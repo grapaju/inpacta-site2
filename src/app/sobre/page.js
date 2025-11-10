@@ -9,6 +9,7 @@ export const metadata = {
 export default function Page() {
   return (
     <div>
+      <div hidden>DEPLOY-MARKER-20251110-1</div>
       {/* Hero */}
       <section className="bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] text-white relative overflow-hidden">
         <div className="hero-pattern absolute inset-0 opacity-20"></div>
