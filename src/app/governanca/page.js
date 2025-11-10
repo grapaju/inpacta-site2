@@ -23,8 +23,9 @@ export default function Page() {
                 <span className="text-[var(--orange)]">Governança</span> e liderança
               </h1>
               <p className="text-xl text-white/90 leading-relaxed max-w-3xl">
-                Nossa estrutura organizacional garante gestão eficiente, transparente 
-                e alinhada aos melhores padrões de governança pública, transformando boas práticas em resultados reais.
+                Nossa estrutura organizacional garante gestão eficiente, transparente e alinhada aos melhores 
+                padrões internacionais de governança (OCDE e BID), assegurando integridade, prestação de contas 
+                e resultados concretos.
               </p>
             </div>
           </ScrollReveal>
