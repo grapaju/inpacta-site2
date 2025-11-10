@@ -252,7 +252,7 @@ function Footer() {
               <Link href="/acessibilidade" className="hover:text-white transition-colors ring-focus min-h-[44px] flex items-center">
                 Acessibilidade
               </Link>
-              <span className="text-white/40 hidden sm:inline">v2.0.0</span>
+              <span className="text-white/40 hidden sm:inline">v{process.env.NEXT_PUBLIC_COMMIT_SHA?.slice(0,7) || 'local'}</span>
             </div>
           </div>
         </div>
