@@ -114,12 +114,12 @@ export default function AdminLayout({ children }) {
             <Link href="/" className="flex items-center">
               <div className="logo-switch">
                 <img
-                  src="/logo-escura.svg"
+                  src="/logo-escura.svg?v=20251110"
                   alt="INPACTA"
                   className="logo-dark h-8 w-auto"
                 />
                 <img
-                  src="/logo-clara.svg"
+                  src="/logo-clara.svg?v=20251110"
                   alt="INPACTA"
                   className="logo-light h-8 w-auto"
                 />
