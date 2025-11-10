@@ -2,8 +2,27 @@ export const projects = [
   {
     slug: "pmspds-sao-bernardo",
     title: "Plano Municipal de Segurança Pública - São Bernardo do Campo",
-    description: "Elaboração completa do PMSPDS com diagnóstico, metas, estrutura de governança e adequação à LGPD.",
+    description: "Plano Municipal de Segurança Pública e Defesa Social (PMSPDS) com diagnóstico integrado, governança intersetorial e adequação à LGPD.",
     category: "governanca",
+    detailsHtml: `
+      <p>O InPacta apoia São Bernardo do Campo na <strong>elaboração e implantação do Plano Municipal de Segurança Pública e Defesa Social (PMSPDS)</strong>, estruturado em fases claras de diagnóstico, visão estratégica, programas, indicadores e governança.</p>
+      <h3>Escopo Principal</h3>
+      <ul>
+        <li><strong>Diagnóstico situacional integrado</strong>: análise socioespacial de criminalidade, desordem urbana, fatores de risco e vulnerabilidades.</li>
+        <li><strong>Arquitetura de governança</strong>: comitês, fluxos decisórios, matriz RACI e integração ao SUSP.</li>
+        <li><strong>Programas e metas</strong>: carteira priorizada com indicadores de resultado, produto e processo alinhados a PPA/LDO.</li>
+        <li><strong>Proteção de dados</strong>: modelagem de tratamento e controles para conformidade com a LGPD.</li>
+        <li><strong>Plano de implantação e monitoramento</strong>: cronograma físico-financeiro, marcos, baseline e mecanismos de avaliação contínua.</li>
+      </ul>
+      <h3>Resultados Esperados</h3>
+      <ul>
+        <li>Conformidade com Lei 13.675/2018 e Decreto 10.822/2021.</li>
+        <li>Base técnica para captação de recursos e cooperação interinstitucional.</li>
+        <li>Melhoria de coordenação entre atores de segurança e defesa social.</li>
+        <li>Estruturação de indicadores para transparência e controle social.</li>
+      </ul>
+      <p>O documento oficial está disponível para consulta pública em <a href="/uploads/InPACTA_SBC_021125.pdf" target="_blank" rel="noopener">PDF</a>.</p>
+    `,
   },
   {
     slug: "observatorio-seguranca-publica",

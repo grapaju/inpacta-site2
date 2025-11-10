@@ -11,6 +11,27 @@ export const news = [
     image: "/images/news-default.jpg"
   },
   {
+    slug: "pmspds-sbc-proposta-2025",
+    date: "2025-11-02",
+    title: "Proposta de Plano Municipal de Segurança Pública e Defesa Social — São Bernardo do Campo",
+    summary: "Documento oficial do InPacta apresenta escopo, governança e plano de implantação do PMSPDS para a Secretaria de Segurança Urbana de São Bernardo do Campo.",
+    content: `
+      <p>O InPacta apresentou a <strong>Proposta de Elaboração e Implantação do Plano Municipal de Segurança Pública e Defesa Social (PMSPDS)</strong> para a <strong>Secretaria de Segurança Urbana de São Bernardo do Campo</strong>. O documento consolida metodologia, fases de trabalho, governança e indicadores, em conformidade com a Lei 13.675/2018 e o Decreto 10.822/2021.</p>
+      <h3>Principais Entregas</h3>
+      <ul>
+        <li><strong>Diagnóstico integrado</strong> com análise socioespacial e fatores de risco.</li>
+        <li><strong>Arquitetura de governança</strong> com colegiados, papéis e fluxos decisórios.</li>
+        <li><strong>Programas e metas</strong> com indicadores de resultado, produto e processo.</li>
+        <li><strong>Plano de implantação</strong> com cronograma, marcos e monitoramento.</li>
+        <li><strong>Adequação à LGPD</strong> para tratamento e proteção de dados sensíveis.</li>
+      </ul>
+      <p>O material completo pode ser consultado em <a href="/uploads/InPACTA_SBC_021125.pdf" target="_blank" rel="noopener">PDF</a>.</p>
+    `,
+    category: "governanca",
+    author: "InPacta",
+    image: "/images/news-default.jpg"
+  },
+  {
     slug: "pmo-inovacao",
     date: "2025-10-10", 
     title: "PMO de Inovação para a administração",

@@ -35,26 +35,26 @@ function Header() {
             {/* Contatos - Otimizado para mobile */}
             <div className="flex items-center gap-3 sm:gap-6 flex-1 min-w-0">
               <a 
-                href="mailto:contato@inpacta.org.br" 
+                href="mailto:segov_secretario@maringa.pr.gov.br" 
                 className="flex items-center gap-1.5 sm:gap-2 hover:text-white/80 transition-colors min-h-[44px] truncate"
-                aria-label="Email de contato"
+                aria-label="Email institucional"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 sm:w-4 sm:h-4">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" strokeWidth="2"/>
                   <polyline points="22,6 12,13 2,6" stroke="currentColor" strokeWidth="2"/>
                 </svg>
-                <span className="hidden md:inline truncate">contato@inpacta.org.br</span>
+                <span className="hidden md:inline truncate">segov_secretario@maringa.pr.gov.br</span>
                 <span className="md:hidden">Contato</span>
               </a>
               <a 
-                href="tel:+551133901234" 
+                href="tel:+554432215389" 
                 className="flex items-center gap-1.5 sm:gap-2 hover:text-white/80 transition-colors min-h-[44px] whitespace-nowrap"
-                aria-label="Telefone de contato"
+                aria-label="Telefone principal"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 sm:w-4 sm:h-4">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" strokeWidth="2"/>
                 </svg>
-                <span className="hidden sm:inline">(11) 3390-1234</span>
+                <span className="hidden sm:inline">(44) 3221-5389</span>
                 <span className="sm:hidden">Tel</span>
               </a>
             </div>

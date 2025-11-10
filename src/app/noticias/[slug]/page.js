@@ -525,7 +525,8 @@ function getTagsForNews(slug) {
   const tagMap = {
     "lancamento-inpacta": ["Lançamento", "Inovação", "Gestão Pública"],
     "pmo-inovacao": ["PMO", "Projetos", "Estratégia"],
-    "dados-abertos": ["Dados", "Transparência", "APIs"]
+    "dados-abertos": ["Dados", "Transparência", "APIs"],
+    "pmspds-sbc-proposta-2025": ["Segurança Pública", "Governança", "PMSPDS", "São Bernardo do Campo"]
   };
   return tagMap[slug] || ["Tecnologia", "Inovação"];
 }

@@ -45,6 +45,12 @@ export default function ProjectPage({ params }) {
       </div>
       <p className="mt-4 text-[color:var(--muted)]">{proj.description}</p>
 
+      {proj.detailsHtml && (
+        <div className="prose max-w-none mt-6 [&>h3]:text-[var(--primary)] [&>a]:text-[var(--accent)] [&>a]:underline text-[var(--foreground)]">
+          <div dangerouslySetInnerHTML={{ __html: proj.detailsHtml }} />
+        </div>
+      )}
+
       <div className="mt-8">
         <Link href="/projetos" className="underline ring-focus">← Voltar para listagem</Link>
       </div>

@@ -49,7 +49,7 @@ export default function Page() {
           {[
             {
               title: "E-mail Institucional",
-              info: "contato@inpacta.mg.gov.br",
+              info: "segov_secretario@maringa.pr.gov.br",
               description: "Canal oficial para comunicação institucional",
               icon: (
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
@@ -58,11 +58,12 @@ export default function Page() {
                 </svg>
               ),
               color: "var(--primary)",
-              action: "Enviar E-mail"
+              action: "Enviar E-mail",
+              href: "mailto:segov_secretario@maringa.pr.gov.br"
             },
             {
               title: "Telefone",
-              info: "(44) 3025-5500",
+              info: "(44) 3221-5389",
               description: "Atendimento de segunda a sexta, 8h às 18h",
               icon: (
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
@@ -70,7 +71,8 @@ export default function Page() {
                 </svg>
               ),
               color: "var(--accent)",
-              action: "Ligar Agora"
+              action: "Ligar Agora",
+              href: "tel:+554432215389"
             },
             {
               title: "Endereço",
@@ -83,7 +85,8 @@ export default function Page() {
                 </svg>
               ),
               color: "var(--green)",
-              action: "Ver no Mapa"
+              action: "Como chegar",
+              href: "https://maps.google.com/?q=Av.+Getúlio+Vargas,+220,+Maringá+-+PR"
             },
             {
               title: "Redes Sociais",
@@ -95,10 +98,11 @@ export default function Page() {
                 </svg>
               ),
               color: "var(--orange)",
-              action: "Seguir"
+              action: "Seguir",
+              href: "https://instagram.com/InPactaMaringa"
             }
           ].map((contact, index) => (
-            <div key={index} className="interactive-card bg-[var(--card)] p-8 rounded-2xl border-2 border-[var(--border)] text-center">
+            <div key={index} className="interactive-card bg-[var(--card)] p-8 rounded-2xl border-2 border-[var(--border)] text-center flex flex-col h-full">
               <div 
                 className="inline-flex size-16 items-center justify-center rounded-2xl mb-6"
                 style={{ backgroundColor: `${contact.color}15`, color: contact.color }}
@@ -110,7 +114,10 @@ export default function Page() {
                 {contact.title}
               </h3>
               
-              <p className="text-lg font-semibold mb-3" style={{ color: contact.color }}>
+              <p 
+                className="text-lg font-semibold mb-3 break-all" 
+                style={{ color: contact.color, wordBreak: 'break-word', overflowWrap: 'anywhere' }}
+              >
                 {contact.info}
               </p>
               
@@ -118,15 +125,20 @@ export default function Page() {
                 {contact.description}
               </p>
               
-              <button 
-                className="px-4 py-2 text-sm font-medium rounded-lg hover:scale-105 transition-transform"
-                style={{ 
-                  backgroundColor: `${contact.color}15`, 
-                  color: contact.color 
-                }}
-              >
-                {contact.action}
-              </button>
+              <div className="mt-auto">
+                <a 
+                  href={contact.href}
+                  target={contact.href?.startsWith('http') ? '_blank' : undefined}
+                  rel={contact.href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  className="inline-block px-4 py-2 text-sm font-medium rounded-lg hover:scale-105 transition-transform ring-focus"
+                  style={{ 
+                    backgroundColor: `${contact.color}15`, 
+                    color: contact.color 
+                  }}
+                >
+                  {contact.action}
+                </a>
+              </div>
             </div>
           ))}
         </StaggeredReveal>
