@@ -1,0 +1,60 @@
+name: Deploy to VPS (aaPanel)
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - name: Copy repository to server (rsync)
+        uses: burnett01/rsync-deployments@6.0.0
+        with:
+          switches: -az --delete --exclude '.git' --exclude 'node_modules' --exclude '.next' --exclude 'public/uploads'
+          path: ./
+          remote_path: ${{ secrets.WORK_DIR }}
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: ${{ secrets.SSH_USER }}
+          remote_port: ${{ secrets.SSH_PORT }}
+
+      - name: Install, migrate, build on server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          port: ${{ secrets.SSH_PORT }}
+          script_stop: true
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            set -e
+            cd ${{ secrets.WORK_DIR }}
+            npm ci
+            npm run deploy:aapanel
+
+      - name: Restart NodeJS project (aaPanel)
+        if: ${{ success() }}
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            set -e
+            cd ${{ secrets.WORK_DIR }}
+            if [ -x scripts/server-restart.sh ]; then
+              bash scripts/server-restart.sh
+            else
+              echo "scripts/server-restart.sh não encontrado; usando fallback"
+              pkill -f "next start" || true
+              nohup npm run start >/dev/null 2>&1 &
+            fi
