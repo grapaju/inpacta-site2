@@ -10,10 +10,10 @@
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "node scripts/setup-production.js",
-    "vercel-build": "node scripts/vercel-build.js",
     "deploy": "node scripts/deploy.js",
     "deploy:fast": "npm run build",
     "deploy:aapanel": "npm run db:migrate && npm run build",
+    "deploy:neon": "node scripts/deploy-neon.js",
     "deploy:ci": "npm ci && npm run deploy:aapanel"
   },
   "dependencies": {

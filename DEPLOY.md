@@ -25,3 +25,10 @@ Opcional:
 ## Nginx (aaPanel)
 - Configure o site com reverse proxy para `http://127.0.0.1:3000` e habilite HTTPS.
 - Snippets e detalhes em `DEPLOY-DEBUG.md`.
+
+## Usando Neon (PostgreSQL gerenciado)
+- No aaPanel, defina `DATABASE_URL` com `sslmode=require`.
+- Se usar o pooler do Neon (PgBouncer), em caso de erro nas migrações Prisma:
+	- Defina temporariamente `DATABASE_URL_DIRECT` com a conexão direta (sem `-pooler`).
+	- Rode `npm run deploy:neon` para aplicar migrações pela URL direta e buildar.
+	- Volte a usar o pooler no runtime com `DATABASE_URL`.

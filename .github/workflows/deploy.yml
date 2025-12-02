@@ -19,7 +19,7 @@ jobs:
       - name: Copy repository to server (rsync)
         uses: burnett01/rsync-deployments@6.0.0
         with:
-          switches: -az --delete --exclude '.git' --exclude 'node_modules' --exclude '.next' --exclude 'public/uploads'
+          switches: -az --delete --exclude '.git' --exclude 'node_modules' --exclude '.next' --exclude 'public/uploads' --exclude '.env*'
           path: ./
           remote_path: ${{ secrets.WORK_DIR }}
           remote_host: ${{ secrets.SSH_HOST }}
@@ -38,7 +38,14 @@ jobs:
             set -e
             cd ${{ secrets.WORK_DIR }}
             npm ci
-            npm run deploy:aapanel
+            # Se DATABASE_URL_DIRECT estiver definido no ambiente, usa o fluxo Neon; caso contrário, aaPanel padrão
+            if [ -n "${DATABASE_URL_DIRECT}" ]; then
+              echo "Usando deploy:neon (migração via conexão direta)"
+              npm run deploy:neon
+            else
+              echo "Usando deploy:aapanel (migração padrão)"
+              npm run deploy:aapanel
+            fi
 
       - name: Restart NodeJS project (aaPanel)
         if: ${{ success() }}
