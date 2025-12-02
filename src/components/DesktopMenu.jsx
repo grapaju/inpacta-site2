@@ -30,7 +30,7 @@ export default function DesktopMenu() {
         { 
           href: "/sobre", 
           label: "Quem Somos",
-          description: "Propósito, Missão e Visão do InPacta"
+          description: "Propósito, Missão e Visão do InPACTA"
         },
         { 
           href: "/estrutura", 
@@ -66,6 +66,21 @@ export default function DesktopMenu() {
           href: "/servicos/planejamento-estrategico-pmo", 
           label: "Planejamento Estratégico e PMO",
           description: "Gestão de portfólio e governança de projetos"
+        },
+      ]
+    },
+    {
+      label: "Transparência",
+      submenu: [
+        { 
+          href: "/transparencia", 
+          label: "Portal da Transparência",
+          description: "Informações públicas e prestação de contas"
+        },
+        { 
+          href: "/dados", 
+          label: "Dados Abertos",
+          description: "Datasets e APIs públicas para consulta"
         },
       ]
     },

@@ -1,4 +1,4 @@
-export const metadata = { title: "Acessibilidade • InPacta" };
+export const metadata = { title: "Acessibilidade • InPACTA" };
 
 export default function Page() {
   return (

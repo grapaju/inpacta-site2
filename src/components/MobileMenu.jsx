@@ -40,7 +40,7 @@ export default function MobileMenu() {
     {
       label: "O Instituto",
       submenu: [
-        { href: "/sobre", label: "Quem Somos", description: "Propósito, Missão e Visão do InPacta" },
+        { href: "/sobre", label: "Quem Somos", description: "Propósito, Missão e Visão do InPACTA" },
         { href: "/estrutura", label: "Estrutura", description: "Conselho de Administração e membros" },
         { href: "/equipe", label: "Equipe e Práticas", description: "Nossa equipe e experiência" },
         { href: "/transparencia", label: "Lei Acesso à Informação", description: "Direito de acesso às informações públicas" },
@@ -52,6 +52,13 @@ export default function MobileMenu() {
         { href: "/servicos/governanca-seguranca-publica", label: "Governança e Segurança Pública", description: "Planos municipais e protocolos operacionais" },
         { href: "/servicos/observatorios-inteligencia-dados", label: "Observatórios e Inteligência", description: "Núcleos de dados e portais de transparência" },
         { href: "/servicos/planejamento-estrategico-pmo", label: "Planejamento Estratégico e PMO", description: "Gestão de portfólio e governança de projetos" },
+      ],
+    },
+    {
+      label: "Transparência",
+      submenu: [
+        { href: "/transparencia", label: "Portal da Transparência", description: "Informações públicas e prestação de contas" },
+        { href: "/dados", label: "Dados Abertos", description: "Datasets e APIs públicas para consulta" },
       ],
     },
     { href: "/noticias", label: "Notícias" },

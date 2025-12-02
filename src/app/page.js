@@ -75,7 +75,7 @@ export default async function Home() {
                 href="/sobre"
                 className="hero-cta-secondary inline-flex items-center justify-center px-8 py-4 rounded-xl border-2 border-white/60 text-white font-bold text-lg hover:bg-white/10 hover:border-white/80 backdrop-blur transition-all duration-300 ring-focus group"
               >
-                Sobre o InPacta
+                Sobre o InPACTA
                 <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
               </Link>
             </div>
@@ -124,7 +124,7 @@ export default async function Home() {
           <div className="text-center mb-16">
             <div className="section-title justify-center">
               <span className="bar" />
-              <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Sobre o InPacta</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Sobre o InPACTA</h2>
             </div>
             <p className="mt-4 text-lg text-[color:var(--muted)] max-w-2xl mx-auto">
               Apoiando gestores e sociedade na construção de administrações mais modernas, justas e conectadas às demandas sociais.
@@ -136,7 +136,7 @@ export default async function Home() {
           <div className="space-y-6">
             <div className="space-y-5 text-lg leading-relaxed text-[color:var(--muted)]">
               <p>
-                O <strong className="text-[var(--foreground)]">InPacta</strong> é o Instituto de Projetos Avançados para Cidades, Tecnologia e Administração, 
+                O <strong className="text-[var(--foreground)]">InPACTA</strong> é o Instituto de Projetos Avançados para Cidades, Tecnologia e Administração, 
                 uma instituição dedicada ao fortalecimento da governança pública através da inovação e inteligência de dados.
               </p>
               <p>
@@ -151,7 +151,7 @@ export default async function Home() {
               </p>
             </div>
             
-            <div className="flex flex-wrap gap-3" aria-label="Pilares do InPacta">
+            <div className="flex flex-wrap gap-3" aria-label="Pilares do InPACTA">
               <span className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-[var(--accent)]/20 bg-gradient-to-r from-[var(--accent)]/10 to-[var(--accent)]/5 text-sm font-medium">
                 <span className="size-3 rounded-full bg-[var(--accent)]" /> 
                 Governança
@@ -229,7 +229,8 @@ export default async function Home() {
       </section>
 
       {/* O que fazemos */}
-      <section className="section-alt max-w-7xl mx-auto px-4 py-20">
+      <div className="section-alt">
+        <section className="max-w-7xl mx-auto px-4 py-20">
         <ScrollReveal animation="fadeUp">
           <div className="text-center mb-16">
             <div className="section-title justify-center">
@@ -307,6 +308,7 @@ export default async function Home() {
           ))}
         </StaggeredReveal>
       </section>
+      </div>
 
       {/* Alinhamento Internacional */}
       <section className="section max-w-7xl mx-auto px-4 py-20">
@@ -377,7 +379,8 @@ export default async function Home() {
       </section>
 
       {/* Destaques */}
-      <section className="section-alt max-w-7xl mx-auto px-4 py-16">
+      <div className="section-alt">
+        <section className="max-w-7xl mx-auto px-4 py-16">
         <div className="text-center mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-[var(--primary)] mb-4">Acesso rápido</h2>
           <p className="text-[color:var(--muted)]">Principais áreas de atuação e compromisso com a sociedade</p>
@@ -387,7 +390,7 @@ export default async function Home() {
           {[
             { href: "/transparencia", label: "Transparência", desc: "Dados e informações públicas acessíveis", color: "#0A2540" },
             { href: "/lgpd", label: "LGPD", desc: "Proteção e privacidade de dados pessoais", color: "#FF6B35" },
-            { href: "/dados", label: "Dados Abertos", desc: "Informações governamentais abertas ao público", color: "#00A3E0" },
+            { href: "/dados", label: "Dados Abertos", desc: "Informações governamentais abertas ao público", color: "#3a6fa6" },
             { href: "/governanca", label: "Governança", desc: "Processos e estrutura organizacional", color: "#27AE60" },
           ].map((d) => (
             <Link 
@@ -422,7 +425,8 @@ export default async function Home() {
       </section>
 
       {/* Notícias */}
-      <section className="section-alt max-w-7xl mx-auto px-4 py-20">
+      <div className="section-alt">
+        <section className="max-w-7xl mx-auto px-4 py-20">
         <ScrollReveal animation="fadeUp">
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 mb-12">
             <div>
@@ -493,6 +497,7 @@ export default async function Home() {
             ))}
         </StaggeredReveal>
       </section>
+      </div>
 
       {/* CTA */}
       <section className="max-w-7xl mx-auto px-4 py-20">
@@ -552,6 +557,7 @@ export default async function Home() {
           </div>
         </div>
       </section>
+      </div>
     </div>
   );
 }

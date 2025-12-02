@@ -4,7 +4,7 @@ import { IconCity, IconCpu, IconLightbulb, IconShield } from "@/components/Icons
 
 const categoryMeta = {
   "cidades-inteligentes": { color: "#27AE60", Icon: IconCity, label: "Cidades Inteligentes" },
-  tecnologia: { color: "#00A3E0", Icon: IconCpu, label: "Tecnologia" },
+  tecnologia: { color: "#3a6fa6", Icon: IconCpu, label: "Tecnologia" },
   inovacao: { color: "#FF6B35", Icon: IconLightbulb, label: "Inovação" },
 };
 
@@ -14,8 +14,8 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }) {
   const proj = projects.find((p) => p.slug === params.slug);
-  if (!proj) return { title: "Projeto não encontrado • InPacta" };
-  return { title: `${proj.title} • Projetos • InPacta`, description: proj.description };
+  if (!proj) return { title: "Projeto não encontrado • InPACTA" };
+  return { title: `${proj.title} • Projetos • InPACTA`, description: proj.description };
 }
 
 export default function ProjectPage({ params }) {

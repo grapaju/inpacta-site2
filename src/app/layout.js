@@ -35,7 +35,7 @@ function Header() {
             {/* Contatos - Otimizado para mobile */}
             <div className="flex items-center gap-3 sm:gap-6 flex-1 min-w-0">
               <a 
-                href="mailto:segov_secretario@maringa.pr.gov.br" 
+                href="mailto:contato@inpacta.tech" 
                 className="flex items-center gap-1.5 sm:gap-2 hover:text-white/80 transition-colors min-h-[44px] truncate"
                 aria-label="Email institucional"
               >
@@ -43,18 +43,18 @@ function Header() {
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" strokeWidth="2"/>
                   <polyline points="22,6 12,13 2,6" stroke="currentColor" strokeWidth="2"/>
                 </svg>
-                <span className="hidden md:inline truncate">segov_secretario@maringa.pr.gov.br</span>
+                <span className="hidden md:inline truncate">contato@inpacta.tech</span>
                 <span className="md:hidden">Contato</span>
               </a>
               <a 
-                href="tel:+554432215389" 
+                href="tel:+5544312754000" 
                 className="flex items-center gap-1.5 sm:gap-2 hover:text-white/80 transition-colors min-h-[44px] whitespace-nowrap"
                 aria-label="Telefone principal"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 sm:w-4 sm:h-4">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" strokeWidth="2"/>
                 </svg>
-                <span className="hidden sm:inline">(44) 3221-5389</span>
+                <span className="hidden sm:inline">(44) 3127-5400</span>
                 <span className="sm:hidden">Tel</span>
               </a>
             </div>
@@ -73,11 +73,11 @@ function Header() {
         <div className="max-w-7xl mx-auto px-3 sm:px-4">
           <div className="flex items-center justify-between h-16 sm:h-20 relative">
             {/* Logo - Redimensionado para mobile */}
-            <Link href="/" className="flex items-center group" aria-label="Página inicial do InPacta">
+            <Link href="/" className="flex items-center group" aria-label="Página inicial do InPACTA">
               <div className="relative h-10 sm:h-12">
                 <Image
                   src="/logo-clara.svg?v=20251110"
-                  alt="InPacta Logo"
+                  alt="InPACTA Logo"
                   width={160}
                   height={50}
                   className="h-10 sm:h-12 w-auto transition-opacity group-hover:opacity-80 logo-light"
@@ -85,7 +85,7 @@ function Header() {
                 />
                 <Image
                   src="/logo-escura.svg?v=20251110"
-                  alt="InPacta Logo"
+                  alt="InPACTA Logo"
                   width={160}
                   height={50}
                   className="h-10 sm:h-12 w-auto transition-opacity group-hover:opacity-80 logo-dark"
@@ -110,14 +110,14 @@ function Footer() {
   return (
     <footer className="bg-gradient-to-br from-[var(--primary)] to-[var(--primary)]/95 text-white mt-auto">
       <div className="container mx-auto px-4 sm:px-6 py-10 sm:py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-8 sm:gap-10 md:gap-12">
-          {/* Logo e Descrição - Coluna maior */}
-          <div className="sm:col-span-2 md:col-span-4 space-y-4 sm:space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-8 sm:gap-10 md:gap-8">
+          {/* Logo e Descrição - Coluna menor */}
+          <div className="sm:col-span-2 md:col-span-5 space-y-4 sm:space-y-6">
             <Link href="/" className="inline-block group">
               <div className="relative h-9 sm:h-10 transition-transform group-hover:scale-105">
                 <Image
                   src="/logo-clara.svg?v=20251110"
-                  alt="InPacta Logo"
+                  alt="InPACTA Logo"
                   width={140}
                   height={48}
                   className="h-9 sm:h-10 w-auto brightness-0 invert"
@@ -164,7 +164,7 @@ function Footer() {
           </div>
 
           {/* Links Principais */}
-          <div className="md:col-span-3 space-y-3 sm:space-y-5">
+          <div className="md:col-span-2 space-y-3 sm:space-y-5">
             <h3 className="font-bold text-white text-base sm:text-lg relative inline-block pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-1 after:bg-[var(--accent)] after:rounded-full">
               Navegação
             </h3>
@@ -195,8 +195,9 @@ function Footer() {
             </h3>
             <ul className="space-y-2.5 sm:space-y-3">
               {[
-                { href: "/sobre", label: "Sobre" },
-                { href: "/governanca", label: "Governança" },
+                { href: "/sobre", label: "Quem Somos" },
+                { href: "/estrutura", label: "Estrutura" },
+                { href: "/equipe", label: "Equipe e Práticas" },
                 { href: "/servicos", label: "Serviços" },
                 { href: "/projetos", label: "Projetos" },
               ].map((link) => (
@@ -214,7 +215,7 @@ function Footer() {
           </div>
 
           {/* Transparência */}
-          <div className="md:col-span-3 space-y-3 sm:space-y-5">
+          <div className="md:col-span-2 space-y-3 sm:space-y-5">
             <h3 className="font-bold text-white text-base sm:text-lg relative inline-block pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-1 after:bg-[var(--accent)] after:rounded-full">
               Transparência
             </h3>
@@ -243,7 +244,7 @@ function Footer() {
         <div className="border-t border-white/20 mt-10 sm:mt-12 pt-6 sm:pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6 text-xs sm:text-sm text-white/60">
             <p className="text-center md:text-left order-2 md:order-1">
-              © {new Date().getFullYear()} InPacta - Instituto de Projetos Avançados. Todos os direitos reservados.
+              © {new Date().getFullYear()} InPACTA - Instituto de Projetos Avançados. Todos os direitos reservados.
             </p>
             <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 order-1 md:order-2">
               <Link href="/lgpd" className="hover:text-white transition-colors ring-focus min-h-[44px] flex items-center">
@@ -268,8 +269,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-br" suppressHydrationWarning>
       <Head>
-        <title>InPacta — Inovação pública para cidades inteligentes</title>
-        <meta name="description" content="O InPacta acelera a modernização administrativa e tecnológica do setor público em Maringá-PR." />
+        <title>InPACTA — Inovação pública para cidades inteligentes</title>
+        <meta name="description" content="O InPACTA acelera a modernização administrativa e tecnológica do setor público em Maringá-PR." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`} suppressHydrationWarning>

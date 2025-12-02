@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ScrollReveal, StaggeredReveal } from "@/hooks/useScrollAnimations";
 
 export const metadata = {
-  title: "Estrutura Organizacional — InPacta",
+  title: "Estrutura Organizacional — InPACTA",
   description: "Estrutura organizacional, hierarquia, departamentos e organograma do Instituto de Inovação para Políticas Públicas de Maringá.",
 };
 
@@ -158,18 +158,19 @@ export default function Page() {
       </section>
 
       {/* Núcleos Especializados */}
-      <section className="section-alt max-w-7xl mx-auto px-4 py-20">
-        <ScrollReveal animation="fadeUp">
-          <div className="text-center mb-16">
-            <div className="section-title justify-center">
-              <span className="bar" />
-              <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Núcleos Especializados</h2>
+      <div className="section-alt">
+        <section className="max-w-7xl mx-auto px-4 py-20">
+          <ScrollReveal animation="fadeUp">
+            <div className="text-center mb-16">
+              <div className="section-title justify-center">
+                <span className="bar" />
+                <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Núcleos Especializados</h2>
+              </div>
+              <p className="mt-4 text-lg text-[color:var(--muted)]">
+                Equipes multidisciplinares focadas em áreas estratégicas de atuação.
+              </p>
             </div>
-            <p className="mt-4 text-lg text-[color:var(--muted)]">
-              Equipes multidisciplinares focadas em áreas estratégicas de atuação.
-            </p>
-          </div>
-        </ScrollReveal>
+          </ScrollReveal>
 
         <StaggeredReveal staggerDelay={200} className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {[
@@ -244,7 +245,8 @@ export default function Page() {
             </div>
           ))}
         </StaggeredReveal>
-      </section>
+        </section>
+      </div>
 
       {/* Comitês e Conselhos */}
       <section className="max-w-7xl mx-auto px-4 py-20">
@@ -351,15 +353,16 @@ export default function Page() {
       </section>
 
       {/* CTA */}
-      <section className="section-alt max-w-7xl mx-auto px-4 py-20">
-        <ScrollReveal animation="scale">
-          <div className="text-center bg-gradient-to-br from-[var(--primary)]/10 via-[var(--card)] to-[var(--accent)]/10 rounded-3xl p-12 border-2 border-[var(--primary)]/20">
-            <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)] mb-6">
-              Faça parte da nossa equipe
-            </h2>
-            <p className="text-lg text-[color:var(--muted)] mb-8 max-w-2xl mx-auto">
-              Estamos sempre em busca de talentos para fortalecer nossa estrutura e missão.
-            </p>
+      <div className="section-alt">
+        <section className="max-w-7xl mx-auto px-4 py-20">
+          <ScrollReveal animation="scale">
+            <div className="text-center bg-gradient-to-br from-[var(--primary)]/10 via-[var(--card)] to-[var(--accent)]/10 rounded-3xl p-12 border-2 border-[var(--primary)]/20">
+              <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)] mb-6">
+                Faça parte da nossa equipe
+              </h2>
+              <p className="text-lg text-[color:var(--muted)] mb-8 max-w-2xl mx-auto">
+                Estamos sempre em busca de talentos para fortalecer nossa estrutura e missão.
+              </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
                 href="/contato" 
@@ -377,7 +380,8 @@ export default function Page() {
             </div>
           </div>
         </ScrollReveal>
-      </section>
+        </section>
+      </div>
     </div>
   );
 }

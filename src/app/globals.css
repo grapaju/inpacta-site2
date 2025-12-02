@@ -10,7 +10,7 @@
   Tokens de design (WCAG, tema claro/escuro) e utilitários globais
   Paleta:
     Primária gov: #0A2540
-    Acento tech: #00A3E0
+    Acento tech: #3a6fa6
     Laranja projetos: #FF6B35
     Verde sustentabilidade: #27AE60
 */
@@ -27,8 +27,8 @@
   /* Acentos */
   --primary: #0a2540; /* gov */
   --primary-contrast: #ffffff;
-  --accent: #00a3e0; /* tech */
-  --accent-contrast: #0a2540;
+  --accent: #3a6fa6; /* tech */
+  --accent-contrast: #ffffff;
   --orange: #ff6b35; /* projetos */
   --green: #27ae60; /* sustentabilidade */
 
@@ -49,10 +49,10 @@
   --border: rgba(230, 238, 246, 0.14);
   --section-alt-bg: #0f1620;
 
-  --primary: #00a3e0;
-  --primary-contrast: #0b1016;
-  --accent: #5cc7f0;
-  --accent-contrast: #0b1016;
+  --primary: #4a7fb8;
+  --primary-contrast: #ffffff;
+  --accent: #4a7fb8;
+  --accent-contrast: #ffffff;
   --hero-start: #0a2540;
   --hero-end: #0b3c66;
 }
@@ -104,12 +104,12 @@
     --card: rgba(11, 16, 22, 0.6);
     --border: rgba(230, 238, 246, 0.14);
 
-    --primary: #00a3e0;
+    --primary: #3a6fa6;
     --primary-contrast: #0b1016;
     --accent: #5cc7f0;
     --accent-contrast: #0b1016;
     --hero-start: #0a2540;
-    --hero-end: #00a3e0;
+    --hero-end: #3a6fa6;
   }
 }
 

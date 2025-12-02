@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ScrollReveal, StaggeredReveal } from "@/hooks/useScrollAnimations";
 
 export const metadata = { 
-  title: "Contato e Parcerias — InPacta",
+  title: "Contato e Parcerias — InPACTA",
   description: "Entre em contato conosco para parcerias, projetos ou dúvidas. Estamos prontos para colaborar na transformação digital do setor público."
 };
 
@@ -49,7 +49,7 @@ export default function Page() {
           {[
             {
               title: "E-mail Institucional",
-              info: "segov_secretario@maringa.pr.gov.br",
+              info: "contato@inpacta.tech",
               description: "Canal oficial para comunicação institucional",
               icon: (
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
@@ -59,11 +59,11 @@ export default function Page() {
               ),
               color: "var(--primary)",
               action: "Enviar E-mail",
-              href: "mailto:segov_secretario@maringa.pr.gov.br"
+              href: "mailto:contato@inpacta.tech"
             },
             {
               title: "Telefone",
-              info: "(44) 3221-5389",
+              info: "(44) 3127-5400",
               description: "Atendimento de segunda a sexta, 8h às 18h",
               icon: (
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
@@ -72,7 +72,7 @@ export default function Page() {
               ),
               color: "var(--accent)",
               action: "Ligar Agora",
-              href: "tel:+554432215389"
+              href: "tel:+5544312754000"
             },
             {
               title: "Endereço",
@@ -145,7 +145,8 @@ export default function Page() {
       </section>
 
       {/* Formulário de Contato */}
-      <section className="section-alt max-w-7xl mx-auto px-4 py-20">
+      <div className="section-alt">
+        <section className="max-w-7xl mx-auto px-4 py-20">
         <div className="grid lg:grid-cols-2 gap-16 items-start">
           <ScrollReveal animation="fadeRight">
             <div>
@@ -348,7 +349,8 @@ export default function Page() {
       </section>
 
       {/* Mapa e Localização */}
-      <section className="section-alt max-w-7xl mx-auto px-4 py-20">
+      <div className="section-alt">
+        <section className="max-w-7xl mx-auto px-4 py-20">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <ScrollReveal animation="fadeRight">
             <div>
@@ -421,7 +423,7 @@ export default function Page() {
                       <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="2"/>
                     </svg>
                   </div>
-                  <h3 className="text-lg font-bold text-[var(--primary)] mb-2">InPacta</h3>
+                  <h3 className="text-lg font-bold text-[var(--primary)] mb-2">InPACTA</h3>
                   <p className="text-sm text-[color:var(--muted)]">
                     Centro de Maringá<br/>
                     Clique para ver no mapa
@@ -438,6 +440,8 @@ export default function Page() {
           </ScrollReveal>
         </div>
       </section>
+      </div>
+      </div>
     </div>
   );
 }

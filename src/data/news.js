@@ -2,9 +2,9 @@ export const news = [
   {
     slug: "lancamento-inpacta",
     date: "2025-10-01",
-    title: "Lançamento oficial do InPacta",
-    summary: "Prefeitura de Maringá institui o InPacta para acelerar inovação pública.",
-    content: `O InPacta inicia suas atividades com foco em projetos de transformação digital,
+    title: "Lançamento oficial do InPACTA",
+    summary: "Prefeitura de Maringá institui o InPACTA para acelerar inovação pública.",
+    content: `O InPACTA inicia suas atividades com foco em projetos de transformação digital,
       integração de sistemas e cidades inteligentes, atendendo exclusivamente órgãos públicos.`,
     category: "inovacao",
     author: "InPacta",
@@ -14,9 +14,9 @@ export const news = [
     slug: "pmspds-sbc-proposta-2025",
     date: "2025-11-02",
     title: "Proposta de Plano Municipal de Segurança Pública e Defesa Social — São Bernardo do Campo",
-    summary: "Documento oficial do InPacta apresenta escopo, governança e plano de implantação do PMSPDS para a Secretaria de Segurança Urbana de São Bernardo do Campo.",
+    summary: "Documento oficial do InPACTA apresenta escopo, governança e plano de implantação do PMSPDS para a Secretaria de Segurança Urbana de São Bernardo do Campo.",
     content: `
-      <p>O InPacta apresentou a <strong>Proposta de Elaboração e Implantação do Plano Municipal de Segurança Pública e Defesa Social (PMSPDS)</strong> para a <strong>Secretaria de Segurança Urbana de São Bernardo do Campo</strong>. O documento consolida metodologia, fases de trabalho, governança e indicadores, em conformidade com a Lei 13.675/2018 e o Decreto 10.822/2021.</p>
+      <p>O InPACTA apresentou a <strong>Proposta de Elaboração e Implantação do Plano Municipal de Segurança Pública e Defesa Social (PMSPDS)</strong> para a <strong>Secretaria de Segurança Urbana de São Bernardo do Campo</strong>. O documento consolida metodologia, fases de trabalho, governança e indicadores, em conformidade com a Lei 13.675/2018 e o Decreto 10.822/2021.</p>
       <h3>Principais Entregas</h3>
       <ul>
         <li><strong>Diagnóstico integrado</strong> com análise socioespacial e fatores de risco.</li>
@@ -28,7 +28,7 @@ export const news = [
       <p>O material completo pode ser consultado em <a href="/uploads/InPACTA_SBC_021125.pdf" target="_blank" rel="noopener">PDF</a>.</p>
     `,
     category: "governanca",
-    author: "InPacta",
+    author: "InPACTA",
     image: "/images/news-default.jpg"
   },
   {
@@ -39,7 +39,7 @@ export const news = [
     content: `O instituto está apoiando a construção de um PMO de Inovação para priorização e governança
       de iniciativas digitais.`,
     category: "tecnologia",
-    author: "InPacta",
+    author: "InPACTA",
     image: "/images/news-default.jpg"
   },
   {
@@ -49,7 +49,7 @@ export const news = [
     summary: "Compromisso com transparência e interoperabilidade.",
     content: `Publicação gradual de datasets e APIs públicas alinhadas às boas práticas de dados abertos.`,
     category: "tecnologia",
-    author: "InPacta", 
+    author: "InPACTA", 
     image: "/images/news-default.jpg"
   },
 ];

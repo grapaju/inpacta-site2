@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ScrollReveal, StaggeredReveal } from "@/hooks/useScrollAnimations";
 
 export const metadata = {
-  title: "Equipe e Práticas — InPacta",
+  title: "Equipe e Práticas — InPACTA",
   description: "Conheça nossa equipe especializada, metodologias de trabalho e práticas inovadoras do Instituto de Inovação para Políticas Públicas de Maringá.",
 };
 
@@ -96,43 +96,44 @@ export default function Page() {
       </section>
 
       {/* Liderança */}
-      <section className="section-alt max-w-7xl mx-auto px-4 py-20">
-        <ScrollReveal animation="fadeUp">
-          <div className="text-center mb-16">
-            <div className="section-title justify-center">
-              <span className="bar" />
-              <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Liderança</h2>
+      <div className="section-alt">
+        <section className="max-w-7xl mx-auto px-4 py-20">
+          <ScrollReveal animation="fadeUp">
+            <div className="text-center mb-16">
+              <div className="section-title justify-center">
+                <span className="bar" />
+                <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Liderança</h2>
+              </div>
+              <p className="mt-4 text-lg text-[color:var(--muted)]">
+                Profissionais experientes que lideram nossa missão de inovação.
+              </p>
             </div>
-            <p className="mt-4 text-lg text-[color:var(--muted)]">
-              Profissionais experientes que lideram nossa missão de inovação.
-            </p>
-          </div>
-        </ScrollReveal>
+          </ScrollReveal>
 
         <StaggeredReveal staggerDelay={200} className="grid md:grid-cols-3 gap-8">
           {[
             {
-              name: "Ana Paula Fernandes",
-              role: "Diretora Executiva",
-              description: "15+ anos em gestão pública e transformação digital. Especialista em políticas de inovação.",
-              specialties: ["Gestão Estratégica", "Políticas Públicas", "Inovação"],
-              education: "MBA em Gestão Pública - FGV",
+              name: "Cristiane Regina de Camargo Hasegawa",
+              role: "Diretora Presidente",
+              description: "Líder experiente em gestão pública e desenvolvimento de políticas de inovação para o setor público.",
+              specialties: ["Gestão Estratégica", "Políticas Públicas", "Liderança"],
+              education: "Especialização em Gestão Pública",
               linkedin: "#"
             },
             {
-              name: "Dr. Roberto Silva",
-              role: "Diretor de Tecnologia",
-              description: "Doutor em Ciência da Computação. Líder em arquiteturas de sistemas governamentais.",
-              specialties: ["Arquitetura de Software", "DevOps", "Segurança"],
-              education: "PhD em Ciência da Computação - USP",
+              name: "Ideuber Carlos Celeste",
+              role: "Diretor Administrativo Financeiro",
+              description: "Especialista em gestão financeira e administrativa com foco em sustentabilidade organizacional.",
+              specialties: ["Gestão Financeira", "Administração", "Planejamento"],
+              education: "Formação em Administração e Finanças",
               linkedin: "#"
             },
             {
-              name: "Mariana Santos",
-              role: "Diretora de Projetos",
-              description: "PMP certificada com experiência em gestão de portfólio de projetos complexos.",
-              specialties: ["PMO", "Metodologias Ágeis", "Gestão de Riscos"],
-              education: "Especialização em Gestão de Projetos - PMI",
+              name: "Márcio Luis Catelan",
+              role: "Diretor Técnico",
+              description: "Especialista em tecnologia e inovação com experiência em desenvolvimento de soluções técnicas.",
+              specialties: ["Tecnologia", "Inovação", "Desenvolvimento"],
+              education: "Formação Técnica e Tecnológica",
               linkedin: "#"
             }
           ].map((leader, index) => (
@@ -190,7 +191,8 @@ export default function Page() {
             </div>
           ))}
         </StaggeredReveal>
-      </section>
+        </section>
+      </div>
 
       {/* Equipes por Área */}
       <section className="max-w-7xl mx-auto px-4 py-20">
@@ -306,19 +308,20 @@ export default function Page() {
       </section>
 
       {/* Metodologias e Práticas */}
-      <section className="section-alt max-w-7xl mx-auto px-4 py-20">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <ScrollReveal animation="fadeRight">
-            <div>
-              <div className="section-title">
-                <span className="bar" />
-                <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Metodologias de Trabalho</h2>
-              </div>
-              <div className="mt-8 space-y-6">
-                <p className="text-lg text-[color:var(--muted)] leading-relaxed">
-                  Utilizamos as <strong className="text-[var(--foreground)]">melhores práticas</strong> da indústria, 
-                  adaptadas às necessidades específicas do setor público.
-                </p>
+      <div className="section-alt">
+        <section className="max-w-7xl mx-auto px-4 py-20">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <ScrollReveal animation="fadeRight">
+              <div>
+                <div className="section-title">
+                  <span className="bar" />
+                  <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Metodologias de Trabalho</h2>
+                </div>
+                <div className="mt-8 space-y-6">
+                  <p className="text-lg text-[color:var(--muted)] leading-relaxed">
+                    Utilizamos as <strong className="text-[var(--foreground)]">melhores práticas</strong> da indústria, 
+                    adaptadas às necessidades específicas do setor público.
+                  </p>
                 
                 <div className="space-y-4">
                   {[
@@ -388,7 +391,8 @@ export default function Page() {
             </div>
           </ScrollReveal>
         </div>
-      </section>
+        </section>
+      </div>
 
       {/* CTA */}
       <section className="max-w-7xl mx-auto px-4 py-20">

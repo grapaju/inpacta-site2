@@ -2,8 +2,8 @@ import Link from "next/link";
 import { ScrollReveal, StaggeredReveal } from "@/hooks/useScrollAnimations";
 
 export const metadata = { 
-  title: "Sobre o InPacta — Instituto de Projetos Avançados",
-  description: "Conheça o InPacta: fortalecemos a governança pública através de inovação, tecnologia e inteligência de dados, transformando serviços públicos em resultados concretos para governos e cidadãos.",
+  title: "Sobre o InPACTA — Instituto de Projetos Avançados",
+  description: "Conheça o InPACTA: fortalecemos a governança pública através de inovação, tecnologia e inteligência de dados, transformando serviços públicos em resultados concretos para governos e cidadãos.",
 };
 
 export default function Page() {
@@ -24,7 +24,7 @@ export default function Page() {
                 Fortalecendo a <span className="text-[var(--orange)]">governança pública</span>
               </h1>
               <p className="text-xl text-white/90 leading-relaxed max-w-3xl">
-                O InPacta é o Instituto de Projetos Avançados para Cidades, Tecnologia e Administração, 
+                O InPACTA é o Instituto de Projetos Avançados para Cidades, Tecnologia e Administração, 
                 dedicado ao fortalecimento da governança pública através de inovação, tecnologia e inteligência de dados.
               </p>
             </div>
@@ -92,18 +92,19 @@ export default function Page() {
       </section>
 
       {/* Valores Detalhados */}
-      <section className="section-alt max-w-7xl mx-auto px-4 py-20">
-        <ScrollReveal animation="fadeUp">
-          <div className="text-center mb-16">
-            <div className="section-title justify-center">
-              <span className="bar" />
-              <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Nossos Valores</h2>
+      <div className="section-alt">
+        <section className="max-w-7xl mx-auto px-4 py-20">
+          <ScrollReveal animation="fadeUp">
+            <div className="text-center mb-16">
+              <div className="section-title justify-center">
+                <span className="bar" />
+                <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Nossos Valores</h2>
+              </div>
+              <p className="mt-4 text-lg text-[color:var(--muted)] max-w-2xl mx-auto">
+                Princípios que orientam nossa atuação e compromisso com a excelência na gestão pública.
+              </p>
             </div>
-            <p className="mt-4 text-lg text-[color:var(--muted)] max-w-2xl mx-auto">
-              Princípios que orientam nossa atuação e compromisso com a excelência na gestão pública.
-            </p>
-          </div>
-        </ScrollReveal>
+          </ScrollReveal>
 
         <StaggeredReveal staggerDelay={150} className="space-y-6">
           <div className="interactive-card p-8 rounded-2xl border-2 border-[var(--border)] bg-gradient-to-br from-[var(--accent)]/5 to-transparent">
@@ -181,7 +182,8 @@ export default function Page() {
             </div>
           </div>
         </StaggeredReveal>
-      </section>
+        </section>
+      </div>
 
       {/* História */}
       <section className="max-w-7xl mx-auto px-4 py-20">
@@ -194,7 +196,7 @@ export default function Page() {
               </div>
               <div className="mt-8 space-y-6 text-lg leading-relaxed text-[color:var(--muted)]">
                 <p>
-                  O <strong className="text-[var(--foreground)]">InPacta</strong> nasceu para apoiar gestores e sociedade 
+                  O <strong className="text-[var(--foreground)]">InPACTA</strong> nasceu para apoiar gestores e sociedade 
                   na construção de administrações públicas mais modernas, justas e conectadas às demandas sociais.
                 </p>
                 <p>
@@ -271,18 +273,19 @@ export default function Page() {
       </section>
 
       {/* Diferenciais Estratégicos */}
-      <section className="section-alt max-w-7xl mx-auto px-4 py-20">
-        <ScrollReveal animation="fadeUp">
-          <div className="text-center mb-16">
-            <div className="section-title justify-center">
-              <span className="bar" />
-              <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Nossos Diferenciais</h2>
+      <div className="section-alt">
+        <section className="max-w-7xl mx-auto px-4 py-20">
+          <ScrollReveal animation="fadeUp">
+            <div className="text-center mb-16">
+              <div className="section-title justify-center">
+                <span className="bar" />
+                <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Nossos Diferenciais</h2>
+              </div>
+              <p className="mt-4 text-lg text-[color:var(--muted)] max-w-2xl mx-auto">
+                Palavras-chave que definem nosso compromisso com a excelência em governança pública.
+              </p>
             </div>
-            <p className="mt-4 text-lg text-[color:var(--muted)] max-w-2xl mx-auto">
-              Palavras-chave que definem nosso compromisso com a excelência em governança pública.
-            </p>
-          </div>
-        </ScrollReveal>
+          </ScrollReveal>
 
         <StaggeredReveal staggerDelay={150} className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
@@ -350,18 +353,20 @@ export default function Page() {
             </div>
           ))}
         </StaggeredReveal>
-      </section>
+        </section>
+      </div>
 
       {/* CTA */}
-      <section className="section-alt max-w-7xl mx-auto px-4 py-20">
-        <ScrollReveal animation="scale">
-          <div className="text-center bg-gradient-to-br from-[var(--accent)]/10 via-[var(--card)] to-[var(--green)]/10 rounded-3xl p-12 border-2 border-[var(--accent)]/20">
-            <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)] mb-6">
-              Quer saber mais sobre nossos projetos?
-            </h2>
-            <p className="text-lg text-[color:var(--muted)] mb-8 max-w-2xl mx-auto">
-              Conheça nossos serviços, projetos em andamento e como estamos transformando a gestão pública.
-            </p>
+      <div className="section-alt">
+        <section className="max-w-7xl mx-auto px-4 py-20">
+          <ScrollReveal animation="scale">
+            <div className="text-center bg-gradient-to-br from-[var(--accent)]/10 via-[var(--card)] to-[var(--green)]/10 rounded-3xl p-12 border-2 border-[var(--accent)]/20">
+              <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)] mb-6">
+                Quer saber mais sobre nossos projetos?
+              </h2>
+              <p className="text-lg text-[color:var(--muted)] mb-8 max-w-2xl mx-auto">
+                Conheça nossos serviços, projetos em andamento e como estamos transformando a gestão pública.
+              </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
                 href="/servicos" 
@@ -379,7 +384,8 @@ export default function Page() {
             </div>
           </div>
         </ScrollReveal>
-      </section>
+        </section>
+      </div>
     </div>
   );
 }

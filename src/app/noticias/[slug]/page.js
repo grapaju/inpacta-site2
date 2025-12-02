@@ -58,7 +58,7 @@ async function fetchNewsItem(slug) {
     console.log('[DEBUG] Usando dados estáticos (desenvolvimento):', staticNews.title);
     return {
       ...staticNews,
-      author: staticNews.author || 'InPacta',
+      author: staticNews.author || 'InPACTA',
       publishedAt: staticNews.date,
       createdAt: staticNews.date,
       published: true,
@@ -119,17 +119,17 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const item = await fetchNewsItem(slug);
   
-  if (!item) return { title: "Notícia • InPacta" };
+  if (!item) return { title: "Notícia • InPACTA" };
   
   return { 
-    title: `${item.title} — Notícias InPacta`, 
+    title: `${item.title} — Notícias InPACTA`, 
     description: item.summary,
     openGraph: {
       title: item.title,
       description: item.summary,
       type: 'article',
       publishedTime: item.date || item.createdAt,
-      authors: [item.author || 'InPacta'],
+      authors: [item.author || 'InPACTA'],
     },
     twitter: {
       card: 'summary_large_image',
@@ -330,7 +330,7 @@ export default async function Page({ params }) {
                         e oferecer serviços de qualidade superior aos cidadãos.&rdquo;
                       </p>
                       <cite className="text-sm text-[color:var(--muted)] font-medium">
-                        — Equipe InPacta
+                        — Equipe InPACTA
                       </cite>
                     </blockquote>
                     
@@ -455,18 +455,19 @@ export default async function Page({ params }) {
 
       {/* Notícias Relacionadas */}
       {relatedNews.length > 0 && (
-        <section className="section-alt max-w-7xl mx-auto px-4 py-20">
-          <ScrollReveal animation="fadeUp">
-            <div className="text-center mb-12">
-              <div className="section-title justify-center">
-                <span className="bar" />
-                <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Mais Notícias</h2>
+        <div className="section-alt">
+          <section className="max-w-7xl mx-auto px-4 py-20">
+            <ScrollReveal animation="fadeUp">
+              <div className="text-center mb-12">
+                <div className="section-title justify-center">
+                  <span className="bar" />
+                  <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Mais Notícias</h2>
+                </div>
+                <p className="mt-4 text-lg text-[color:var(--muted)]">
+                  Continue acompanhando as atualizações do InPACTA.
+                </p>
               </div>
-              <p className="mt-4 text-lg text-[color:var(--muted)]">
-                Continue acompanhando as atualizações do InPacta.
-              </p>
-            </div>
-          </ScrollReveal>
+            </ScrollReveal>
 
           <StaggeredReveal staggerDelay={150} className="grid md:grid-cols-3 gap-8">
             {relatedNews.map((relatedItem) => (

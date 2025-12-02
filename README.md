@@ -1,6 +1,6 @@
-## InPacta — Site institucional (Next.js + Tailwind)
+## InPACTA — Site institucional (Next.js + Tailwind)
 
-Site institucional do InPacta (Instituto de Projetos Avançados para Cidades, Tecnologia e Administração), dedicado ao fortalecimento da governança pública através de inovação, tecnologia e inteligência de dados. Com foco em acessibilidade (WCAG 2.1 AA), LGPD, transparência e visual moderno com glassmorphism e tema claro/escuro.
+Site institucional do InPACTA (Instituto de Projetos Avançados para Cidades, Tecnologia e Administração), dedicado ao fortalecimento da governança pública através de inovação, tecnologia e inteligência de dados. Com foco em acessibilidade (WCAG 2.1 AA), LGPD, transparência e visual moderno com glassmorphism e tema claro/escuro.
 
 ### Como rodar
 
@@ -17,7 +17,7 @@ Abra http://localhost:3000
  - `src/app/page.js`: Home (hero, serviços com ícones, destaques, KPIs, CTA)
 
 - Glassmorphism: usar `.glass`/`.glass-dark` em cartões, com gradiente sutil e blur; bordas arredondadas 12–16px
-- Cores: base clara `--background: #f7fafc`, base escura `--background: #0b1016`; destaque `--primary: #0A2540`, acentos `--accent: #00A3E0`, `--orange: #FF6B35`, `--green: #27AE60`
+- Cores: base clara `--background: #f7fafc`, base escura `--background: #0b1016`; destaque `--primary: #0A2540`, acentos `--accent: #3a6fa6`, `--orange: #FF6B35`, `--green: #27AE60`
 - Tipografia: fontes Geist (sans/mono) via `next/font`; tamanho base ajustável em `%` (controle A-/A/A+)
 - Animações: transições de 150–250ms, respeitando `prefers-reduced-motion`
 

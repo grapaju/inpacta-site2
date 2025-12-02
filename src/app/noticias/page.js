@@ -97,7 +97,7 @@ export default function Page() {
               </h1>
               <p className="text-xl text-white/90 leading-relaxed max-w-3xl">
                 Acompanhe as últimas novidades, projetos em desenvolvimento 
-                e atualizações do InPacta.
+                e atualizações do InPACTA.
               </p>
             </div>
           </ScrollReveal>
@@ -156,17 +156,18 @@ export default function Page() {
       </section>
 
       {/* Category Filter */}
-      <section className="section-alt max-w-7xl mx-auto px-4 py-12">
-        <ScrollReveal animation="fadeUp">
-          <div className="text-center mb-8">
-            <h3 className="text-xl font-bold text-[var(--primary)] mb-4">
-              Filtrar por Categoria
-            </h3>
-            <p className="text-[color:var(--muted)]">
-              Explore nossas notícias por área de interesse
-            </p>
-          </div>
-        </ScrollReveal>
+      <div className="section-alt">
+        <section className="max-w-7xl mx-auto px-4 py-12">
+          <ScrollReveal animation="fadeUp">
+            <div className="text-center mb-8">
+              <h3 className="text-xl font-bold text-[var(--primary)] mb-4">
+                Filtrar por Categoria
+              </h3>
+              <p className="text-[color:var(--muted)]">
+                Explore nossas notícias por área de interesse
+              </p>
+            </div>
+          </ScrollReveal>
 
         <ScrollReveal animation="fadeUp" delay={200}>
           <div className="flex flex-wrap justify-center gap-3">
@@ -194,22 +195,24 @@ export default function Page() {
             </div>
           </div>
         )}
-      </section>
+        </section>
+      </div>
 
       {/* Notícias em Destaque */}
       {featuredNews.length > 0 && (
-        <section className="section-alt max-w-7xl mx-auto px-4 py-20">
-          <ScrollReveal animation="fadeUp">
-            <div className="text-center mb-16">
-              <div className="section-title justify-center">
-                <span className="bar" />
-                <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Destaques</h2>
+        <div className="section-alt">
+          <section className="max-w-7xl mx-auto px-4 py-20">
+            <ScrollReveal animation="fadeUp">
+              <div className="text-center mb-16">
+                <div className="section-title justify-center">
+                  <span className="bar" />
+                  <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Destaques</h2>
+                </div>
+                <p className="mt-4 text-lg text-[color:var(--muted)]">
+                  As notícias mais importantes e recentes do InPACTA.
+                </p>
               </div>
-              <p className="mt-4 text-lg text-[color:var(--muted)]">
-                As notícias mais importantes e recentes do InPacta.
-              </p>
-            </div>
-          </ScrollReveal>
+            </ScrollReveal>
 
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Notícia Principal */}
@@ -227,7 +230,7 @@ export default function Page() {
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                   <div className="absolute bottom-4 left-4 text-white">
-                    <span className="inline-block px-3 py-1 bg-[var(--accent)] text-xs font-medium rounded-full mb-2">
+                    <span className="inline-block px-3 py-1 bg-[var(--accent)] text-white text-xs font-medium rounded-full mb-2">
                       DESTAQUE
                     </span>
                   </div>
@@ -300,7 +303,8 @@ export default function Page() {
               ))}
             </div>
           </div>
-        </section>
+          </section>
+        </div>
       )}
 
       {/* Todas as Notícias */}
@@ -315,7 +319,7 @@ export default function Page() {
             </div>
             <p className="mt-4 text-lg text-[color:var(--muted)]">
               {selectedCategory === 'all' 
-                ? 'Acompanhe todas as atualizações e novidades do InPacta.'
+                ? 'Acompanhe todas as atualizações e novidades do InPACTA.'
                 : `Explore nossas notícias de ${categories.find(c => c.value === selectedCategory)?.label.toLowerCase()}.`
               }
             </p>
@@ -429,16 +433,17 @@ export default function Page() {
       </section>
 
       {/* Newsletter */}
-      <section className="section-alt max-w-7xl mx-auto px-4 py-20">
-        <ScrollReveal animation="scale">
-          <div className="text-center bg-gradient-to-br from-[var(--green)]/10 via-[var(--card)] to-[var(--accent)]/10 rounded-3xl p-12 border-2 border-[var(--green)]/20">
-            <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)] mb-6">
-              Receba nossas atualizações
-            </h2>
-            <p className="text-lg text-[color:var(--muted)] mb-8 max-w-2xl mx-auto">
-              Assine nossa newsletter e seja o primeiro a saber sobre novos projetos, 
-              atualizações e oportunidades.
-            </p>
+      <div className="section-alt">
+        <section className="max-w-7xl mx-auto px-4 py-20">
+          <ScrollReveal animation="scale">
+            <div className="text-center bg-gradient-to-br from-[var(--green)]/10 via-[var(--card)] to-[var(--accent)]/10 rounded-3xl p-12 border-2 border-[var(--green)]/20">
+              <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)] mb-6">
+                Receba nossas atualizações
+              </h2>
+              <p className="text-lg text-[color:var(--muted)] mb-8 max-w-2xl mx-auto">
+                Assine nossa newsletter e seja o primeiro a saber sobre novos projetos, 
+                atualizações e oportunidades.
+              </p>
             <form className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
               <input 
                 type="email" 
@@ -455,7 +460,8 @@ export default function Page() {
             </form>
           </div>
         </ScrollReveal>
-      </section>
+        </section>
+      </div>
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { services } from "@/data/services";
 import { IconCity, IconCpu, IconLightbulb, IconShield } from "@/components/Icons";
 import { ScrollReveal, StaggeredReveal } from "@/hooks/useScrollAnimations";
 
-export const metadata = { title: "Serviços • InPacta" };
+export const metadata = { title: "Serviços • InPACTA" };
 
 export default function Page() {
   return (
@@ -118,16 +118,17 @@ export default function Page() {
       </section>
 
       {/* CTA Section */}
-      <section className="section-alt max-w-7xl mx-auto px-4 py-20">
-        <ScrollReveal animation="scale">
-          <div className="text-center bg-gradient-to-br from-[var(--accent)]/10 via-[var(--card)] to-[var(--primary)]/10 rounded-3xl p-12 border-2 border-[var(--accent)]/20">
-            <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)] mb-6">
-              Precisa de uma solução personalizada?
-            </h2>
-            <p className="text-lg text-[color:var(--muted)] mb-8 max-w-2xl mx-auto">
-              Nossa equipe está pronta para desenvolver soluções sob medida 
-              para as necessidades específicas da sua organização.
-            </p>
+      <div className="section-alt">
+        <section className="max-w-7xl mx-auto px-4 py-20">
+          <ScrollReveal animation="scale">
+            <div className="text-center bg-gradient-to-br from-[var(--accent)]/10 via-[var(--card)] to-[var(--primary)]/10 rounded-3xl p-12 border-2 border-[var(--accent)]/20">
+              <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)] mb-6">
+                Precisa de uma solução personalizada?
+              </h2>
+              <p className="text-lg text-[color:var(--muted)] mb-8 max-w-2xl mx-auto">
+                Nossa equipe está pronta para desenvolver soluções sob medida 
+                para as necessidades específicas da sua organização.
+              </p>
             <Link 
               href="/contato"
               className="inline-flex items-center gap-3 px-8 py-4 bg-[var(--accent)] text-white font-semibold rounded-xl hover:scale-105 transition-transform ring-focus"
@@ -139,7 +140,8 @@ export default function Page() {
             </Link>
           </div>
         </ScrollReveal>
-      </section>
+        </section>
+      </div>
     </div>
   );
 }
@@ -148,9 +150,9 @@ export default function Page() {
 function getServiceConfig(slug) {
   const configs = {
     "governanca-seguranca-publica": { color: "#0A2540", Icon: IconShield },
-    "observatorios-inteligencia-dados": { color: "#00A3E0", Icon: IconCpu },
+    "observatorios-inteligencia-dados": { color: "#3a6fa6", Icon: IconCpu },
     "planejamento-estrategico-pmo": { color: "#FF6B35", Icon: IconLightbulb },
-    "govtech-digitalizacao": { color: "#00A3E0", Icon: IconCpu },
+    "govtech-digitalizacao": { color: "#3a6fa6", Icon: IconCpu },
     "smart-cities": { color: "#27AE60", Icon: IconCity },
     "pmo-projetos": { color: "#FF6B35", Icon: IconLightbulb },
   };

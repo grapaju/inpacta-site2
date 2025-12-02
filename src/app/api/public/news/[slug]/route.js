@@ -68,7 +68,7 @@ export async function GET(request, { params }) {
         const converted = {
           ...staticItem,
           id: `static-${staticItem.slug}`,
-          author: { name: staticItem.author || 'InPacta' },
+          author: { name: staticItem.author || 'InPACTA' },
           publishedAt: staticItem.date,
           createdAt: staticItem.date,
           published: true

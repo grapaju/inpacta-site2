@@ -78,7 +78,7 @@ export async function GET(request) {
         .map(item => ({
           ...item,
           id: `static-${item.slug}`,
-          author: { name: item.author || 'InPacta' },
+          author: { name: item.author || 'InPACTA' },
           publishedAt: item.date,
           createdAt: item.date,
           published: true

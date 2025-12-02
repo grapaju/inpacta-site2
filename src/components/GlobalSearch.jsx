@@ -22,7 +22,7 @@ const searchableContent = [
   })),
   // Páginas estáticas
   {
-    title: "Sobre o InPacta",
+    title: "Sobre o InPACTA",
     description: "Conheça nossa história, missão e visão para transformar Maringá em uma cidade mais inteligente.",
     type: "página",
     url: "/sobre",
@@ -37,7 +37,7 @@ const searchableContent = [
   },
   {
     title: "Transparência",
-    description: "Acesso às informações públicas, relatórios e prestação de contas do InPacta.",
+    description: "Acesso às informações públicas, relatórios e prestação de contas do InPACTA.",
     type: "página",
     url: "/transparencia", 
     slug: "transparencia"
@@ -51,7 +51,7 @@ const searchableContent = [
   },
   {
     title: "Estrutura Organizacional",
-    description: "Organograma, departamentos, núcleos especializados e hierarquia institucional do InPacta.",
+    description: "Organograma, departamentos, núcleos especializados e hierarquia institucional do InPACTA.",
     type: "página",
     url: "/estrutura",
     slug: "estrutura"

@@ -2,13 +2,13 @@ import Link from "next/link";
 import { projects } from "@/data/projects";
 import { IconCity, IconCpu, IconLightbulb, IconShield } from "@/components/Icons";
 
-export const metadata = { title: "Projetos • InPacta" };
+export const metadata = { title: "Projetos • InPACTA" };
 
 const categoryMeta = {
   "governanca": { color: "#0A2540", Icon: IconShield, label: "Governança" },
-  "dados-inteligencia": { color: "#00A3E0", Icon: IconCpu, label: "Dados e Inteligência" },
+  "dados-inteligencia": { color: "#3a6fa6", Icon: IconCpu, label: "Dados e Inteligência" },
   "pmo": { color: "#FF6B35", Icon: IconLightbulb, label: "PMO" },
-  "tecnologia": { color: "#00A3E0", Icon: IconCpu, label: "Tecnologia" },
+  "tecnologia": { color: "#3a6fa6", Icon: IconCpu, label: "Tecnologia" },
   "cidades-inteligentes": { color: "#27AE60", Icon: IconCity, label: "Cidades Inteligentes" },
   "inovacao": { color: "#FF6B35", Icon: IconLightbulb, label: "Inovação" },
 };

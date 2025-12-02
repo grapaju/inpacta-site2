@@ -9,8 +9,8 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const item = services.find((s) => s.slug === slug);
-  if (!item) return { title: "Serviço • InPacta" };
-  return { title: `${item.title} • InPacta`, description: item.description };
+  if (!item) return { title: "Serviço • InPACTA" };
+  return { title: `${item.title} • InPACTA`, description: item.description };
 }
 
 export default async function Page({ params }) {
@@ -127,18 +127,19 @@ export default async function Page({ params }) {
       </section>
 
       {/* Features */}
-      <section className="section-alt max-w-7xl mx-auto px-4 py-20">
-        <ScrollReveal animation="fadeUp">
-          <div className="text-center mb-16">
-            <div className="section-title justify-center">
-              <span className="bar" />
-              <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Principais Recursos</h2>
+      <div className="section-alt">
+        <section className="max-w-7xl mx-auto px-4 py-20">
+          <ScrollReveal animation="fadeUp">
+            <div className="text-center mb-16">
+              <div className="section-title justify-center">
+                <span className="bar" />
+                <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Principais Recursos</h2>
+              </div>
+              <p className="mt-4 text-lg text-[color:var(--muted)]">
+                Funcionalidades e capacidades que tornam nossos serviços únicos.
+              </p>
             </div>
-            <p className="mt-4 text-lg text-[color:var(--muted)]">
-              Funcionalidades e capacidades que tornam nossos serviços únicos.
-            </p>
-          </div>
-        </ScrollReveal>
+          </ScrollReveal>
 
         <StaggeredReveal staggerDelay={150} className="grid md:grid-cols-2 gap-8">
           {item.features.map((feature, index) => (
@@ -208,15 +209,16 @@ export default async function Page({ params }) {
       </section>
 
       {/* CTA */}
-      <section className="section-alt max-w-7xl mx-auto px-4 py-20">
-        <ScrollReveal animation="scale">
-          <div className="text-center bg-gradient-to-br from-[var(--accent)]/10 via-[var(--card)] to-[var(--green)]/10 rounded-3xl p-12 border-2 border-[var(--accent)]/20">
-            <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)] mb-6">
-              Interessado em {item.title}?
-            </h2>
-            <p className="text-lg text-[color:var(--muted)] mb-8 max-w-2xl mx-auto">
-              Entre em contato conosco para saber como podemos ajudar sua organização com {item.title.toLowerCase()}.
-            </p>
+      <div className="section-alt">
+        <section className="max-w-7xl mx-auto px-4 py-20">
+          <ScrollReveal animation="scale">
+            <div className="text-center bg-gradient-to-br from-[var(--accent)]/10 via-[var(--card)] to-[var(--green)]/10 rounded-3xl p-12 border-2 border-[var(--accent)]/20">
+              <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)] mb-6">
+                Interessado em {item.title}?
+              </h2>
+              <p className="text-lg text-[color:var(--muted)] mb-8 max-w-2xl mx-auto">
+                Entre em contato conosco para saber como podemos ajudar sua organização com {item.title.toLowerCase()}.
+              </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
                 href="/contato" 
@@ -234,7 +236,8 @@ export default async function Page({ params }) {
             </div>
           </div>
         </ScrollReveal>
-      </section>
+        </section>
+      </div>
     </div>
   );
 }

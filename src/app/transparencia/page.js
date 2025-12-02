@@ -2,8 +2,8 @@ import Link from "next/link";
 import { ScrollReveal, StaggeredReveal } from "@/hooks/useScrollAnimations";
 
 export const metadata = {
-  title: "Transparência — InPacta",
-  description: "Acesso à informação pública, relatórios, prestação de contas e dados transparentes do InPacta. Compromisso com a Lei de Acesso à Informação.",
+  title: "Transparência — InPACTA",
+  description: "Acesso à informação pública, relatórios, prestação de contas e dados transparentes do InPACTA. Compromisso com a Lei de Acesso à Informação.",
 };
 
 export default function Page() {
@@ -123,15 +123,16 @@ export default function Page() {
       </section>
 
       {/* CTA */}
-      <section className="section-alt max-w-7xl mx-auto px-4 py-20">
-        <ScrollReveal animation="scale">
-          <div className="text-center bg-gradient-to-br from-[var(--green)]/10 via-[var(--card)] to-[var(--accent)]/10 rounded-3xl p-12 border-2 border-[var(--green)]/20">
-            <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)] mb-6">
-              Dúvidas sobre acesso à informação?
-            </h2>
-            <p className="text-lg text-[color:var(--muted)] mb-8 max-w-2xl mx-auto">
-              Nossa equipe está pronta para ajudar você a encontrar as informações que precisa.
-            </p>
+      <div className="section-alt">
+        <section className="max-w-7xl mx-auto px-4 py-20">
+          <ScrollReveal animation="scale">
+            <div className="text-center bg-gradient-to-br from-[var(--green)]/10 via-[var(--card)] to-[var(--accent)]/10 rounded-3xl p-12 border-2 border-[var(--green)]/20">
+              <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)] mb-6">
+                Dúvidas sobre acesso à informação?
+              </h2>
+              <p className="text-lg text-[color:var(--muted)] mb-8 max-w-2xl mx-auto">
+                Nossa equipe está pronta para ajudar você a encontrar as informações que precisa.
+              </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
                 href="/contato" 
@@ -149,7 +150,8 @@ export default function Page() {
             </div>
           </div>
         </ScrollReveal>
-      </section>
+        </section>
+      </div>
     </div>
   );
 }

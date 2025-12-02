@@ -5,7 +5,7 @@ export const projects = [
     description: "Plano Municipal de Segurança Pública e Defesa Social (PMSPDS) com diagnóstico integrado, governança intersetorial e adequação à LGPD.",
     category: "governanca",
     detailsHtml: `
-      <p>O InPacta apoia São Bernardo do Campo na <strong>elaboração e implantação do Plano Municipal de Segurança Pública e Defesa Social (PMSPDS)</strong>, estruturado em fases claras de diagnóstico, visão estratégica, programas, indicadores e governança.</p>
+      <p>O InPACTA apoia São Bernardo do Campo na <strong>elaboração e implantação do Plano Municipal de Segurança Pública e Defesa Social (PMSPDS)</strong>, estruturado em fases claras de diagnóstico, visão estratégica, programas, indicadores e governança.</p>
       <h3>Escopo Principal</h3>
       <ul>
         <li><strong>Diagnóstico situacional integrado</strong>: análise socioespacial de criminalidade, desordem urbana, fatores de risco e vulnerabilidades.</li>
