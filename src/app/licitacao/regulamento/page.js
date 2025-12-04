@@ -3,6 +3,9 @@ import { ScrollReveal } from "@/hooks/useScrollAnimations";
 export const metadata = {
   title: "Regulamento de Licitações e Contratos — InPACTA",
   description: "Diretrizes, procedimentos e bases legais para licitações e contratos do InPACTA, assegurando transparência, integridade e conformidade.",
+  alternates: {
+    canonical: "https://inpacta.simplifique.click/licitacao/regulamento",
+  },
 };
 
 export default function Page() {

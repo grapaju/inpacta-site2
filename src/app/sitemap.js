@@ -16,6 +16,7 @@ export default function sitemap() {
     "/lgpd",
     "/acessibilidade",
     "/dados",
+    "/licitacao/regulamento",
   ];
 
   const dynamic = [
