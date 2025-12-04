@@ -1,5 +1,5 @@
 export default function robots() {
-  const base = "https://inpacta.simplifique.click";
+  const base = "https://inpacta.tech";
   return {
     rules: [
       { userAgent: "*", allow: "/" },

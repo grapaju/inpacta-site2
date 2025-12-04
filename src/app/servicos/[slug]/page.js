@@ -10,7 +10,7 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const item = services.find((s) => s.slug === slug);
   if (!item) return { title: "Serviço • InPACTA" };
-  const base = "https://inpacta.simplifique.click";
+  const base = "https://inpacta.tech";
   return { 
     title: `${item.title} • InPACTA`, 
     description: item.description,
