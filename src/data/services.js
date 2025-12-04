@@ -100,7 +100,7 @@ export const services = [
     ],
     showTechnologies: true,
     technologies: ["Power BI", "GIS", "PostgreSQL", "APIs REST", "Dashboards", "Análise Geoespacial"],
-    showCases: true,
+    showCases: false,
     cases: [
       {
         title: "Observatório de Segurança Pública",
@@ -157,7 +157,7 @@ export const services = [
     ],
     showTechnologies: true,
     technologies: ["PMO", "Gestão por Resultados", "Indicadores de Performance", "PPA", "Monitoramento e Avaliação"],
-    showCases: true,
+    showCases: false,
     cases: [
       {
         title: "PMO de Segurança Pública Municipal",
