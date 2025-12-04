@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
 
 function sanitize(str) {
   return String(str || '').trim()
@@ -36,7 +34,8 @@ export async function POST(request) {
     const smtpConfigured = Boolean(host && user && pass)
 
     // Rate limit simples por IP: máximo 3 envios por 10 minutos
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || request.ip || 'unknown'
+    const ipHeader = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || ''
+    const ip = ipHeader?.split(',')[0].trim() || 'unknown'
     const windowMs = 10 * 60 * 1000
     const since = new Date(Date.now() - windowMs)
     const recentCount = await prisma.contactSubmission.count({
