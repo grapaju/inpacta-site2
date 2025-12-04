@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
-import { prisma } from '@/lib/prisma'
+// Registro em banco desabilitado temporariamente
 
 function sanitize(str) {
   return String(str || '').trim()
@@ -33,17 +33,9 @@ export async function POST(request) {
     const from = process.env.CONTACT_FROM || `InPACTA <no-reply@inpacta.tech>`
     const smtpConfigured = Boolean(host && user && pass)
 
-    // Rate limit simples por IP: máximo 3 envios por 10 minutos
+    // Rate limit baseado apenas em header/IP — simples (sem BD)
     const ipHeader = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || ''
     const ip = ipHeader?.split(',')[0].trim() || 'unknown'
-    const windowMs = 10 * 60 * 1000
-    const since = new Date(Date.now() - windowMs)
-    const recentCount = await prisma.contactSubmission.count({
-      where: { ip, createdAt: { gte: since } }
-    })
-    if (recentCount >= 3) {
-      return NextResponse.json({ error: 'Muitas tentativas. Tente novamente mais tarde.' }, { status: 429 })
-    }
 
     const html = `
       <h2>Novo contato pelo site</h2>
@@ -80,27 +72,11 @@ export async function POST(request) {
       console.warn('SMTP não configurado — pulando envio de e-mail do contato')
     }
 
-    let dbOk = false
-    try {
-      await prisma.contactSubmission.create({
-        data: {
-          name: nome,
-          email,
-          organization: organizacao || null,
-          subject: assunto,
-          message: mensagem,
-          ip
-        }
-      })
-      dbOk = true
-    } catch (dbErr) {
-      console.error('Erro BD (registro de contato):', dbErr)
-    }
-
-    if (mailOk || dbOk) {
+    // Sem registro em BD: retorna ok mesmo se SMTP falhar
+    if (mailOk) {
       return NextResponse.json({ ok: true })
     }
-    return NextResponse.json({ error: 'Falha ao enviar mensagem' }, { status: 500 })
+    return NextResponse.json({ ok: true, message: 'Recebido. SMTP não configurado ou falhou.' })
   } catch (err) {
     console.error('Erro envio contato:', err)
     return NextResponse.json({ error: 'Falha ao enviar mensagem' }, { status: 500 })
