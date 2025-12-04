@@ -1,17 +1,18 @@
 export const services = [
   {
     slug: "governanca-seguranca-publica",
-    title: "Governança e Segurança Pública",
-    description: "Planos municipais de segurança, planejamento estratégico de guardas municipais e protocolos de uso responsável da força.",
+    title: "Governança em Segurança Pública",
+    description: "Elaboração de planos, protocolos e estruturas de gestão para segurança pública.",
     category: "Governança",
     icon: "shield",
     color: "var(--primary)",
     hero: {
       title: "Governança em Segurança Pública",
-      subtitle: "Elaboração de planos, protocolos e estruturas de gestão para segurança pública municipal",
-      image: "/images/seguranca-hero.jpg"
+      subtitle: "Elaboração de planos, protocolos e estruturas de gestão pública",
+      image: "/images/governanca-hero.jpg"
     },
-    overview: "Apoiamos municípios na elaboração e implantação de Planos Municipais de Segurança Pública e Defesa Social (PMSPDS), planejamento estratégico de guardas municipais e revisão de processos operacionais, com base em evidências, transparência e integração tecnológica.",
+    overview: "Apoiamos o Estado no Planejamento Estratégico e revisão de processos operacionais, com base em evidências, transparência e integração tecnológica.",
+    showFeatures: true,
     features: [
       {
         title: "Plano Municipal de Segurança (PMSPDS)",
@@ -40,7 +41,9 @@ export const services = [
       "Gestão baseada em evidências e dados territoriais",
       "Fortalecimento institucional e governança integrada"
     ],
+    showTechnologies: true,
     technologies: ["LGPD", "SUSP", "Indicadores de Performance", "Análise Territorial", "Gestão por Resultados"],
+    showCases: false,
     cases: [
       {
         title: "PMSPDS São Bernardo do Campo",
@@ -95,7 +98,9 @@ export const services = [
       "Maior efetividade na alocação de recursos",
       "Transparência e controle social ampliados"
     ],
+    showTechnologies: true,
     technologies: ["Power BI", "GIS", "PostgreSQL", "APIs REST", "Dashboards", "Análise Geoespacial"],
+    showCases: true,
     cases: [
       {
         title: "Observatório de Segurança Pública",
@@ -150,7 +155,9 @@ export const services = [
       "Transparência e rastreabilidade das ações",
       "Otimização de recursos e redução de desperdícios"
     ],
+    showTechnologies: true,
     technologies: ["PMO", "Gestão por Resultados", "Indicadores de Performance", "PPA", "Monitoramento e Avaliação"],
+    showCases: true,
     cases: [
       {
         title: "PMO de Segurança Pública Municipal",

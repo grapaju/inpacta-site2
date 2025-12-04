@@ -21,7 +21,7 @@ export default function Page() {
                 <span className="text-white/80 font-medium">O Instituto</span>
               </div>
               <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                Fortalecendo a <span className="text-[var(--orange)]">governança pública</span>
+                Fortalecendo a <span style={{ color: '#ff6b35' }}>governança pública</span>
               </h1>
               <p className="text-xl text-white/90 leading-relaxed max-w-3xl">
                 O InPACTA é o Instituto de Projetos Avançados para Cidades, Tecnologia e Administração, 
@@ -362,24 +362,24 @@ export default function Page() {
           <ScrollReveal animation="scale">
             <div className="text-center bg-gradient-to-br from-[var(--accent)]/10 via-[var(--card)] to-[var(--green)]/10 rounded-3xl p-12 border-2 border-[var(--accent)]/20">
               <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)] mb-6">
-                Quer saber mais sobre nossos projetos?
+                Nossos Serviços
               </h2>
               <p className="text-lg text-[color:var(--muted)] mb-8 max-w-2xl mx-auto">
-                Conheça nossos serviços, projetos em andamento e como estamos transformando a gestão pública.
+                Conheça as linhas de atuação do InPACTA para apoiar a modernização administrativa, governança por dados e interoperabilidade no setor público.
               </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
                 href="/servicos" 
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-[var(--accent)] text-[var(--accent-contrast)] font-semibold hover:scale-105 transition-transform ring-focus group"
               >
-                Nossos Serviços
+                Ver serviços
                 <span className="transition-transform group-hover:translate-x-1">→</span>
               </Link>
               <Link 
                 href="/contato" 
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-xl border-2 border-[var(--border)] font-semibold hover:bg-[var(--card)] transition-colors ring-focus"
               >
-                Entre em Contato
+                Fale conosco
               </Link>
             </div>
           </div>

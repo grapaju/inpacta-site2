@@ -170,3 +170,17 @@ enum Role {
   EDITOR
   AUTHOR
 }
+
+model ContactSubmission {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  organization String?
+  subject     String
+  message     String
+  ip          String
+  createdAt   DateTime @default(now())
+
+  @@index([ip, createdAt])
+  @@map("contact_submissions")
+}

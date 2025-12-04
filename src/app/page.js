@@ -58,7 +58,7 @@ export default async function Home() {
             {/* Descrição */}
             <p className="text-lg md:text-xl text-white/90 leading-relaxed max-w-3xl mx-auto mb-10">
               Desenvolvemos políticas, metodologias e soluções baseadas em <strong className="text-white">inovação</strong>, 
-              <strong className="text-white"> tecnologia</strong> e <strong className="text-white">inteligência de dados</strong> 
+              <strong className="text-white"> tecnologia</strong> e <strong className="text-white">inteligência de dados</strong>{" "}
               que aumentam a eficiência do Estado e geram resultados concretos para cidadãos.
             </p>
             
@@ -145,8 +145,8 @@ export default async function Home() {
                 transparência e transformem serviços públicos em resultados concretos.
               </p>
               <p>
-                Trabalhamos com <strong className="text-[var(--accent)]">governança aplicada</strong>, <strong className="text-[var(--orange)]">dados e inteligência</strong>, 
-                <strong className="text-[var(--green)]"> gestão por resultados</strong> e foco em impacto real, transformando boas práticas em 
+                Trabalhamos com governança aplicada, dados e inteligência, 
+                gestão por resultados e foco em impacto real, transformando boas práticas em 
                 resultados concretos para governos e cidadãos.
               </p>
             </div>
@@ -183,8 +183,8 @@ export default async function Home() {
                   <span className="size-2.5 rounded-full bg-[var(--accent)]" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-[var(--foreground)] mb-1">Governança e Segurança Pública</h4>
-                  <p className="text-sm text-[color:var(--muted)]">Planos municipais, planejamento estratégico e protocolos operacionais</p>
+                  <h4 className="font-semibold text-[var(--foreground)] mb-1">Governança Administrativa</h4>
+                  <p className="text-sm text-[color:var(--muted)]">Modelagem de estruturas decisórias, fluxos de processos, indicadores e transparência para elevar a eficiência administrativa e a prestação de serviços.</p>
                 </div>
               </li>
               
@@ -310,79 +310,12 @@ export default async function Home() {
       </section>
       </div>
 
-      {/* Alinhamento Internacional */}
-      <section className="section max-w-7xl mx-auto px-4 py-20">
-        <ScrollReveal animation="fadeUp">
-          <div className="text-center mb-16">
-            <div className="section-title justify-center">
-              <span className="bar" />
-              <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Padrões Internacionais</h2>
-            </div>
-            <p className="mt-4 text-lg text-[color:var(--muted)] max-w-3xl mx-auto">
-              Nossa atuação está alinhada aos principais frameworks e diretrizes internacionais de governança 
-              pública, garantindo qualidade, eficiência e resultados mensuráveis.
-            </p>
-          </div>
-        </ScrollReveal>
+      
 
-        <StaggeredReveal staggerDelay={150} className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          <div className="interactive-card p-8 rounded-2xl border-2 border-[var(--border)] bg-gradient-to-br from-[var(--accent)]/5 to-transparent">
-            <div className="flex items-start gap-6">
-              <div className="flex-shrink-0 w-16 h-16 bg-[var(--accent)]/10 rounded-2xl flex items-center justify-center">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="text-[var(--accent)]">
-                  <path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2"/>
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-bold text-[var(--primary)] mb-3">OCDE</h3>
-                <p className="text-[color:var(--muted)] leading-relaxed mb-3">
-                  Seguimos os princípios de governança pública da Organização para a Cooperação e Desenvolvimento 
-                  Econômico, focando em transparência, prestação de contas, integridade e participação cidadã.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <span className="text-xs px-3 py-1 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] font-medium">
-                    Governança Digital
-                  </span>
-                  <span className="text-xs px-3 py-1 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] font-medium">
-                    Integridade
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="interactive-card p-8 rounded-2xl border-2 border-[var(--border)] bg-gradient-to-br from-[var(--green)]/5 to-transparent">
-            <div className="flex items-start gap-6">
-              <div className="flex-shrink-0 w-16 h-16 bg-[var(--green)]/10 rounded-2xl flex items-center justify-center">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="text-[var(--green)]">
-                  <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="currentColor" strokeWidth="2"/>
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-bold text-[var(--primary)] mb-3">BID</h3>
-                <p className="text-[color:var(--muted)] leading-relaxed mb-3">
-                  Alinhados às diretrizes do Banco Interamericano de Desenvolvimento para modernização do Estado, 
-                  eficiência administrativa, transparência e desenvolvimento sustentável.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <span className="text-xs px-3 py-1 rounded-full bg-[var(--green)]/10 text-[var(--green)] font-medium">
-                    Eficiência
-                  </span>
-                  <span className="text-xs px-3 py-1 rounded-full bg-[var(--green)]/10 text-[var(--green)] font-medium">
-                    Sustentabilidade
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </StaggeredReveal>
-      </section>
-
-      {/* Destaques */}
-      <div className="section-alt">
-        <section className="max-w-7xl mx-auto px-4 py-16">
+      {/* Destaques (Principais áreas de atuação) */}
+      <section className="max-w-7xl mx-auto px-4 py-16">
         <div className="text-center mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold text-[var(--primary)] mb-4">Acesso rápido</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-[var(--primary)] mb-4">Principais áreas de atuação</h2>
           <p className="text-[color:var(--muted)]">Principais áreas de atuação e compromisso com a sociedade</p>
         </div>
         
@@ -393,15 +326,14 @@ export default async function Home() {
             { href: "/dados", label: "Dados Abertos", desc: "Informações governamentais abertas ao público", color: "#3a6fa6" },
             { href: "/governanca", label: "Governança", desc: "Processos e estrutura organizacional", color: "#27AE60" },
           ].map((d) => (
-            <Link 
+            <div 
               key={d.href} 
-              href={d.href} 
-              role="listitem" 
-              className="glass rounded-2xl p-6 ring-focus group hover:scale-[1.02] transition-all duration-300 bg-gradient-to-br from-[var(--card)] to-[var(--background)]"
+              role="listitem"
+              className="glass rounded-2xl p-6 ring-focus bg-gradient-to-br from-[var(--card)] to-[var(--background)] cursor-default"
             >
               <div className="flex items-start justify-between mb-4">
                 <div 
-                  className="size-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-3"
+                  className="size-12 rounded-xl flex items-center justify-center"
                   style={{ 
                     backgroundColor: `${d.color}15`, 
                     color: d.color,
@@ -412,14 +344,14 @@ export default async function Home() {
                 </div>
               </div>
               
-              <h3 className="font-bold text-lg mb-2 text-[var(--foreground)] group-hover:text-[color:${d.color}] transition-colors">
+              <h3 className="font-bold text-lg mb-2 text-[var(--foreground)]">
                 {d.label}
               </h3>
               
               <p className="text-sm text-[color:var(--muted)] leading-relaxed">
                 {d.desc}
               </p>
-            </Link>
+            </div>
           ))}
         </div>
       </section>
@@ -557,7 +489,6 @@ export default async function Home() {
           </div>
         </div>
       </section>
-      </div>
     </div>
   );
 }

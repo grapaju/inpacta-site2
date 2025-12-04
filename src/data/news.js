@@ -52,4 +52,17 @@ export const news = [
     author: "InPACTA", 
     image: "/images/news-default.jpg"
   },
+  {
+    slug: "maringa-tera-projeto-inpacta-para-acelerar-inovacao-no-setor-publico",
+    date: "2025-12-01",
+    title: "Maringá terá projeto InPACTA para acelerar inovação no setor público",
+    summary: "Parceria para impulsionar transformação digital, interoperabilidade e melhoria de serviços públicos em Maringá.",
+    content: `
+      <p>A iniciativa do InPACTA em Maringá visa acelerar a inovação no setor público por meio de governança de projetos, integração de sistemas e uso estratégico de dados.</p>
+      <p>O projeto contempla diagnóstico institucional, arquitetura de interoperabilidade, PMO de inovação e implantação de indicadores para resultados tangíveis na entrega de serviços ao cidadão.</p>
+    `,
+    category: "inovacao",
+    author: "InPACTA",
+    image: "/images/news-default.jpg"
+  },
 ];

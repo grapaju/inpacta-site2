@@ -5,6 +5,15 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_COMMIT_SHA: process.env.COMMIT_SHA || ''
   },
+  async redirects() {
+    return [
+      {
+        source: '/servicos/governanca-administrativa',
+        destination: '/servicos/governanca-seguranca-publica',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

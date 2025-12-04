@@ -29,23 +29,23 @@
   animation: fadeIn 0.2s ease-out;
 }
 
-/* Hover effects para cards */
+/* Hover effects para cards - mais sutis e profissionais */
 .admin-stats-card {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
 }
 
 .admin-stats-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px -2px rgba(10, 37, 64, 0.15), 0 2px 6px -2px rgba(10, 37, 64, 0.1);
 }
 
 .admin-action-card {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
 }
 
 .admin-action-card:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -4px rgba(10, 37, 64, 0.2), 0 4px 8px -2px rgba(10, 37, 64, 0.1);
 }
 
 /* Efeito glass morphism para sidebar */
@@ -117,20 +117,20 @@
 }
 
 .admin-badge-new {
-  background-color: rgba(59, 130, 246, 0.1);
-  color: rgb(37, 99, 235);
+  background-color: rgba(10, 37, 64, 0.1);
+  color: #0a2540;
 }
 
 [data-theme="dark"] .admin-badge-new {
-  background-color: rgba(59, 130, 246, 0.2);
-  color: rgb(147, 197, 253);
+  background-color: rgba(58, 111, 166, 0.2);
+  color: #4a7fb8;
 }
 
-/* Efeitos de foco aprimorados */
+/* Efeitos de foco aprimorados com cores institucionais */
 .admin-focus-ring:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
-  box-shadow: 0 0 0 2px var(--primary), 0 0 0 4px rgba(var(--primary-rgb), 0.1);
+  box-shadow: 0 0 0 2px #0a2540, 0 0 0 4px rgba(10, 37, 64, 0.15);
 }
 
 /* Transições suaves para tema */
@@ -159,14 +159,15 @@
   overflow: hidden;
 }
 
-/* Efeitos hover para cards de notícias */
+/* Efeitos hover para cards de notícias - mais sutis */
 .news-card {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
 }
 
 .news-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px -4px rgba(10, 37, 64, 0.15), 0 4px 8px -2px rgba(10, 37, 64, 0.1);
+  border-color: rgba(10, 37, 64, 0.2);
 }
 
 /* Animações para filtros */
@@ -213,6 +214,56 @@
   gap: 1.5rem;
 }
 
+/* Estilos específicos para elementos administrativos */
+.admin-header {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.admin-section {
+  background: var(--background);
+}
+
+.admin-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Botões administrativos */
+.admin-btn-primary {
+  background: var(--primary);
+  color: white;
+  border: 1px solid var(--primary);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.admin-btn-primary:hover {
+  background: color-mix(in oklab, var(--primary), black 15%);
+  border-color: color-mix(in oklab, var(--primary), black 15%);
+}
+
+.admin-btn-secondary {
+  background: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.admin-btn-secondary:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
 /* Mobile responsivo melhorado */
 @media (max-width: 768px) {
   .admin-card-grid {
@@ -229,6 +280,10 @@
     grid-template-columns: 1fr;
     gap: 1rem;
   }
+  
+  .admin-container {
+    padding: 0 0.75rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -238,5 +293,9 @@
 
   .news-grid {
     gap: 0.75rem;
+  }
+  
+  .admin-container {
+    padding: 0 0.5rem;
   }
 }

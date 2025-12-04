@@ -1,7 +1,0 @@
-DATABASE_URL=postgresql://neondb_owner:npg_OhrB3YE9FRsJ@ep-dawn-thunder-adxnnbgv-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require
-# Opcional, para migrações com conexão direta (sem pooler):
-DATABASE_URL_DIRECT=postgresql://neondb_owner:npg_OhrB3YE9FRsJ@ep-dawn-thunder-adxnnbgv.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require
-
-NEXTAUTH_URL=https://dev.inpacta.tech
-NEXTAUTH_SECRET=OQpOJC/uSngX31lgb/h2T3hyJq929F+1PF5hbppzRMEzJTTNMG1Jn5eqOh4=
-# PORT=3000  (opcional, se quiser mudar a porta do app)

@@ -140,10 +140,10 @@ export default function AdminLayout({ children }) {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`group flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200 ${
+                  className={`group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-150 ${
                     isActive
-                      ? 'bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] text-white shadow-lg'
-                      : 'text-[var(--foreground)] hover:bg-[var(--primary)]/10 hover:text-[var(--primary)]'
+                      ? 'bg-[var(--primary)] text-white shadow-sm border border-[var(--primary)]/20'
+                      : 'text-[var(--foreground)] hover:bg-[var(--primary)]/8 hover:text-[var(--primary)] border border-transparent'
                   }`}
                 >
                   <span className={`mr-3 flex-shrink-0 ${isActive ? 'text-white' : 'text-[var(--muted)]'}`}>
@@ -151,7 +151,7 @@ export default function AdminLayout({ children }) {
                   </span>
                   {item.name}
                   {item.badge && (
-                    <span className="ml-auto inline-block py-0.5 px-2 text-xs font-medium bg-[var(--accent)] text-white rounded-full">
+                    <span className="ml-auto inline-block py-0.5 px-2 text-xs font-medium bg-[var(--primary)]/10 text-[var(--primary)] rounded-md border border-[var(--primary)]/20">
                       {item.badge}
                     </span>
                   )}
@@ -164,7 +164,7 @@ export default function AdminLayout({ children }) {
           <div className="flex-shrink-0 border-t border-[var(--border)] p-4">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <div className="w-10 h-10 bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-[var(--primary)] rounded-lg flex items-center justify-center shadow-sm">
                   <span className="text-white font-semibold text-sm">
                     {(user.name || user.email).charAt(0).toUpperCase()}
                   </span>
@@ -179,7 +179,7 @@ export default function AdminLayout({ children }) {
             </div>
             <button
               onClick={handleLogout}
-              className="mt-3 w-full flex items-center px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+              className="mt-3 w-full flex items-center px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/10 rounded-lg transition-colors border border-transparent hover:border-red-200 dark:hover:border-red-800"
             >
               <svg className="mr-3 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -218,10 +218,10 @@ export default function AdminLayout({ children }) {
                     <Link
                       key={item.name}
                       href={item.href}
-                      className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${
+                      className={`group flex items-center px-2 py-2 text-base font-medium rounded-lg ${
                         isActive
-                          ? 'bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] text-white'
-                          : 'text-[var(--foreground)] hover:bg-[var(--primary)]/10'
+                          ? 'bg-[var(--primary)] text-white shadow-sm'
+                          : 'text-[var(--foreground)] hover:bg-[var(--primary)]/8 hover:text-[var(--primary)]'
                       }`}
                       onClick={() => setSidebarOpen(false)}
                     >

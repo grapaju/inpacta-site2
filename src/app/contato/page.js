@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ScrollReveal, StaggeredReveal } from "@/hooks/useScrollAnimations";
+import ContactForm from "@/components/ContactForm";
 
 export const metadata = { 
   title: "Contato e Parcerias — InPACTA",
@@ -20,7 +21,7 @@ export default function Page() {
                 <span className="text-white/80 font-medium">Fale Conosco</span>
               </div>
               <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                Vamos <span className="text-[var(--accent)]">Colaborar</span>
+                Vamos <span style={{ color: '#ff6b35' }}>Colaborar</span>
               </h1>
               <p className="text-xl text-white/90 leading-relaxed max-w-3xl">
                 Entre em contato para discutir projetos, parcerias ou esclarecer dúvidas. 
@@ -76,8 +77,8 @@ export default function Page() {
             },
             {
               title: "Endereço",
-              info: "Av. Getúlio Vargas, 220",
-              description: "Centro, Maringá - PR, 87013-130",
+              info: "Av. XV de novembro, 701, 2º Andar",
+              description: "Centro, Maringá - PR, CEP 87013-130",
               icon: (
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" strokeWidth="2"/>
@@ -86,11 +87,11 @@ export default function Page() {
               ),
               color: "var(--green)",
               action: "Como chegar",
-              href: "https://maps.google.com/?q=Av.+Getúlio+Vargas,+220,+Maringá+-+PR"
+              href: "https://maps.google.com/?q=Av.+XV+de+novembro,+701,+2º+Andar,+Centro,+Maringá,+CEP+87013-130"
             },
             {
               title: "Redes Sociais",
-              info: "@InPactaMaringa",
+              info: "@inpacta",
               description: "Acompanhe nosso trabalho nas redes sociais",
               icon: (
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
@@ -99,7 +100,7 @@ export default function Page() {
               ),
               color: "var(--orange)",
               action: "Seguir",
-              href: "https://instagram.com/InPactaMaringa"
+              href: "https://instagram.com/inpacta"
             }
           ].map((contact, index) => (
             <div key={index} className="interactive-card bg-[var(--card)] p-8 rounded-2xl border-2 border-[var(--border)] text-center flex flex-col h-full">
@@ -194,159 +195,13 @@ export default function Page() {
 
           <ScrollReveal animation="fadeLeft">
             <div className="bg-[var(--card)] p-8 rounded-2xl border-2 border-[var(--border)]">
-              <form className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-[var(--primary)] mb-2">
-                      Nome *
-                    </label>
-                    <input 
-                      type="text"
-                      name="nome"
-                      required
-                      className="w-full px-4 py-3 rounded-xl border-2 border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:border-[var(--accent)] ring-focus transition-colors"
-                      placeholder="Seu nome completo"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-[var(--primary)] mb-2">
-                      E-mail *
-                    </label>
-                    <input 
-                      type="email"
-                      name="email"
-                      required
-                      className="w-full px-4 py-3 rounded-xl border-2 border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:border-[var(--accent)] ring-focus transition-colors"
-                      placeholder="seu@email.com"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-[var(--primary)] mb-2">
-                    Organização
-                  </label>
-                  <input 
-                    type="text"
-                    name="organizacao"
-                    className="w-full px-4 py-3 rounded-xl border-2 border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:border-[var(--accent)] ring-focus transition-colors"
-                    placeholder="Nome da sua organização"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-[var(--primary)] mb-2">
-                    Assunto *
-                  </label>
-                  <select 
-                    name="assunto"
-                    required
-                    className="w-full px-4 py-3 rounded-xl border-2 border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] focus:border-[var(--accent)] ring-focus transition-colors"
-                  >
-                    <option value="">Selecione um assunto</option>
-                    <option value="parceria">Parceria Institucional</option>
-                    <option value="consultoria">Consultoria Técnica</option>
-                    <option value="projeto">Desenvolvimento de Projeto</option>
-                    <option value="suporte">Suporte e Treinamento</option>
-                    <option value="imprensa">Imprensa</option>
-                    <option value="outros">Outros</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-[var(--primary)] mb-2">
-                    Mensagem *
-                  </label>
-                  <textarea 
-                    name="mensagem"
-                    rows={6}
-                    required
-                    className="w-full px-4 py-3 rounded-xl border-2 border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:border-[var(--accent)] ring-focus transition-colors resize-none"
-                    placeholder="Descreva sua necessidade, projeto ou dúvida..."
-                  />
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <input 
-                    type="checkbox"
-                    id="privacy"
-                    name="privacy"
-                    required
-                    className="mt-1 size-4 text-[var(--accent)] border-[var(--border)] rounded focus:ring-[var(--accent)]"
-                  />
-                  <label htmlFor="privacy" className="text-sm text-[color:var(--muted)]">
-                    Concordo com o tratamento dos meus dados conforme a{" "}
-                    <Link href="/lgpd" className="text-[var(--accent)] hover:underline">
-                      Política de Privacidade (LGPD)
-                    </Link>
-                    .
-                  </label>
-                </div>
-
-                <button 
-                  type="submit"
-                  className="w-full px-8 py-4 bg-[var(--accent)] text-[var(--accent-contrast)] font-semibold rounded-xl hover:scale-105 transition-transform ring-focus"
-                >
-                  Enviar Mensagem
-                </button>
-              </form>
+              <ContactForm />
             </div>
           </ScrollReveal>
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="max-w-7xl mx-auto px-4 py-20">
-        <ScrollReveal animation="fadeUp">
-          <div className="text-center mb-16">
-            <div className="section-title justify-center">
-              <span className="bar" />
-              <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Perguntas Frequentes</h2>
-            </div>
-            <p className="mt-4 text-lg text-[color:var(--muted)]">
-              Respostas às dúvidas mais comuns sobre nossos serviços.
-            </p>
-          </div>
-        </ScrollReveal>
-
-        <StaggeredReveal staggerDelay={100} className="grid md:grid-cols-2 gap-8">
-          {[
-            {
-              question: "Qual o prazo médio para desenvolvimento de projetos?",
-              answer: "O prazo varia conforme a complexidade, mas projetos médios levam de 3 a 6 meses, incluindo análise, desenvolvimento e implantação."
-            },
-            {
-              question: "Vocês atendem órgãos de outros municípios?",
-              answer: "Sim, atendemos órgãos públicos de todo o Brasil, com foco especial na região Sul e parcerias estratégicas."
-            },
-            {
-              question: "Como funciona o processo de consultoria?",
-              answer: "Iniciamos com diagnóstico, seguido de proposta técnica, desenvolvimento da solução e acompanhamento pós-implantação."
-            },
-            {
-              question: "Há custos para consultas iniciais?",
-              answer: "Consultas iniciais e diagnósticos básicos são gratuitos. Cobramos apenas por projetos de desenvolvimento e implementação."
-            },
-            {
-              question: "Vocês oferecem treinamento para equipes?",
-              answer: "Sim, oferecemos capacitação técnica, workshops e treinamentos específicos para equipes que utilizarão nossas soluções."
-            },
-            {
-              question: "Como garantem a segurança dos dados?",
-              answer: "Seguimos rigorosamente a LGPD e melhores práticas de segurança, com criptografia, backups seguros e auditoria constante."
-            }
-          ].map((faq, index) => (
-            <div key={index} className="bg-[var(--card)] p-6 rounded-2xl border-2 border-[var(--border)]">
-              <h3 className="font-bold text-[var(--primary)] mb-3">
-                {faq.question}
-              </h3>
-              <p className="text-[color:var(--muted)] leading-relaxed">
-                {faq.answer}
-              </p>
-            </div>
-          ))}
-        </StaggeredReveal>
-      </section>
+      {/* FAQ removido conforme solicitação */}
 
       {/* Mapa e Localização */}
       <div className="section-alt">
@@ -375,7 +230,7 @@ export default function Page() {
                     <div>
                       <h3 className="font-bold text-[var(--primary)]">Endereço</h3>
                       <p className="text-[color:var(--muted)]">
-                        Av. Getúlio Vargas, 220<br/>
+                        Av. XV de novembro, 701, 2º Andar<br/>
                         Centro, Maringá - PR<br/>
                         CEP: 87013-130
                       </p>
@@ -401,41 +256,30 @@ export default function Page() {
                 </div>
                 
                 <div className="pt-4">
-                  <button className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--green)] text-white font-semibold rounded-xl hover:scale-105 transition-transform ring-focus">
+                  <a href="https://maps.google.com/?q=Av.+XV+de+novembro,+701,+2º+Andar,+Centro,+Maringá,+CEP+87013-130" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--green)] text-white font-semibold rounded-xl hover:scale-105 transition-transform ring-focus">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                       <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" strokeWidth="2"/>
                       <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="2"/>
                     </svg>
                     Abrir no Google Maps
-                  </button>
+                  </a>
                 </div>
               </div>
             </div>
           </ScrollReveal>
 
           <ScrollReveal animation="fadeLeft">
-            <div className="aspect-square bg-gradient-to-br from-[var(--green)]/20 to-[var(--accent)]/20 rounded-2xl border-2 border-[var(--border)] relative overflow-hidden">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="size-16 bg-[var(--green)] text-white rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" strokeWidth="2"/>
-                      <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="2"/>
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-bold text-[var(--primary)] mb-2">InPACTA</h3>
-                  <p className="text-sm text-[color:var(--muted)]">
-                    Centro de Maringá<br/>
-                    Clique para ver no mapa
-                  </p>
-                </div>
-              </div>
-              
-              {/* Decorative elements */}
-              <div className="absolute top-4 left-4 size-4 bg-[var(--accent)]/30 rounded-full"></div>
-              <div className="absolute top-8 right-6 size-2 bg-[var(--green)]/40 rounded-full"></div>
-              <div className="absolute bottom-6 left-8 size-3 bg-[var(--primary)]/20 rounded-full"></div>
-              <div className="absolute bottom-4 right-4 size-6 bg-[var(--accent)]/10 rounded-full"></div>
+            <div className="rounded-2xl border-2 border-[var(--border)] overflow-hidden w-full aspect-video md:aspect-auto md:h-[450px]">
+              <iframe
+                title="Mapa - InPACTA"
+                aria-label="Mapa do endereço do InPACTA"
+                src="https://www.google.com/maps?q=Av.+XV+de+novembro,+701,+2º+Andar,+Centro,+Maringá,+CEP+87013-130&hl=pt-BR&z=18&output=embed"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
             </div>
           </ScrollReveal>
         </div>

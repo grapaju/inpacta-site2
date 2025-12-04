@@ -49,7 +49,7 @@ export default function MobileMenu() {
     {
       label: "Serviços",
       submenu: [
-        { href: "/servicos/governanca-seguranca-publica", label: "Governança e Segurança Pública", description: "Planos municipais e protocolos operacionais" },
+        { href: "/servicos/governanca-seguranca-publica", label: "Governança em Segurança Pública", description: "Elaboração de planos e protocolos" },
         { href: "/servicos/observatorios-inteligencia-dados", label: "Observatórios e Inteligência", description: "Núcleos de dados e portais de transparência" },
         { href: "/servicos/planejamento-estrategico-pmo", label: "Planejamento Estratégico e PMO", description: "Gestão de portfólio e governança de projetos" },
       ],
@@ -59,6 +59,12 @@ export default function MobileMenu() {
       submenu: [
         { href: "/transparencia", label: "Portal da Transparência", description: "Informações públicas e prestação de contas" },
         { href: "/dados", label: "Dados Abertos", description: "Datasets e APIs públicas para consulta" },
+      ],
+    },
+    {
+      label: "Licitação",
+      submenu: [
+        { href: "/licitacao/regulamento", label: "Regulamento de Licitações e Contratos", description: "Diretrizes, procedimentos e compliance" },
       ],
     },
     { href: "/noticias", label: "Notícias" },

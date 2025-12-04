@@ -68,7 +68,9 @@ async function fetchNewsItem(slug) {
   
   // Fallback para API em desenvolvimento
   try {
-    const response = await fetch(`/api/public/news/${slug}`, {
+    const devPort = process.env.PORT || 3000;
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `http://localhost:${devPort}`;
+    const response = await fetch(`${baseUrl}/api/public/news/${slug}`, {
       cache: 'no-store',
       headers: { 'Content-Type': 'application/json' },
     });
@@ -193,30 +195,29 @@ export default async function Page({ params }) {
     );
   }
 
-  // Buscar notícias relacionadas
+  // Buscar notícias relacionadas (sempre do banco via API)
   let relatedNews = [];
   try {
-    const response = await fetch(`/api/public/news`, {
-      next: { revalidate: 300 }
+    const devPort = process.env.PORT || 3000;
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : `http://localhost:${devPort}`);
+    const response = await fetch(`${baseUrl}/api/public/news?page=1&limit=12`, {
+      next: { revalidate: 300 },
+      headers: { 'Content-Type': 'application/json' }
     });
     
     if (response.ok) {
       const data = await response.json();
-      const allNews = data.news || data; // Suporte para ambos os formatos
+      const allNews = data.news || data;
       if (Array.isArray(allNews)) {
         relatedNews = allNews
-          .filter(n => n.slug !== slug)
+          .filter(n => (n.slug || '').toLowerCase() !== (slug || '').toLowerCase())
           .sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt))
           .slice(0, 3);
       }
     }
   } catch (error) {
-    console.error('Erro ao buscar notícias relacionadas:', error);
-    // Fallback para dados estáticos
-    relatedNews = news
-      .filter(n => n.slug !== slug)
-      .sort((a, b) => (a.date < b.date ? 1 : -1))
-      .slice(0, 3);
+    console.error('Erro ao buscar notícias relacionadas (API):', error);
+    relatedNews = [];
   }
 
   const newsDate = item.date || item.createdAt;
@@ -516,6 +517,7 @@ export default async function Page({ params }) {
             </div>
           </ScrollReveal>
         </section>
+        </div>
       )}
     </div>
   );

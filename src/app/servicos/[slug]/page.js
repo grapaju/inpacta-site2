@@ -45,7 +45,11 @@ export default async function Page({ params }) {
                 <span className="text-white/80 font-medium">{item.category}</span>
               </div>
               <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                {item.hero.title}
+                {colorizeTitle(
+                  item.hero.title,
+                  getTitleColor(item.title) || item.color,
+                  slug === 'planejamento-estrategico-pmo' ? 'Planejamento Estratégico' : null
+                )}
               </h1>
               <p className="text-xl text-white/90 leading-relaxed max-w-3xl">
                 {item.hero.subtitle}
@@ -89,124 +93,132 @@ export default async function Page({ params }) {
             </div>
           </ScrollReveal>
 
-          <ScrollReveal animation="fadeLeft">
-            <div className="bg-gradient-to-br from-[var(--card)] to-[var(--background)] p-8 rounded-3xl border-2 border-[var(--border)]">
-              <h3 className="text-lg font-bold text-[var(--primary)] mb-6">Tecnologias Utilizadas</h3>
-              <div className="flex flex-wrap gap-2">
-                {item.technologies.map((tech, index) => (
-                  <span 
-                    key={index}
-                    className="px-3 py-2 text-sm font-medium rounded-lg"
-                    style={{ 
-                      backgroundColor: `${item.color}15`, 
-                      color: item.color 
-                    }}
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-              
-              <div className="mt-8 pt-6 border-t border-[var(--border)]">
-                <div className="flex items-center gap-3 mb-3">
-                  <div 
-                    className="size-12 rounded-xl flex items-center justify-center"
-                    style={{ backgroundColor: `${item.color}15`, color: item.color }}
-                  >
-                    {getServiceIcon(item.icon)}
-                  </div>
-                  <div>
-                    <div className="font-bold text-[var(--primary)]">{item.title}</div>
-                    <div className="text-sm text-[color:var(--muted)]">{item.category}</div>
+          {item.showTechnologies && (
+            <ScrollReveal animation="fadeLeft">
+              <div className="bg-gradient-to-br from-[var(--card)] to-[var(--background)] p-8 rounded-3xl border-2 border-[var(--border)]">
+                <h3 className="text-lg font-bold text-[var(--primary)] mb-6">Tecnologias Utilizadas</h3>
+                <div className="flex flex-wrap gap-2">
+                  {item.technologies.map((tech, index) => (
+                    <span 
+                      key={index}
+                      className="px-3 py-2 text-sm font-medium rounded-lg"
+                      style={{ 
+                        backgroundColor: `${item.color}15`, 
+                        color: item.color 
+                      }}
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+                
+                <div className="mt-8 pt-6 border-t border-[var(--border)]">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div 
+                      className="size-12 rounded-xl flex items-center justify-center"
+                      style={{ backgroundColor: `${item.color}15`, color: item.color }}
+                    >
+                      {getServiceIcon(item.icon)}
+                    </div>
+                    <div>
+                      <div className="font-bold text-[var(--primary)]">{item.title}</div>
+                      <div className="text-sm text-[color:var(--muted)]">{item.category}</div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </ScrollReveal>
+            </ScrollReveal>
+          )}
         </div>
       </section>
 
       {/* Features */}
-      <div className="section-alt">
+      {item.showFeatures && (
+        <div className="section-alt">
+          <section className="max-w-7xl mx-auto px-4 py-20">
+            <ScrollReveal animation="fadeUp">
+              <div className="text-center mb-16">
+                <div className="section-title justify-center">
+                  <span className="bar" />
+                  <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Principais Recursos</h2>
+                </div>
+                <p className="mt-4 text-lg text-[color:var(--muted)]">
+                  Funcionalidades e capacidades que tornam nossos serviços únicos.
+                </p>
+              </div>
+            </ScrollReveal>
+
+            <StaggeredReveal staggerDelay={150} className="grid md:grid-cols-2 gap-8">
+              {item.features.map((feature, index) => (
+                <div key={index} className="interactive-card bg-[var(--card)] p-8 rounded-2xl border-2 border-[var(--border)]">
+                  <div 
+                    className="inline-flex size-16 items-center justify-center rounded-2xl mb-6"
+                    style={{ backgroundColor: `${item.color}15`, color: item.color }}
+                  >
+                    {getFeatureIcon(feature.icon)}
+                  </div>
+                  <h3 className="text-xl font-bold text-[var(--primary)] mb-4">
+                    {feature.title}
+                  </h3>
+                  <p className="text-[color:var(--muted)] leading-relaxed">
+                    {feature.description}
+                  </p>
+                </div>
+              ))}
+            </StaggeredReveal>
+          </section>
+
+        </div>
+      )}
+
+      {/* Cases — controlado por item.showCases */}
+      {item.showCases && (
         <section className="max-w-7xl mx-auto px-4 py-20">
           <ScrollReveal animation="fadeUp">
             <div className="text-center mb-16">
               <div className="section-title justify-center">
                 <span className="bar" />
-                <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Principais Recursos</h2>
+                <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Casos de Sucesso</h2>
               </div>
               <p className="mt-4 text-lg text-[color:var(--muted)]">
-                Funcionalidades e capacidades que tornam nossos serviços únicos.
+                Projetos reais que demonstram o impacto de nossas soluções.
               </p>
             </div>
           </ScrollReveal>
 
-        <StaggeredReveal staggerDelay={150} className="grid md:grid-cols-2 gap-8">
-          {item.features.map((feature, index) => (
-            <div key={index} className="interactive-card bg-[var(--card)] p-8 rounded-2xl border-2 border-[var(--border)]">
-              <div 
-                className="inline-flex size-16 items-center justify-center rounded-2xl mb-6"
-                style={{ backgroundColor: `${item.color}15`, color: item.color }}
-              >
-                {getFeatureIcon(feature.icon)}
-              </div>
-              <h3 className="text-xl font-bold text-[var(--primary)] mb-4">
-                {feature.title}
-              </h3>
-              <p className="text-[color:var(--muted)] leading-relaxed">
-                {feature.description}
-              </p>
-            </div>
-          ))}
-        </StaggeredReveal>
-      </section>
-
-      {/* Cases */}
-      <section className="max-w-7xl mx-auto px-4 py-20">
-        <ScrollReveal animation="fadeUp">
-          <div className="text-center mb-16">
-            <div className="section-title justify-center">
-              <span className="bar" />
-              <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Casos de Sucesso</h2>
-            </div>
-            <p className="mt-4 text-lg text-[color:var(--muted)]">
-              Projetos reais que demonstram o impacto de nossas soluções.
-            </p>
-          </div>
-        </ScrollReveal>
-
-        <StaggeredReveal staggerDelay={200} className="grid md:grid-cols-2 gap-8">
-          {item.cases.map((caseStudy, index) => (
-            <div key={index} className="interactive-card bg-gradient-to-br from-[var(--card)] to-[var(--background)] p-8 rounded-2xl border-2 border-[var(--border)]">
-              <div className="mb-6">
-                <h3 className="text-xl font-bold text-[var(--primary)] mb-3">
-                  {caseStudy.title}
-                </h3>
-                <p className="text-[color:var(--muted)] leading-relaxed mb-4">
-                  {caseStudy.description}
-                </p>
-              </div>
-              
-              <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]">
-                <div 
-                  className="text-sm font-bold"
-                  style={{ color: item.color }}
-                >
-                  Impacto: {caseStudy.impact}
+          <StaggeredReveal staggerDelay={200} className="grid md:grid-cols-2 gap-8">
+            {item.cases.map((caseStudy, index) => (
+              <div key={index} className="interactive-card bg-gradient-to-br from-[var(--card)] to-[var(--background)] p-8 rounded-2xl border-2 border-[var(--border)]">
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold text-[var(--primary)] mb-3">
+                    {caseStudy.title}
+                  </h3>
+                  <p className="text-[color:var(--muted)] leading-relaxed mb-4">
+                    {caseStudy.description}
+                  </p>
                 </div>
-                <div 
-                  className="size-8 rounded-lg flex items-center justify-center"
-                  style={{ backgroundColor: `${item.color}15`, color: item.color }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
+                
+                <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]">
+                  <div 
+                    className="text-sm font-bold"
+                    style={{ color: item.color }}
+                  >
+                    Impacto: {caseStudy.impact}
+                  </div>
+                  <div 
+                    className="size-8 rounded-lg flex items-center justify-center"
+                    style={{ backgroundColor: `${item.color}15`, color: item.color }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" strokeWidth="2"/>
+                    </svg>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </StaggeredReveal>
-      </section>
+            ))}
+          </StaggeredReveal>
+        </section>
+      )}
 
       {/* CTA */}
       <div className="section-alt">
@@ -243,6 +255,52 @@ export default async function Page({ params }) {
 }
 
 // Helper function for service icons
+function colorizeTitle(title, color, highlightPhrase = null) {
+  if (!title || typeof title !== 'string') return title;
+  if (highlightPhrase && title.includes(highlightPhrase)) {
+    const before = title.slice(0, title.indexOf(highlightPhrase));
+    const after = title.slice(title.indexOf(highlightPhrase) + highlightPhrase.length);
+    return (
+      <>
+        {before}
+        <span style={{ color }}>{highlightPhrase}</span>
+        {after}
+      </>
+    );
+  }
+  const parts = title.split(' ');
+  if (parts.length === 0) return title;
+  const first = parts.shift();
+  return (
+    <>
+      <span style={{ color }}>{first}</span>{' '}
+      {parts.join(' ')}
+    </>
+  );
+}
+
+function getTitleColor(title) {
+  if (!title) return null;
+  const t = title.trim().toLowerCase();
+  // Mapeamento de padronização solicitado
+  // Laranja: Estrutura Organizacional, Nossa Equipe, Práticas
+  if (
+    t === 'estrutura organizacional' ||
+    t === 'nossa equipe' ||
+    t === 'práticas'
+  ) {
+    return '#f59e0b'; // laranja (aprox. orange-500)
+  }
+  // Azul (mesmo do título Governança): Observatórios e Inteligência de Dados, Planejamento Estratégico e PMO Público
+  if (
+    t === 'observatórios e inteligência de dados' ||
+    t === 'planejamento estratégico e pmo público'
+  ) {
+    return 'var(--primary)'; // usa a mesma cor azul de Governança
+  }
+  return null;
+}
+
 function getServiceIcon(iconType) {
   const iconMap = {
     monitor: (

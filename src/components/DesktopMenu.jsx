@@ -54,8 +54,8 @@ export default function DesktopMenu() {
       submenu: [
         { 
           href: "/servicos/governanca-seguranca-publica", 
-          label: "Governança e Segurança Pública",
-          description: "Planos municipais e protocolos operacionais"
+          label: "Governança em Segurança Pública",
+          description: "Elaboração de planos e protocolos"
         },
         { 
           href: "/servicos/observatorios-inteligencia-dados", 
@@ -82,6 +82,16 @@ export default function DesktopMenu() {
           label: "Dados Abertos",
           description: "Datasets e APIs públicas para consulta"
         },
+      ]
+    },
+    {
+      label: "Licitação",
+      submenu: [
+        {
+          href: "/licitacao/regulamento",
+          label: "Regulamento de Licitações e Contratos",
+          description: "Diretrizes, procedimentos e compliance"
+        }
       ]
     },
     { href: "/noticias", label: "Notícias" },

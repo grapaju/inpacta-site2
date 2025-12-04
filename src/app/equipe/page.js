@@ -20,7 +20,7 @@ export default function Page() {
                 <span className="text-white/80 font-medium">Pessoas & Processos</span>
               </div>
               <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                Nossa <span className="text-[var(--green)]">Equipe</span> e Práticas
+                Nossa <span style={{ color: '#ff6b35' }}>Equipe</span> e Práticas
               </h1>
               <p className="text-xl text-white/90 leading-relaxed max-w-3xl">
                 Conheça os profissionais especializados e as metodologias que fortalecem 
@@ -31,69 +31,71 @@ export default function Page() {
         </div>
       </section>
 
-      {/* Estatísticas da Equipe */}
-      <section className="max-w-7xl mx-auto px-4 py-20">
-        <ScrollReveal animation="fadeUp">
-          <div className="text-center mb-16">
-            <div className="section-title justify-center">
-              <span className="bar" />
-              <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Números da Equipe</h2>
+      {/* Estatísticas da Equipe — OCULTADO TEMPORARIAMENTE */}
+      {false && (
+        <section className="max-w-7xl mx-auto px-4 py-20">
+          <ScrollReveal animation="fadeUp">
+            <div className="text-center mb-16">
+              <div className="section-title justify-center">
+                <span className="bar" />
+                <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Números da Equipe</h2>
+              </div>
+              <p className="mt-4 text-lg text-[color:var(--muted)] max-w-2xl mx-auto">
+                Profissionais qualificados trabalhando com metodologias ágeis e inovadoras.
+              </p>
             </div>
-            <p className="mt-4 text-lg text-[color:var(--muted)] max-w-2xl mx-auto">
-              Profissionais qualificados trabalhando com metodologias ágeis e inovadoras.
-            </p>
-          </div>
-        </ScrollReveal>
+          </ScrollReveal>
 
-        <StaggeredReveal staggerDelay={150} className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {[
-            { number: "45+", label: "Profissionais", icon: "users", color: "var(--primary)" },
-            { number: "8", label: "Especialidades", icon: "layers", color: "var(--accent)" },
-            { number: "15+", label: "Anos de Experiência", icon: "award", color: "var(--green)" },
-            { number: "100%", label: "Metodologias Ágeis", icon: "zap", color: "var(--orange)" },
-          ].map((stat, index) => (
-            <div key={index} className="interactive-card text-center p-6 rounded-2xl bg-[var(--card)] border-2 border-[var(--border)]">
-              <div 
-                className="inline-flex size-16 items-center justify-center rounded-2xl mb-4"
-                style={{ backgroundColor: `${stat.color}15`, color: stat.color }}
-              >
-                {stat.icon === "users" && (
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2"/>
-                    <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2"/>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
-                )}
-                {stat.icon === "layers" && (
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                    <polygon points="12,2 2,7 12,12 22,7" stroke="currentColor" strokeWidth="2"/>
-                    <polyline points="2,17 12,22 22,17" stroke="currentColor" strokeWidth="2"/>
-                    <polyline points="2,12 12,17 22,12" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
-                )}
-                {stat.icon === "award" && (
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="8" r="7" stroke="currentColor" strokeWidth="2"/>
-                    <polyline points="8.21,13.89 7,23 12,20 17,23 15.79,13.88" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
-                )}
-                {stat.icon === "zap" && (
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                    <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
-                )}
+          <StaggeredReveal staggerDelay={150} className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {[
+              { number: "45+", label: "Profissionais", icon: "users", color: "var(--primary)" },
+              { number: "8", label: "Especialidades", icon: "layers", color: "var(--accent)" },
+              { number: "15+", label: "Anos de Experiência", icon: "award", color: "var(--green)" },
+              { number: "100%", label: "Metodologias Ágeis", icon: "zap", color: "var(--orange)" },
+            ].map((stat, index) => (
+              <div key={index} className="interactive-card text-center p-6 rounded-2xl bg-[var(--card)] border-2 border-[var(--border)]">
+                <div 
+                  className="inline-flex size-16 items-center justify-center rounded-2xl mb-4"
+                  style={{ backgroundColor: `${stat.color}15`, color: stat.color }}
+                >
+                  {stat.icon === "users" && (
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2"/>
+                      <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2"/>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="2"/>
+                    </svg>
+                  )}
+                  {stat.icon === "layers" && (
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                      <polygon points="12,2 2,7 12,12 22,7" stroke="currentColor" strokeWidth="2"/>
+                      <polyline points="2,17 12,22 22,17" stroke="currentColor" strokeWidth="2"/>
+                      <polyline points="2,12 12,17 22,12" stroke="currentColor" strokeWidth="2"/>
+                    </svg>
+                  )}
+                  {stat.icon === "award" && (
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="8" r="7" stroke="currentColor" strokeWidth="2"/>
+                      <polyline points="8.21,13.89 7,23 12,20 17,23 15.79,13.88" stroke="currentColor" strokeWidth="2"/>
+                    </svg>
+                  )}
+                  {stat.icon === "zap" && (
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                      <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2" stroke="currentColor" strokeWidth="2"/>
+                    </svg>
+                  )}
+                </div>
+                <div className="text-3xl font-bold mb-2" style={{ color: stat.color }}>
+                  {stat.number}
+                </div>
+                <div className="text-sm text-[color:var(--muted)] font-medium">
+                  {stat.label}
+                </div>
               </div>
-              <div className="text-3xl font-bold mb-2" style={{ color: stat.color }}>
-                {stat.number}
-              </div>
-              <div className="text-sm text-[color:var(--muted)] font-medium">
-                {stat.label}
-              </div>
-            </div>
-          ))}
-        </StaggeredReveal>
-      </section>
+            ))}
+          </StaggeredReveal>
+        </section>
+      )}
 
       {/* Liderança */}
       <div className="section-alt">
@@ -105,89 +107,32 @@ export default function Page() {
                 <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Liderança</h2>
               </div>
               <p className="mt-4 text-lg text-[color:var(--muted)]">
-                Profissionais experientes que lideram nossa missão de inovação.
+                Profissionais capacitados que lideram nossa missão de inovação.
               </p>
             </div>
           </ScrollReveal>
 
         <StaggeredReveal staggerDelay={200} className="grid md:grid-cols-3 gap-8">
           {[
-            {
-              name: "Cristiane Regina de Camargo Hasegawa",
-              role: "Diretora Presidente",
-              description: "Líder experiente em gestão pública e desenvolvimento de políticas de inovação para o setor público.",
-              specialties: ["Gestão Estratégica", "Políticas Públicas", "Liderança"],
-              education: "Especialização em Gestão Pública",
-              linkedin: "#"
-            },
-            {
-              name: "Ideuber Carlos Celeste",
-              role: "Diretor Administrativo Financeiro",
-              description: "Especialista em gestão financeira e administrativa com foco em sustentabilidade organizacional.",
-              specialties: ["Gestão Financeira", "Administração", "Planejamento"],
-              education: "Formação em Administração e Finanças",
-              linkedin: "#"
-            },
-            {
-              name: "Márcio Luis Catelan",
-              role: "Diretor Técnico",
-              description: "Especialista em tecnologia e inovação com experiência em desenvolvimento de soluções técnicas.",
-              specialties: ["Tecnologia", "Inovação", "Desenvolvimento"],
-              education: "Formação Técnica e Tecnológica",
-              linkedin: "#"
-            }
+            { name: "Cristiane Regina de Camargo Hasegawa", role: "Diretora Presidente" },
+            { name: "Ideuber Carlos Celeste", role: "Diretor Administrativo Financeiro" },
+            { name: "Márcio Luis Catelan", role: "Diretor Técnico" }
           ].map((leader, index) => (
-            <div key={index} className="interactive-card bg-[var(--card)] p-8 rounded-2xl border-2 border-[var(--border)]">
-              <div className="text-center mb-6">
-                <div className="size-24 bg-gradient-to-br from-[var(--accent)] to-[var(--primary)] rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-white text-2xl font-bold">
-                    {leader.name.split(' ').map(n => n[0]).join('')}
+            <div key={index} className="interactive-card bg-[var(--card)] p-8 rounded-2xl border-2 border-[var(--border)] h-full flex flex-col">
+              <div className="text-center mb-4">
+                <div className="size-20 bg-gradient-to-br from-[var(--accent)] to-[var(--primary)] rounded-full mx-auto mb-3 flex items-center justify-center">
+                  <span className="text-white text-xl font-bold">
+                    {leader.name?.[0]}
                   </span>
                 </div>
                 <h3 className="text-xl font-bold text-[var(--primary)] mb-1">
                   {leader.name}
                 </h3>
-                <p className="text-[var(--accent)] font-medium mb-3">
+                <p className="text-[var(--accent)] font-medium">
                   {leader.role}
                 </p>
               </div>
-              
-              <p className="text-sm text-[color:var(--muted)] leading-relaxed mb-4">
-                {leader.description}
-              </p>
-              
-              <div className="mb-4">
-                <h4 className="text-sm font-bold text-[var(--primary)] mb-2">Especialidades</h4>
-                <div className="flex flex-wrap gap-2">
-                  {leader.specialties.map((specialty, specIndex) => (
-                    <span 
-                      key={specIndex}
-                      className="text-xs px-2 py-1 bg-[var(--accent)]/10 text-[var(--accent)] rounded-full"
-                    >
-                      {specialty}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              
-              <div className="mb-4">
-                <h4 className="text-sm font-bold text-[var(--primary)] mb-1">Formação</h4>
-                <p className="text-xs text-[color:var(--muted)]">{leader.education}</p>
-              </div>
-              
-              <div className="pt-4 border-t border-[var(--border)]">
-                <Link 
-                  href={leader.linkedin}
-                  className="inline-flex items-center gap-2 text-sm text-[var(--accent)] hover:underline font-medium"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" stroke="currentColor" strokeWidth="2"/>
-                    <rect x="2" y="9" width="4" height="12" stroke="currentColor" strokeWidth="2"/>
-                    <circle cx="4" cy="4" r="2" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
-                  LinkedIn
-                </Link>
-              </div>
+              <div className="mt-auto" />
             </div>
           ))}
         </StaggeredReveal>
@@ -264,7 +209,7 @@ export default function Page() {
               )
             }
           ].map((team, index) => (
-            <div key={index} className="interactive-card bg-[var(--card)] p-6 rounded-2xl border-2 border-[var(--border)]">
+            <div key={index} className="interactive-card bg-[var(--card)] p-6 rounded-2xl border-2 border-[var(--border)] h-full flex flex-col">
               <div className="mb-4">
                 <div 
                   className="inline-flex size-12 items-center justify-center rounded-xl mb-4"
@@ -289,7 +234,7 @@ export default function Page() {
                 </p>
               </div>
               
-              <div>
+              <div className="mt-auto">
                 <h4 className="text-sm font-bold text-[var(--primary)] mb-2">Tecnologias</h4>
                 <div className="flex flex-wrap gap-1">
                   {team.technologies.map((tech, techIndex) => (
@@ -307,92 +252,94 @@ export default function Page() {
         </StaggeredReveal>
       </section>
 
-      {/* Metodologias e Práticas */}
-      <div className="section-alt">
-        <section className="max-w-7xl mx-auto px-4 py-20">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <ScrollReveal animation="fadeRight">
-              <div>
-                <div className="section-title">
-                  <span className="bar" />
-                  <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Metodologias de Trabalho</h2>
-                </div>
-                <div className="mt-8 space-y-6">
-                  <p className="text-lg text-[color:var(--muted)] leading-relaxed">
-                    Utilizamos as <strong className="text-[var(--foreground)]">melhores práticas</strong> da indústria, 
-                    adaptadas às necessidades específicas do setor público.
-                  </p>
-                
-                <div className="space-y-4">
-                  {[
-                    {
-                      title: "Metodologias Ágeis",
-                      description: "Scrum, Kanban e SAFe para entregas iterativas e adaptabilidade."
-                    },
-                    {
-                      title: "DevOps Culture",
-                      description: "Integração contínua, entrega contínua e colaboração entre equipes."
-                    },
-                    {
-                      title: "Design Thinking",
-                      description: "Centrado no usuário para criar soluções inovadoras e eficazes."
-                    },
-                    {
-                      title: "Lean Startup",
-                      description: "Desenvolvimento enxuto com validação rápida de hipóteses."
-                    }
-                  ].map((methodology, index) => (
-                    <div key={index} className="flex items-start gap-4">
-                      <div className="size-2 bg-[var(--accent)] rounded-full mt-2 flex-shrink-0"></div>
-                      <div>
-                        <h3 className="font-bold text-[var(--primary)] mb-1">{methodology.title}</h3>
-                        <p className="text-sm text-[color:var(--muted)]">{methodology.description}</p>
+      {/* Metodologias e Práticas — OCULTADO TEMPORARIAMENTE */}
+      {false && (
+        <div className="section-alt">
+          <section className="max-w-7xl mx-auto px-4 py-20">
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              <ScrollReveal animation="fadeRight">
+                <div>
+                  <div className="section-title">
+                    <span className="bar" />
+                    <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)]">Metodologias de Trabalho</h2>
+                  </div>
+                  <div className="mt-8 space-y-6">
+                    <p className="text-lg text-[color:var(--muted)] leading-relaxed">
+                      Utilizamos as <strong className="text-[var(--foreground)]">melhores práticas</strong> da indústria, 
+                      adaptadas às necessidades específicas do setor público.
+                    </p>
+                  
+                  <div className="space-y-4">
+                    {[
+                      {
+                        title: "Metodologias Ágeis",
+                        description: "Scrum, Kanban e SAFe para entregas iterativas e adaptabilidade."
+                      },
+                      {
+                        title: "DevOps Culture",
+                        description: "Integração contínua, entrega contínua e colaboração entre equipes."
+                      },
+                      {
+                        title: "Design Thinking",
+                        description: "Centrado no usuário para criar soluções inovadoras e eficazes."
+                      },
+                      {
+                        title: "Lean Startup",
+                        description: "Desenvolvimento enxuto com validação rápida de hipóteses."
+                      }
+                    ].map((methodology, index) => (
+                      <div key={index} className="flex items-start gap-4">
+                        <div className="size-2 bg-[var(--accent)] rounded-full mt-2 flex-shrink-0"></div>
+                        <div>
+                          <h3 className="font-bold text-[var(--primary)] mb-1">{methodology.title}</h3>
+                          <p className="text-sm text-[color:var(--muted)]">{methodology.description}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          </ScrollReveal>
+            </ScrollReveal>
 
-          <ScrollReveal animation="fadeLeft">
-            <div className="space-y-8">
-              <div className="bg-gradient-to-br from-[var(--accent)]/10 via-[var(--card)] to-[var(--green)]/10 p-8 rounded-2xl border-2 border-[var(--accent)]/20">
-                <h3 className="text-xl font-bold text-[var(--primary)] mb-4">Certificações da Equipe</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  {[
-                    "PMP - Project Management",
-                    "Scrum Master Certified",
-                    "AWS Solutions Architect",
-                    "Google Cloud Professional",
-                    "UX Design Certified",
-                    "DevOps Foundation"
-                  ].map((cert, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div className="size-2 bg-[var(--green)] rounded-full"></div>
-                      <span className="text-sm text-[var(--foreground)]">{cert}</span>
-                    </div>
-                  ))}
+            <ScrollReveal animation="fadeLeft">
+              <div className="space-y-8">
+                <div className="bg-gradient-to-br from-[var(--accent)]/10 via-[var(--card)] to-[var(--green)]/10 p-8 rounded-2xl border-2 border-[var(--accent)]/20">
+                  <h3 className="text-xl font-bold text-[var(--primary)] mb-4">Certificações da Equipe</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {[
+                      "PMP - Project Management",
+                      "Scrum Master Certified",
+                      "AWS Solutions Architect",
+                      "Google Cloud Professional",
+                      "UX Design Certified",
+                      "DevOps Foundation"
+                    ].map((cert, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <div className="size-2 bg-[var(--green)] rounded-full"></div>
+                        <span className="text-sm text-[var(--foreground)]">{cert}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="bg-[var(--card)] p-6 rounded-2xl border-2 border-[var(--border)]">
+                  <h3 className="text-lg font-bold text-[var(--primary)] mb-3">Desenvolvimento Contínuo</h3>
+                  <p className="text-sm text-[color:var(--muted)] mb-4">
+                    Investimos constantemente na capacitação de nossa equipe através de:
+                  </p>
+                  <ul className="space-y-2 text-sm text-[var(--foreground)]">
+                    <li>• Treinamentos técnicos regulares</li>
+                    <li>• Participação em conferências</li>
+                    <li>• Certificações internacionais</li>
+                    <li>• Workshops internos</li>
+                  </ul>
                 </div>
               </div>
-              
-              <div className="bg-[var(--card)] p-6 rounded-2xl border-2 border-[var(--border)]">
-                <h3 className="text-lg font-bold text-[var(--primary)] mb-3">Desenvolvimento Contínuo</h3>
-                <p className="text-sm text-[color:var(--muted)] mb-4">
-                  Investimos constantemente na capacitação de nossa equipe através de:
-                </p>
-                <ul className="space-y-2 text-sm text-[var(--foreground)]">
-                  <li>• Treinamentos técnicos regulares</li>
-                  <li>• Participação em conferências</li>
-                  <li>• Certificações internacionais</li>
-                  <li>• Workshops internos</li>
-                </ul>
-              </div>
-            </div>
-          </ScrollReveal>
+            </ScrollReveal>
+          </div>
+          </section>
         </div>
-        </section>
-      </div>
+      )}
 
       {/* CTA */}
       <section className="max-w-7xl mx-auto px-4 py-20">

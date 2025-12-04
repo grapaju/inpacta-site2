@@ -130,7 +130,7 @@ export default function AdminDashboard() {
           value={stats.news}
           description="Artigos publicados"
           icon="📰"
-          color="blue"
+          color="primary"
           trend={{ type: 'up', value: '+12%' }}
         />
         <StatsCard
@@ -138,7 +138,7 @@ export default function AdminDashboard() {
           value={stats.users}
           description="Usuários cadastrados"
           icon="👥"
-          color="green"
+          color="success"
           trend={{ type: 'up', value: '+3' }}
         />
         <StatsCard
@@ -146,7 +146,7 @@ export default function AdminDashboard() {
           value="2.4k"
           description="Este mês"
           icon="📊"
-          color="purple"
+          color="info"
           trend={{ type: 'up', value: '+18%' }}
         />
         <StatsCard
@@ -154,7 +154,7 @@ export default function AdminDashboard() {
           value="98%"
           description="Tempo de atividade"
           icon="⚡"
-          color="orange"
+          color="warning"
           trend={{ type: 'up', value: '+0.2%' }}
         />
       </div>
@@ -173,7 +173,7 @@ export default function AdminDashboard() {
             description="Criar e publicar um novo artigo"
             href="/admin/news/new"
             icon="📝"
-            color="blue"
+            color="primary"
             badge="Popular"
           />
           <ActionCard
@@ -181,20 +181,20 @@ export default function AdminDashboard() {
             description="Adicionar um novo projeto ao portfólio"
             href="/admin/projects/new"
             icon="🚀"
-            color="purple"
+            color="accent"
           />
           <ActionCard
             title="Analytics SEO"
             description="Visualizar métricas e performance"
             href="/admin/seo"
             icon="📊"
-            color="green"
+            color="success"
           />
         </div>
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-[var(--card)] rounded-2xl border border-[var(--border)] p-6">
+      <div className="bg-[var(--card)] rounded-lg border border-[var(--border)] p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-[var(--foreground)] mb-6 flex items-center">
           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
