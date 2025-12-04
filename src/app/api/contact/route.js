@@ -33,12 +33,7 @@ export async function POST(request) {
     const pass = process.env.SMTP_PASS
     const to = process.env.CONTACT_TO || 'contato@inpacta.tech'
     const from = process.env.CONTACT_FROM || `InPACTA <no-reply@inpacta.tech>`
-
-    if (!host || !user || !pass) {
-      return NextResponse.json({
-        error: 'SMTP não configurado (defina SMTP_HOST, SMTP_USER, SMTP_PASS)'
-      }, { status: 500 })
-    }
+    const smtpConfigured = Boolean(host && user && pass)
 
     // Rate limit simples por IP: máximo 3 envios por 10 minutos
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || request.ip || 'unknown'
@@ -51,13 +46,6 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Muitas tentativas. Tente novamente mais tarde.' }, { status: 429 })
     }
 
-    const transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure: port === 465,
-      auth: { user, pass },
-    })
-
     const html = `
       <h2>Novo contato pelo site</h2>
       <p><strong>Nome:</strong> ${nome}</p>
@@ -69,28 +57,51 @@ export async function POST(request) {
       <hr/>
       <p>Enviado em: ${new Date().toLocaleString('pt-BR')}</p>
     `
-
-    await transporter.sendMail({
-      from,
-      to,
-      replyTo: email,
-      subject: `[InPACTA] Contato: ${assunto}`,
-      html,
-    })
-
-    // Registrar envio no banco
-    await prisma.contactSubmission.create({
-      data: {
-        name: nome,
-        email,
-        organization: organizacao || null,
-        subject: assunto,
-        message: mensagem,
-        ip
+    let mailOk = false
+    if (smtpConfigured) {
+      try {
+        const transporter = nodemailer.createTransport({
+          host,
+          port,
+          secure: port === 465,
+          auth: { user, pass },
+        })
+        await transporter.sendMail({
+          from,
+          to,
+          replyTo: email,
+          subject: `[InPACTA] Contato: ${assunto}`,
+          html,
+        })
+        mailOk = true
+      } catch (smtpErr) {
+        console.error('Erro SMTP (envio de contato):', smtpErr)
       }
-    })
+    } else {
+      console.warn('SMTP não configurado — pulando envio de e-mail do contato')
+    }
 
-    return NextResponse.json({ ok: true })
+    let dbOk = false
+    try {
+      await prisma.contactSubmission.create({
+        data: {
+          name: nome,
+          email,
+          organization: organizacao || null,
+          subject: assunto,
+          message: mensagem,
+          ip
+        }
+      })
+      dbOk = true
+    } catch (dbErr) {
+      console.error('Erro BD (registro de contato):', dbErr)
+    }
+
+    if (mailOk || dbOk) {
+      return NextResponse.json({ ok: true })
+    }
+    return NextResponse.json({ error: 'Falha ao enviar mensagem' }, { status: 500 })
   } catch (err) {
     console.error('Erro envio contato:', err)
     return NextResponse.json({ error: 'Falha ao enviar mensagem' }, { status: 500 })
