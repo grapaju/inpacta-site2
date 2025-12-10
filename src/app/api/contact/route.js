@@ -29,8 +29,8 @@ export async function POST(request) {
     const port = parseInt(process.env.SMTP_PORT || '587', 10)
     const user = process.env.SMTP_USER
     const pass = process.env.SMTP_PASS
-    const to = process.env.CONTACT_TO || 'contato@inpacta.tech'
-    const from = process.env.CONTACT_FROM || `InPACTA <no-reply@inpacta.tech>`
+    const to = process.env.CONTACT_TO || 'contato@inpacta.org.br'
+    const from = process.env.CONTACT_FROM || `InPACTA <no-reply@inpacta.org.br>`
     const smtpConfigured = Boolean(host && user && pass)
 
     // Rate limit baseado apenas em header/IP — simples (sem BD)

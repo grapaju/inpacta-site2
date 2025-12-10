@@ -93,7 +93,7 @@ async function fetchAllNews() {
   try {
     const baseUrl = process.env.VERCEL_URL 
       ? `https://${process.env.VERCEL_URL}` 
-      : process.env.NEXT_PUBLIC_BASE_URL || 'https://inpacta-site.vercel.app';
+      : process.env.NEXT_PUBLIC_BASE_URL || 'https://inpacta.org.br';
       
     const response = await fetch(`${baseUrl}/api/public/news`, {
       cache: 'force-cache'

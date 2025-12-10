@@ -7,7 +7,7 @@ export async function GET() {
   try {
     // Deletar admin antigo se existir
     await prisma.user.deleteMany({
-      where: { email: 'admin@inpacta.mg.gov.br' }
+      where: { email: 'admin@inpacta.org.br' }
     })
     
     // Criar novo admin com bcryptjs
@@ -15,7 +15,7 @@ export async function GET() {
     
     const admin = await prisma.user.create({
       data: {
-        email: 'admin@inpacta.mg.gov.br',
+        email: 'admin@inpacta.org.br',
         password: hashedPassword,
         name: 'Administrador INPACTA',
         role: 'ADMIN'
@@ -24,7 +24,7 @@ export async function GET() {
     
     return Response.json({ 
       message: 'Admin recriado com bcryptjs!',
-      email: 'admin@inpacta.mg.gov.br',
+      email: 'admin@inpacta.org.br',
       password: 'admin123'
     })
     

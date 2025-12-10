@@ -35,7 +35,7 @@ function Header() {
             {/* Contatos - Otimizado para mobile */}
             <div className="flex items-center gap-3 sm:gap-6 flex-1 min-w-0">
               <a 
-                href="mailto:contato@inpacta.tech" 
+                href="mailto:contato@inpacta.org.br" 
                 className="flex items-center gap-1.5 sm:gap-2 hover:text-white/80 transition-colors min-h-[44px] truncate"
                 aria-label="Email institucional"
               >
@@ -43,7 +43,7 @@ function Header() {
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" strokeWidth="2"/>
                   <polyline points="22,6 12,13 2,6" stroke="currentColor" strokeWidth="2"/>
                 </svg>
-                <span className="hidden md:inline truncate">contato@inpacta.tech</span>
+                <span className="hidden md:inline truncate">contato@inpacta.org.br</span>
                 <span className="md:hidden">Contato</span>
               </a>
               <a 
@@ -199,7 +199,6 @@ function Footer() {
                 { href: "/estrutura", label: "Estrutura" },
                 { href: "/equipe", label: "Equipe e Práticas" },
                 { href: "/servicos", label: "Serviços" },
-                { href: "/projetos", label: "Projetos" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link 
@@ -223,8 +222,6 @@ function Footer() {
               {[
                 { href: "/transparencia", label: "Portal da Transparência" },
                 { href: "/dados", label: "Dados Abertos" },
-                { href: "/estrutura", label: "Estrutura" },
-                { href: "/equipe", label: "Equipe" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link 

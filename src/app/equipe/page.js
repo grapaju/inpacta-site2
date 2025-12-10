@@ -2,11 +2,12 @@ import Link from "next/link";
 import { ScrollReveal, StaggeredReveal } from "@/hooks/useScrollAnimations";
 
 export const metadata = {
-  title: "Equipe e Práticas — InPACTA",
-  description: "Conheça nossa equipe especializada, metodologias de trabalho e práticas inovadoras do Instituto de Inovação para Políticas Públicas de Maringá.",
+  title: "Nossa Equipe — InPACTA",
+  description: "Conheça nossa equipe especializada do Instituto de Inovação para Políticas Públicas.",
 };
 
 export default function Page() {
+  const SHOW_SPECIALIZED_TEAMS = process.env.NEXT_PUBLIC_SHOW_SPECIALIZED_TEAMS === 'true';
   return (
     <div>
       {/* Hero */}
@@ -20,7 +21,7 @@ export default function Page() {
                 <span className="text-white/80 font-medium">Pessoas & Processos</span>
               </div>
               <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                Nossa <span style={{ color: '#ff6b35' }}>Equipe</span> e Práticas
+                Nossa <span style={{ color: '#ff6b35' }}>Equipe</span>
               </h1>
               <p className="text-xl text-white/90 leading-relaxed max-w-3xl">
                 Conheça os profissionais especializados e as metodologias que fortalecem 
@@ -114,7 +115,7 @@ export default function Page() {
 
         <StaggeredReveal staggerDelay={200} className="grid md:grid-cols-3 gap-8">
           {[
-            { name: "Cristiane Regina de Camargo Hasegawa", role: "Diretora Presidente" },
+            { name: "Cristiane Hasegawa", role: "Diretora Presidente" },
             { name: "Ideuber Carlos Celeste", role: "Diretor Administrativo Financeiro" },
             { name: "Márcio Luis Catelan", role: "Diretor Técnico" }
           ].map((leader, index) => (
@@ -139,7 +140,8 @@ export default function Page() {
         </section>
       </div>
 
-      {/* Equipes por Área */}
+      {/* Equipes por Área — Controlado por env NEXT_PUBLIC_SHOW_SPECIALIZED_TEAMS */}
+      {SHOW_SPECIALIZED_TEAMS && (
       <section className="max-w-7xl mx-auto px-4 py-20">
         <ScrollReveal animation="fadeUp">
           <div className="text-center mb-16">
@@ -251,6 +253,7 @@ export default function Page() {
           ))}
         </StaggeredReveal>
       </section>
+      )}
 
       {/* Metodologias e Práticas — OCULTADO TEMPORARIAMENTE */}
       {false && (

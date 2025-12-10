@@ -29,20 +29,20 @@ export default function ThemeToggle() {
         >
           Claro
         </button>
-        <button
+        {/* <button
           type="button"
           className="px-2 py-1 text-xs rounded-md border border-[var(--border)] hover:bg-[var(--card)] ring-focus"
           disabled
         >
           Escuro
-        </button>
-        <button
+        </button> */}
+      {/*   <button
           type="button"
           className="px-2 py-1 text-xs rounded-md border border-[var(--border)] hover:bg-[var(--card)] ring-focus"
           disabled
         >
           Sistema
-        </button>
+        </button> */}
       </div>
     );
   }
@@ -57,22 +57,22 @@ export default function ThemeToggle() {
       >
         Claro
       </button>
-      <button
+     {/*  <button
         type="button"
         onClick={() => setTheme("dark")}
         className="px-2 py-1 text-xs rounded-md border border-[var(--border)] hover:bg-[var(--card)] ring-focus"
         aria-pressed={theme === "dark"}
       >
         Escuro
-      </button>
-      <button
+      </button> */}
+      {/* <button
         type="button"
         onClick={() => setTheme("system")}
         className="px-2 py-1 text-xs rounded-md border border-[var(--border)] hover:bg-[var(--card)] ring-focus"
         aria-pressed={theme === "system"}
       >
         Sistema
-      </button>
+      </button> */}
     </div>
   );
 }

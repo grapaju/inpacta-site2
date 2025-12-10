@@ -3,7 +3,7 @@ import { services } from "@/data/services";
 import { projects } from "@/data/projects";
 
 export default function sitemap() {
-  const base = "https://inpacta.tech";
+  const base = "https://inpacta.org.br";
   const routes = [
     "",
     "/sobre",

@@ -21,7 +21,7 @@ export async function GET(request, { params }) {
       updatedAt: new Date().toISOString(),
       author: { 
         name: 'Sistema Corrigido', 
-        email: 'sistema@inpacta.com' 
+        email: 'sistema@inpacta.org.br' 
       },
       category: 'sistema',
       featuredImage: '',

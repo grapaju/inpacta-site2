@@ -135,7 +135,7 @@ export default function AdminLogin() {
                 color: 'white',
                 fontSize: '1rem'
               }}
-              placeholder="admin@inpacta.com"
+              placeholder="admin@inpacta.org.br"
               required
             />
           </div>
@@ -205,7 +205,7 @@ export default function AdminLogin() {
 
         <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
           <p style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '0.875rem' }}>
-            Credenciais padrão: admin@inpacta.com / admin123
+            Credenciais padrão: admin@inpacta.org.br / admin123
           </p>
         </div>
       </div>

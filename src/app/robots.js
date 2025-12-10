@@ -1,5 +1,5 @@
 export default function robots() {
-  const base = "https://inpacta.tech";
+  const base = "https://inpacta.org.br";
   return {
     rules: [
       { userAgent: "*", allow: "/" },

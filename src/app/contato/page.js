@@ -50,7 +50,7 @@ export default function Page() {
           {[
             {
               title: "E-mail Institucional",
-              info: "contato@inpacta.tech",
+              info: "contato@inpacta.org.br",
               description: "Canal oficial para comunicação institucional",
               icon: (
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
@@ -60,7 +60,7 @@ export default function Page() {
               ),
               color: "var(--primary)",
               action: "Enviar E-mail",
-              href: "mailto:contato@inpacta.tech"
+              href: "mailto:contato@inpacta.org.br"
             },
             {
               title: "Telefone",
@@ -91,16 +91,16 @@ export default function Page() {
             },
             {
               title: "Redes Sociais",
-              info: "@inpacta",
-              description: "Acompanhe nosso trabalho nas redes sociais",
+              info: "Em breve",
+              description: "Nossos perfis oficiais serão divulgados em breve",
               icon: (
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
                   <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" stroke="currentColor" strokeWidth="2"/>
                 </svg>
               ),
               color: "var(--orange)",
-              action: "Seguir",
-              href: "https://instagram.com/inpacta"
+              action: "Em breve",
+              href: "#"
             }
           ].map((contact, index) => (
             <div key={index} className="interactive-card bg-[var(--card)] p-8 rounded-2xl border-2 border-[var(--border)] text-center flex flex-col h-full">

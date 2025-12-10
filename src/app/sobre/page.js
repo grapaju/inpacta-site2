@@ -200,20 +200,20 @@ export default function Page() {
                   na construção de administrações públicas mais modernas, justas e conectadas às demandas sociais.
                 </p>
                 <p>
-                  Com <strong className="text-[var(--accent)]">governança</strong> como eixo central de nossa atuação, 
-                  utilizamos <strong className="text-[var(--orange)]">inovação e tecnologia</strong> como meios para 
+                  Com governança como eixo central de nossa atuação, 
+                  utilizamos inovação e tecnologia como meios para 
                   fortalecer a gestão pública, desenvolver políticas baseadas em evidências e metodologias que 
-                  aumentam a <strong className="text-[var(--green)]">eficiência do Estado</strong>.
+                  aumentam a eficiência do Estado.
                 </p>
                 <p>
-                  Nosso trabalho gera <strong className="text-[var(--primary)]">resultados concretos</strong> tanto no 
+                  Nosso trabalho gera <strong>resultados concretos</strong> tanto no 
                   âmbito institucional quanto social, ampliando a transparência, fortalecendo a participação cidadã 
                   e inspirando confiança da sociedade nas instituições públicas.
                 </p>
                 <p>
-                  Atuamos em áreas estratégicas como <strong className="text-[var(--accent)]">segurança pública</strong>, 
-                  <strong className="text-[var(--orange)]"> observatórios e inteligência de dados</strong> e 
-                  <strong className="text-[var(--green)]"> planejamento estratégico e PMO</strong>, transformando 
+                  Atuamos em áreas estratégicas como <strong>segurança pública</strong>, 
+                  <strong > observatórios e inteligência de dados</strong> e 
+                  <strong> planejamento estratégico e PMO</strong>, transformando 
                   diagnósticos em ação coordenada e resultados mensuráveis.
                 </p>
               </div>

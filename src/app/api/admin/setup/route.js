@@ -1,6 +1,6 @@
 /**
  * Script simples para criar usuário admin via URL
- * Acesse: https://inpacta-site.vercel.app/api/admin/setup
+ * Acesse: https://inpacta.org.br/api/admin/setup
  */
 
 // Adicione esta API route temporária
@@ -13,7 +13,7 @@ export async function GET() {
   try {
     // Verificar se já existe admin
     const existingAdmin = await prisma.user.findUnique({
-      where: { email: 'admin@inpacta.mg.gov.br' }
+      where: { email: 'admin@inpacta.org.br' }
     })
     
     if (existingAdmin) {
@@ -25,7 +25,7 @@ export async function GET() {
     
     const admin = await prisma.user.create({
       data: {
-        email: 'admin@inpacta.mg.gov.br',
+        email: 'admin@inpacta.org.br',
         password: hashedPassword,
         name: 'Administrador INPACTA',
         role: 'ADMIN'
@@ -34,7 +34,7 @@ export async function GET() {
     
     return Response.json({ 
       message: 'Admin criado com sucesso!',
-      email: 'admin@inpacta.mg.gov.br',
+      email: 'admin@inpacta.org.br',
       password: 'admin123'
     })
     

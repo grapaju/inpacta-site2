@@ -23,7 +23,7 @@ async function createAdminUser() {
     // Criar usuário admin
     const admin = await prisma.user.create({
       data: {
-        email: 'admin@inpacta.com',
+        email: 'admin@inpacta.org.br',
         name: 'Administrador',
         password: hashedPassword,
         role: 'ADMIN'
@@ -33,7 +33,7 @@ async function createAdminUser() {
     console.log('✅ Usuário administrador criado com sucesso!')
     console.log('')
     console.log('� Dados de acesso:')
-    console.log('�📧 Email: admin@inpacta.com')
+    console.log('�📧 Email: admin@inpacta.org.br')
     console.log('🔑 Senha: admin123')
     console.log('')
     console.log('🌐 Acesse: http://localhost:3002/admin/login')

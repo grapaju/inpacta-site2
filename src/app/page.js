@@ -7,7 +7,7 @@ import { ScrollReveal, StaggeredReveal } from "@/hooks/useScrollAnimations";
 // Função para buscar notícias mais recentes
 async function getLatestNews() {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'https://inpacta-site.vercel.app'}/api/public/news?limit=3`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'https://inpacta.org.br'}/api/public/news?limit=3`, {
       next: { revalidate: 300 } // Revalida a cada 5 minutos
     });
     
@@ -182,9 +182,9 @@ export default async function Home() {
                 <div className="mt-1 size-8 rounded-xl bg-gradient-to-br from-[var(--accent)]/20 to-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <span className="size-2.5 rounded-full bg-[var(--accent)]" />
                 </div>
-                <div>
-                  <h4 className="font-semibold text-[var(--foreground)] mb-1">Governança Administrativa</h4>
-                  <p className="text-sm text-[color:var(--muted)]">Modelagem de estruturas decisórias, fluxos de processos, indicadores e transparência para elevar a eficiência administrativa e a prestação de serviços.</p>
+                 <div>
+                  <h4 className="font-semibold text-[var(--foreground)] mb-1">Governança e Segurança Pública</h4>
+                  <p className="text-sm text-[color:var(--muted)]">Planos, planejamento estratégico e protocolos operacionais</p>
                 </div>
               </li>
               

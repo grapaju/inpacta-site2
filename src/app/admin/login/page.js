@@ -3,7 +3,7 @@
 import { useState } from 'react'
 
 export default function AdminLogin() {
-  const [email, setEmail] = useState('admin@inpacta.mg.gov.br')
+  const [email, setEmail] = useState('admin@inpacta.org.br')
   const [password, setPassword] = useState('admin123')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)

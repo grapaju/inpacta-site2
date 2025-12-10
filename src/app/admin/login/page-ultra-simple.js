@@ -74,7 +74,7 @@ export default function AdminLogin() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@inpacta.mg.gov.br"
+              placeholder="admin@inpacta.org.br"
               required
               style={{
                 width: '100%',
@@ -154,7 +154,7 @@ export default function AdminLogin() {
           fontSize: '14px',
           color: '#666'
         }}>
-          <p>📧 admin@inpacta.mg.gov.br</p>
+          <p>📧 admin@inpacta.org.br</p>
           <p>🔑 admin123</p>
         </div>
       </div>

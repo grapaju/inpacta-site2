@@ -71,7 +71,7 @@ export default function AdminLogin() {
               value={credentials.email}
               onChange={(e) => setCredentials(prev => ({ ...prev, email: e.target.value }))}
               className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30"
-              placeholder="admin@inpacta.mg.gov.br"
+              placeholder="admin@inpacta.org.br"
               required
             />
           </div>
@@ -108,7 +108,7 @@ export default function AdminLogin() {
 
         <div className="mt-6 text-center">
           <p className="text-white/50 text-sm">
-            Credenciais padrão: admin@inpacta.mg.gov.br / admin123
+            Credenciais padrão: admin@inpacta.org.br / admin123
           </p>
         </div>
       </div>
