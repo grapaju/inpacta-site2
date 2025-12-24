@@ -3,7 +3,7 @@
 import React from "react"
 import Link from "next/link"
 
-export default function ContactForm() {
+export default function ContactForm({ defaultAssunto = "" }) {
   const [status, setStatus] = React.useState({ loading: false, message: '', type: '' })
 
   const handleSubmit = async (e) => {
@@ -56,8 +56,14 @@ export default function ContactForm() {
 
       <div>
         <label className="block text-sm font-medium text-[var(--primary)] mb-2">Assunto *</label>
-        <select name="assunto" required className="w-full px-4 py-3 rounded-xl border-2 border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] focus:border-[var(--accent)] ring-focus transition-colors">
+        <select
+          name="assunto"
+          required
+          defaultValue={defaultAssunto || ""}
+          className="w-full px-4 py-3 rounded-xl border-2 border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] focus:border-[var(--accent)] ring-focus transition-colors"
+        >
           <option value="">Selecione um assunto</option>
+          <option value="lai">Solicitação de Informação (LAI)</option>
           <option value="parceria">Parceria Institucional</option>
           <option value="consultoria">Consultoria Técnica</option>
           <option value="projeto">Desenvolvimento de Projeto</option>

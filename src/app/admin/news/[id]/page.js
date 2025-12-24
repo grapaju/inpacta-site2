@@ -168,83 +168,71 @@ export default function NewsForm() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando...</p>
+      <div className="admin-page">
+        <div className="admin-loading">
+          <div className="admin-spinner" />
+          <p>Carregando...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <Link href="/admin/news" className="text-blue-600 hover:text-blue-700">
-                ← Voltar às Notícias
-              </Link>
-              <h1 className="text-2xl font-bold text-gray-900">
-                {isEdit ? 'Editar Notícia' : 'Nova Notícia'}
-              </h1>
-            </div>
-          </div>
+    <div className="admin-page">
+      <div className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">{isEdit ? 'Editar Notícia' : 'Nova Notícia'}</h1>
         </div>
-      </header>
+        <Link href="/admin/news" className="admin-btn-secondary">
+          Voltar
+        </Link>
+      </div>
 
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Card Principal */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Informações da Notícia</h2>
-            
-            <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="admin-form">
+        <div className="admin-form-section">
+          <h2>Informações da Notícia</h2>
+
+          <div>
               {/* Título */}
-              <div>
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-                  Título *
+              <div className="admin-form-group">
+                <label htmlFor="title" className="admin-form-label">
+                  Título <span className="admin-required">*</span>
                 </label>
                 <input
                   type="text"
                   id="title"
                   value={news.title}
                   onChange={(e) => handleChange('title', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="admin-form-input"
                   placeholder="Digite o título da notícia"
                   required
                 />
               </div>
 
               {/* Resumo */}
-              <div>
-                <label htmlFor="summary" className="block text-sm font-medium text-gray-700 mb-2">
-                  Resumo *
+              <div className="admin-form-group">
+                <label htmlFor="summary" className="admin-form-label">
+                  Resumo <span className="admin-required">*</span>
                 </label>
                 <textarea
                   id="summary"
                   value={news.summary}
                   onChange={(e) => handleChange('summary', e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="admin-form-input admin-form-textarea"
                   placeholder="Resumo da notícia (será exibido na listagem)"
                   required
                 />
               </div>
 
               {/* Categoria */}
-              <div>
-                <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
-                  Categoria
-                </label>
+              <div className="admin-form-group">
+                <label htmlFor="category" className="admin-form-label">Categoria</label>
                 <select
                   id="category"
                   value={news.category}
                   onChange={(e) => handleChange('category', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="admin-form-input"
                 >
                   <option value="tecnologia">Tecnologia</option>
                   <option value="inovacao">Inovação</option>
@@ -256,15 +244,13 @@ export default function NewsForm() {
               </div>
 
               {/* Tags */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tags
-                </label>
-                <div className="flex gap-2 mb-2">
+              <div className="admin-form-group">
+                <label className="admin-form-label">Tags</label>
+                <div className="admin-inline-row">
                   <input
                     type="text"
                     id="tagInput"
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="admin-form-input"
                     placeholder="Digite uma tag e pressione Enter"
                     onKeyPress={(e) => {
                       if (e.key === 'Enter') {
@@ -276,22 +262,20 @@ export default function NewsForm() {
                   <button
                     type="button"
                     onClick={addTag}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    className="admin-btn-secondary"
                   >
                     Adicionar
                   </button>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="admin-tag-list">
                   {news.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                    >
+                    <span key={index} className="admin-tag">
                       {tag}
                       <button
                         type="button"
                         onClick={() => removeTag(index)}
-                        className="ml-2 text-blue-600 hover:text-blue-800"
+                        className="admin-tag-remove"
+                        aria-label="Remover tag"
                       >
                         ×
                       </button>
@@ -301,134 +285,110 @@ export default function NewsForm() {
               </div>
 
               {/* Conteúdo */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Conteúdo *
+              <div className="admin-form-group">
+                <label className="admin-form-label">
+                  Conteúdo <span className="admin-required">*</span>
                 </label>
                 <RichTextEditor
                   content={news.content}
                   onChange={(content) => handleChange('content', content)}
                   placeholder="Escreva o conteúdo da notícia aqui. Use a barra de ferramentas para formatação."
                 />
-                <p className="text-sm text-gray-500 mt-1">
-                  Use a barra de ferramentas para formatar seu texto com negrito, cores, listas e mais
-                </p>
+                <span className="admin-form-hint">
+                  Use a barra de ferramentas para formatação (negrito, listas, links e outros).
+                </span>
               </div>
             </div>
           </div>
 
           {/* Card Imagem Destacada */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Imagem Destacada</h2>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Imagem Principal da Notícia
-              </label>
+          <div className="admin-form-section">
+            <h2>Imagem Destacada</h2>
+
+            <div className="admin-form-group">
+              <label className="admin-form-label">Imagem Principal da Notícia</label>
               <ImageUpload
                 onImageSelect={handleImageSelect}
                 currentImage={news.featuredImage}
                 category="news"
                 className="w-full"
               />
-              <p className="text-sm text-gray-500 mt-2">
-                Esta imagem será exibida na listagem de notícias e no topo do artigo
-              </p>
+              <span className="admin-form-hint">Esta imagem será exibida na listagem de notícias e no topo do artigo.</span>
             </div>
           </div>
 
           {/* Card SEO */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Otimização SEO</h2>
-            
-            <div className="space-y-6">
+          <div className="admin-form-section">
+            <h2>Otimização SEO</h2>
+
+            <div>
               {/* Meta Title */}
-              <div>
-                <label htmlFor="metaTitle" className="block text-sm font-medium text-gray-700 mb-2">
-                  Meta Título
-                </label>
+              <div className="admin-form-group">
+                <label htmlFor="metaTitle" className="admin-form-label">Meta Título</label>
                 <input
                   type="text"
                   id="metaTitle"
                   value={news.metaTitle}
                   onChange={(e) => handleChange('metaTitle', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="admin-form-input"
                   placeholder="Título para SEO (deixe vazio para usar o título da notícia)"
                 />
               </div>
 
               {/* Meta Description */}
-              <div>
-                <label htmlFor="metaDescription" className="block text-sm font-medium text-gray-700 mb-2">
-                  Meta Descrição
-                </label>
+              <div className="admin-form-group">
+                <label htmlFor="metaDescription" className="admin-form-label">Meta Descrição</label>
                 <textarea
                   id="metaDescription"
                   value={news.metaDescription}
                   onChange={(e) => handleChange('metaDescription', e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="admin-form-input admin-form-textarea"
                   placeholder="Descrição para SEO (deixe vazio para usar o resumo)"
                 />
               </div>
 
               {/* OG Image */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Imagem para Redes Sociais
-                </label>
+              <div className="admin-form-group">
+                <label className="admin-form-label">Imagem para Redes Sociais</label>
                 <ImageUpload
                   onImageSelect={handleSeoImageSelect}
                   currentImage={news.ogImage}
                   category="seo"
                   className="w-full"
                 />
-                <p className="text-sm text-gray-500 mt-2">
-                  Se não definida, será usada a imagem destacada da notícia
-                </p>
+                <span className="admin-form-hint">Se não definida, será usada a imagem destacada da notícia.</span>
               </div>
             </div>
           </div>
 
           {/* Card Status */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Status de Publicação</h2>
-            
-            <div className="flex items-center">
+          <div className="admin-form-section">
+            <h2>Status de Publicação</h2>
+
+            <label className="admin-checkbox-label" htmlFor="published">
               <input
                 type="checkbox"
                 id="published"
                 checked={news.published}
                 onChange={(e) => handleChange('published', e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="admin-checkbox"
               />
-              <label htmlFor="published" className="ml-2 block text-sm text-gray-900">
-                Publicar notícia
-              </label>
-            </div>
-            <p className="text-sm text-gray-500 mt-1">
-              Notícias não publicadas ficam como rascunho e não aparecem no site
-            </p>
+              <span>Publicar notícia</span>
+            </label>
+            <span className="admin-form-hint">Notícias não publicadas ficam como rascunho e não aparecem no site.</span>
           </div>
 
           {/* Botões */}
-          <div className="flex justify-end space-x-4">
-            <Link
-              href="/admin/news"
-              className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-            >
-              Cancelar
-            </Link>
-            <button
-              type="submit"
-              disabled={saving}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 transition-colors"
-            >
-              {saving ? 'Salvando...' : (isEdit ? 'Atualizar' : 'Criar')} Notícia
-            </button>
-          </div>
-        </form>
-      </main>
+        <div className="admin-form-actions">
+          <Link href="/admin/news" className="admin-btn-secondary">
+            Cancelar
+          </Link>
+          <button type="submit" disabled={saving} className="admin-btn-primary">
+            {saving ? 'Salvando...' : (isEdit ? 'Atualizar' : 'Criar')} Notícia
+          </button>
+        </div>
+      </form>
     </div>
   )
 }

@@ -5,14 +5,32 @@ import { prisma } from '@/lib/prisma';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'inpacta-jwt-secret-2024';
 
-async function verifyAuth(request) {
+function verifyToken(request) {
+  // Tentar primeiro Authorization header
   const authHeader = request.headers.get('authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  let token = null;
+  
+  if (authHeader?.startsWith('Bearer ')) {
+    token = authHeader.substring(7);
+  } else {
+    // Fallback para cookies (para navegador simples do VS Code)
+    const cookies = request.headers.get('cookie') || '';
+    const tokenMatch = cookies.match(/adminToken=([^;]+)/);
+    if (tokenMatch) {
+      token = tokenMatch[1];
+    }
+  }
+  
+  if (!token) {
     throw new Error('Token não fornecido');
   }
-
-  const token = authHeader.split(' ')[1];
+  
   const decoded = jwt.verify(token, JWT_SECRET);
+  return decoded;
+}
+
+async function verifyAuth(request) {
+  const decoded = verifyToken(request);
   
   // Buscar usuário para verificar se é admin
   const user = await prisma.user.findUnique({

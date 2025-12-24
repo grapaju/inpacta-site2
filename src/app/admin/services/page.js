@@ -92,220 +92,148 @@ export default function AdminServices() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando serviços...</p>
+      <div className="admin-page">
+        <div className="admin-loading">
+          <div className="admin-spinner" />
+          <p>Carregando serviços...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <Link href="/admin" className="text-blue-600 hover:text-blue-700">
-                ← Voltar ao Dashboard
-              </Link>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Gerenciar Serviços
-              </h1>
-            </div>
-            <Link
-              href="/admin/services/new"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+    <div className="admin-page">
+      <header className="admin-page-header">
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className="admin-btn-secondary"
+              onClick={() => router.push('/admin')}
             >
-              Novo Serviço
-            </Link>
+              ← Voltar ao painel
+            </button>
+            <h1 className="admin-page-title" style={{ fontSize: '1.75rem' }}>Serviços</h1>
           </div>
+          <span className="admin-subtitle">Gestão de serviços publicados no site</span>
         </div>
+        <Link href="/admin/services/new" className="admin-btn-primary">
+          Novo serviço
+        </Link>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Todos os Serviços ({pagination.total || 0})
-            </h2>
-          </div>
-
-          {services.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="text-gray-400 text-6xl mb-4">🔧</div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Nenhum serviço encontrado
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Comece criando seu primeiro serviço
-              </p>
-              <Link
-                href="/admin/services/new"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
-              >
-                Criar Novo Serviço
-              </Link>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Título
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Categoria
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Preço
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Autor
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Data
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Ações
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {services.map((service) => (
-                    <tr key={service.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          {service.title}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {service.summary.substring(0, 100)}...
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {service.category}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          {service.price ? `R$ ${service.price}` : 'Sob consulta'}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {service.priceType}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <button
-                          onClick={() => toggleActive(service.id, service.active)}
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer ${
-                            service.active 
-                              ? 'bg-green-100 text-green-800 hover:bg-green-200' 
-                              : 'bg-red-100 text-red-800 hover:bg-red-200'
-                          }`}
-                        >
-                          {service.active ? 'Ativo' : 'Inativo'}
-                        </button>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {service.author?.name || service.author?.email}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(service.createdAt).toLocaleDateString('pt-BR')}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex justify-end space-x-2">
-                          <Link
-                            href={`/admin/services/${service.id}`}
-                            className="text-indigo-600 hover:text-indigo-900"
-                          >
-                            Editar
-                          </Link>
-                          <Link
-                            href={`/servicos/${service.slug}`}
-                            target="_blank"
-                            className="text-green-600 hover:text-green-900"
-                          >
-                            Ver
-                          </Link>
-                          <button
-                            onClick={() => deleteService(service.id)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            Excluir
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {/* Pagination */}
-          {pagination.pages > 1 && (
-            <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-              <div className="flex-1 flex justify-between sm:hidden">
-                <button
-                  onClick={() => fetchServices(pagination.page - 1)}
-                  disabled={pagination.page === 1}
-                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-                >
-                  Anterior
-                </button>
-                <button
-                  onClick={() => fetchServices(pagination.page + 1)}
-                  disabled={pagination.page === pagination.pages}
-                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-                >
-                  Próximo
-                </button>
-              </div>
-              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm text-gray-700">
-                    Mostrando{' '}
-                    <span className="font-medium">
-                      {(pagination.page - 1) * pagination.limit + 1}
-                    </span>{' '}
-                    a{' '}
-                    <span className="font-medium">
-                      {Math.min(pagination.page * pagination.limit, pagination.total)}
-                    </span>{' '}
-                    de{' '}
-                    <span className="font-medium">{pagination.total}</span> resultados
-                  </p>
-                </div>
-                <div>
-                  <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                    {Array.from({ length: pagination.pages }, (_, i) => i + 1).map((page) => (
-                      <button
-                        key={page}
-                        onClick={() => fetchServices(page)}
-                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                          page === pagination.page
-                            ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
-                            : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    ))}
-                  </nav>
-                </div>
-              </div>
-            </div>
-          )}
+      <div className="admin-card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', alignItems: 'baseline', marginBottom: '1rem', flexWrap: 'wrap' }}>
+          <h2 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600 }}>
+            Todos os serviços ({pagination.total || 0})
+          </h2>
         </div>
-      </main>
+
+        {services.length === 0 ? (
+          <div className="admin-loading" style={{ padding: '2rem 1rem' }}>
+            <p style={{ margin: 0, marginBottom: '0.75rem' }}>Nenhum serviço encontrado.</p>
+            <Link href="/admin/services/new" className="admin-btn-primary">
+              Criar serviço
+            </Link>
+          </div>
+        ) : (
+          <div style={{ overflowX: 'auto' }}>
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Título</th>
+                  <th>Categoria</th>
+                  <th>Preço</th>
+                  <th>Status</th>
+                  <th>Autor</th>
+                  <th>Data</th>
+                  <th className="admin-table-actions">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {services.map((service) => (
+                  <tr key={service.id}>
+                    <td>
+                      <div style={{ fontWeight: 500 }}>{service.title}</div>
+                      <div style={{ color: 'var(--muted-text)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
+                        {(service.summary || '').substring(0, 100)}{(service.summary || '').length > 100 ? '...' : ''}
+                      </div>
+                    </td>
+                    <td>
+                      <span className="admin-badge admin-badge-info">{service.category}</span>
+                    </td>
+                    <td>
+                      <div>{service.price ? `R$ ${service.price}` : 'Sob consulta'}</div>
+                      <div style={{ color: 'var(--muted-text)', fontSize: '0.875rem' }}>{service.priceType}</div>
+                    </td>
+                    <td>
+                      <button
+                        type="button"
+                        className={service.active ? 'admin-badge admin-badge-published' : 'admin-badge admin-badge-archived'}
+                        onClick={() => toggleActive(service.id, service.active)}
+                        title="Alterar status"
+                      >
+                        {service.active ? 'Ativo' : 'Inativo'}
+                      </button>
+                    </td>
+                    <td>{service.author?.name || service.author?.email}</td>
+                    <td>{new Date(service.createdAt).toLocaleDateString('pt-BR')}</td>
+                    <td className="admin-table-actions">
+                      <Link
+                        href={`/admin/services/${service.id}`}
+                        className="admin-btn-icon"
+                        title="Editar"
+                      >
+                        Editar
+                      </Link>
+                      <Link
+                        href={`/servicos/${service.slug}`}
+                        target="_blank"
+                        className="admin-btn-icon"
+                        title="Abrir no site"
+                      >
+                        Ver
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => deleteService(service.id)}
+                        className="admin-btn-icon admin-btn-danger"
+                        title="Excluir"
+                      >
+                        Excluir
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {pagination.pages > 1 && (
+          <div className="admin-pagination">
+            <button
+              type="button"
+              className="admin-btn-secondary"
+              onClick={() => fetchServices(pagination.page - 1)}
+              disabled={pagination.page === 1}
+            >
+              ← Anterior
+            </button>
+            <div className="admin-pagination-info">
+              Página <strong>{pagination.page}</strong> de <strong>{pagination.pages}</strong>
+            </div>
+            <button
+              type="button"
+              className="admin-btn-secondary"
+              onClick={() => fetchServices(pagination.page + 1)}
+              disabled={pagination.page === pagination.pages}
+            >
+              Próxima →
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

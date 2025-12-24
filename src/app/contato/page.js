@@ -7,7 +7,11 @@ export const metadata = {
   description: "Entre em contato conosco para parcerias, projetos ou dúvidas. Estamos prontos para colaborar na transformação digital do setor público."
 };
 
-export default function Page() {
+export default function Page({ searchParams }) {
+  const assunto = typeof searchParams?.assunto === 'string' ? searchParams.assunto : '';
+  const defaultAssunto = ['parceria', 'consultoria', 'projeto', 'suporte', 'imprensa', 'outros', 'lai'].includes(assunto)
+    ? assunto
+    : '';
   return (
     <div>
       {/* Hero */}
@@ -194,8 +198,8 @@ export default function Page() {
           </ScrollReveal>
 
           <ScrollReveal animation="fadeLeft">
-            <div className="bg-[var(--card)] p-8 rounded-2xl border-2 border-[var(--border)]">
-              <ContactForm />
+            <div id="formulario" className="bg-[var(--card)] p-8 rounded-2xl border-2 border-[var(--border)]">
+              <ContactForm defaultAssunto={defaultAssunto} />
             </div>
           </ScrollReveal>
         </div>

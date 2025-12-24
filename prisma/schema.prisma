@@ -19,10 +19,14 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relacionamentos
+  // Relacionamentos existentes
   news      News[]
   services  Service[]
   projects  Project[]
+
+  // Documentos públicos (centralizado)
+  versoesDocumentoCriadas VersaoDocumento[] @relation("VersaoDocumentoCriadaPor")
+  biddingMovements  BiddingMovement[]
 
   @@map("users")
 }
@@ -166,9 +170,10 @@ model Media {
 }
 
 enum Role {
-  ADMIN
-  EDITOR
-  AUTHOR
+  ADMIN      // Controle total
+  EDITOR     // Pode criar e publicar
+  AUTHOR     // Pode criar apenas
+  APPROVER   // Pode aprovar documentos
 }
 
 model ContactSubmission {
@@ -184,3 +189,205 @@ model ContactSubmission {
   @@index([ip, createdAt])
   @@map("contact_submissions")
 }
+
+// ============================================================================
+// SISTEMA CENTRALIZADO DE DOCUMENTOS PÚBLICOS
+// ============================================================================
+
+enum CategoriaMacroDocumento {
+  RELATORIOS_FINANCEIROS
+  RELATORIOS_GESTAO
+  DOCUMENTOS_OFICIAIS
+  LICITACOES_E_REGULAMENTOS
+}
+
+enum DocumentoStatusPublicacao {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum DocumentoApareceEm {
+  TRANSPARENCIA
+  LICITACOES
+}
+
+model Documento {
+  id             String                    @id @default(uuid()) @db.Uuid
+  titulo         String
+  slug           String                    @unique
+
+  categoriaMacro CategoriaMacroDocumento   @map("categoria_macro")
+  subcategoria   String
+
+  // Classificação específica por área (opcional)
+  // Permite que o mesmo documento apareça em Licitações com outra categoria/subcategoria
+  categoriaMacroLicitacoes CategoriaMacroDocumento? @map("categoria_macro_licitacoes")
+  subcategoriaLicitacoes   String?                  @map("subcategoria_licitacoes")
+
+  descricaoCurta String                    @db.Text @map("descricao_curta")
+  orgaoEmissor   String                    @map("orgao_emissor")
+
+  apareceEm      DocumentoApareceEm[]      @map("aparece_em")
+  status         DocumentoStatusPublicacao @default(DRAFT)
+  ordemExibicao  Int                       @default(0) @map("ordem_exibicao")
+
+  versaoVigenteId String?                  @unique @db.Uuid @map("versao_vigente_id")
+  versaoVigente   VersaoDocumento?         @relation("VersaoVigente", fields: [versaoVigenteId], references: [id])
+
+  versoes        VersaoDocumento[]
+
+  createdAt      DateTime                  @default(now()) @map("created_at")
+  updatedAt      DateTime                  @updatedAt @map("updated_at")
+
+  @@index([categoriaMacro, status, ordemExibicao])
+  @@index([status, updatedAt])
+  @@map("documentos")
+}
+
+model VersaoDocumento {
+  id                 String    @id @default(uuid()) @db.Uuid
+  documentoId        String    @db.Uuid @map("documento_id")
+  documento          Documento @relation(fields: [documentoId], references: [id], onDelete: Cascade)
+
+  numeroIdentificacao String   @map("numero_identificacao")
+  versao              Int
+  dataAprovacao       DateTime @map("data_aprovacao")
+  descricaoAlteracao  String?  @db.Text @map("descricao_alteracao")
+
+  arquivoPdf          String   @map("arquivo_pdf")
+  fileSize            Int      @map("file_size")
+
+  // Impede upload duplicado do mesmo PDF no sistema
+  fileHash            String   @unique @map("file_hash")
+
+  isVigente           Boolean  @default(false) @map("is_vigente")
+
+  createdAt           DateTime @default(now()) @map("created_at")
+  createdById         String   @map("created_by")
+  createdBy           User     @relation("VersaoDocumentoCriadaPor", fields: [createdById], references: [id])
+
+  vigentePara         Documento? @relation("VersaoVigente")
+
+  @@unique([documentoId, versao])
+  @@index([documentoId, isVigente])
+  @@index([dataAprovacao])
+  @@map("versoes_documento")
+}
+
+// Licitação (processo)
+model Bidding {
+  id              String          @id @default(cuid())
+  
+  // Identificação
+  number          String          @unique      // "001/2024"
+  title           String
+  object          String          @db.Text     // Objeto detalhado (NOVO campo separado)
+  description     String          @db.Text     // Descrição adicional
+  
+  // Classificação
+  modality        BiddingModality              // Pregão, Concorrência...
+  type            BiddingType                  // Menor preço, Melhor técnica...
+  
+  // Status do processo
+  status          BiddingStatus
+  
+  // Campos adicionais (NOVO)
+  legalBasis      String?         @db.Text     // Base legal
+  srp             Boolean         @default(false) // Sistema de Registro de Preços
+  
+  // Datas importantes
+  publicationDate DateTime
+  openingDate     DateTime?
+  closingDate     DateTime?
+  
+  // Valores
+  estimatedValue  Decimal?        @db.Decimal(15, 2)
+  finalValue      Decimal?        @db.Decimal(15, 2)
+  
+  // Histórico de movimentações (NOVO)
+  movements       BiddingMovement[]
+  
+  // Resultado
+  winner          String?
+  winnerDocument  String?                      // CNPJ/CPF
+  
+  // Observações
+  notes           String?         @db.Text
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  @@index([status, openingDate])
+  @@index([number])
+  @@map("biddings")
+}
+
+// Histórico de movimentações da licitação (NOVO)
+model BiddingMovement {
+  id          String       @id @default(cuid())
+  
+  bidding     Bidding      @relation(fields: [biddingId], references: [id], onDelete: Cascade)
+  biddingId   String
+  
+  phase       BiddingPhase
+  description String       @db.Text
+  date        DateTime     @default(now())
+  
+  // Auditoria
+  createdBy   User         @relation(fields: [createdById], references: [id])
+  createdById String
+  createdAt   DateTime     @default(now())
+  
+  @@index([biddingId, date])
+  @@map("bidding_movements")
+}
+
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+
+enum BiddingPhase {
+  ABERTURA        // Edital, anexos, termo de referência
+  QUESTIONAMENTOS // Esclarecimentos, impugnações, respostas
+  JULGAMENTO      // Atas de sessão, propostas, habilitação
+  RECURSO         // Recursos e contra-razões
+  HOMOLOGACAO     // Termo de homologação, adjudicação
+  CONTRATACAO     // Contrato final, ordem de serviço
+  EXECUCAO        // Aditivos, medições, fiscalização
+  ENCERRAMENTO    // Termo de recebimento, avaliação
+}
+
+
+enum BiddingModality {
+  PREGAO_ELETRONICO
+  PREGAO_PRESENCIAL
+  CONCORRENCIA
+  TOMADA_PRECOS
+  CONVITE
+  DISPENSA
+  INEXIGIBILIDADE
+}
+
+enum BiddingType {
+  MENOR_PRECO
+  MELHOR_TECNICA
+  TECNICA_PRECO
+}
+
+enum BiddingStatus {
+  PLANEJAMENTO     // Planejamento
+  PUBLICADO        // Aviso publicado
+  EM_ANDAMENTO     // Em andamento
+  SUSPENSA         // Suspensa temporariamente
+  HOMOLOGADO       // Homologado
+  ADJUDICADO       // Adjudicado
+  REVOGADO         // Revogado
+  ANULADO          // Anulado
+  DESERTO          // Deserto
+  FRACASSADO       // Fracassado
+  CONCLUIDA        // Concluída
+}
+

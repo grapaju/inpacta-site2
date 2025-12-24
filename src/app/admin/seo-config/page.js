@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { ScrollReveal } from '@/hooks/useScrollAnimations';
 
 export default function SEOConfigPage() {
   const router = useRouter();
@@ -105,275 +103,192 @@ export default function SEOConfigPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando...</p>
+      <div className="admin-page">
+        <div className="admin-loading">
+          <div className="admin-spinner" />
+          <p>Carregando...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-      {/* Header */}
-      <header className="bg-white/70 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link href="/admin" className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                INPACTA Admin
-              </Link>
-              <span className="ml-4 text-gray-400">|</span>
-              <span className="ml-4 text-gray-600">Configurações de SEO</span>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-700">Olá, {user?.username}</span>
-              <button
-                onClick={handleLogout}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                Sair
-              </button>
-            </div>
-          </div>
+    <div className="admin-page">
+      <header className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">Configurações de SEO</h1>
+          <span className="admin-subtitle">Metadados, integrações e SEO técnico</span>
         </div>
+        <button type="button" className="admin-btn-secondary" onClick={handleLogout}>
+          Sair
+        </button>
       </header>
 
-      {/* Navigation */}
-      <nav className="bg-white/50 backdrop-blur-sm border-b border-gray-200/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8 h-12 items-center">
-            <Link href="/admin" className="text-gray-600 hover:text-blue-600 transition-colors">
-              Dashboard
-            </Link>
-            <Link href="/admin/news" className="text-gray-600 hover:text-blue-600 transition-colors">
-              Notícias
-            </Link>
-            <Link href="/admin/seo" className="text-gray-600 hover:text-blue-600 transition-colors">
-              SEO & Analytics
-            </Link>
-            <Link href="/admin/seo-config" className="text-blue-600 font-medium border-b-2 border-blue-600">
-              Configurações SEO
-            </Link>
-          </div>
+      {message && (
+        <div className={`admin-notice ${message.toLowerCase().includes('sucesso') ? 'admin-notice-success' : 'admin-notice-error'}`}>
+          {message}
         </div>
-      </nav>
+      )}
 
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <ScrollReveal>
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-8">
-              Configurações de SEO
-            </h1>
-
-            {message && (
-              <div className={`mb-6 p-4 rounded-lg ${
-                message.includes('sucesso') 
-                  ? 'bg-green-100 text-green-700 border border-green-300' 
-                  : 'bg-red-100 text-red-700 border border-red-300'
-              }`}>
-                {message}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Google Services */}
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Google Services</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Google Analytics ID
-                    </label>
-                    <input
-                      type="text"
-                      value={settings.google_analytics_id}
-                      onChange={(e) => setSettings({...settings, google_analytics_id: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="G-XXXXXXXXXX"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Google Search Console ID
-                    </label>
-                    <input
-                      type="text"
-                      value={settings.google_search_console_id}
-                      onChange={(e) => setSettings({...settings, google_search_console_id: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="google-site-verification=..."
-                    />
-                  </div>
-                </div>
+      <div className="admin-card">
+        <form onSubmit={handleSubmit} className="admin-form admin-form-flush">
+          <div className="admin-form-section admin-form-section-pad admin-form-section-compact">
+            <h2>Google Services</h2>
+            <div className="admin-form-row">
+              <div className="admin-form-group admin-form-group-compact">
+                <label className="admin-form-label">Google Analytics ID</label>
+                <input
+                  type="text"
+                  value={settings.google_analytics_id}
+                  onChange={(e) => setSettings({ ...settings, google_analytics_id: e.target.value })}
+                  className="admin-form-input"
+                  placeholder="G-XXXXXXXXXX"
+                />
               </div>
 
-              {/* Meta Tags */}
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Meta Tags</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Título da Página (Meta Title)
-                    </label>
-                    <input
-                      type="text"
-                      value={settings.meta_title}
-                      onChange={(e) => setSettings({...settings, meta_title: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="INPACTA - Instituto de Pesquisa e Análise"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Descrição (Meta Description)
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={settings.meta_description}
-                      onChange={(e) => setSettings({...settings, meta_description: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Descrição do site para motores de busca..."
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Palavras-chave (Meta Keywords)
-                    </label>
-                    <input
-                      type="text"
-                      value={settings.meta_keywords}
-                      onChange={(e) => setSettings({...settings, meta_keywords: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="inpacta, pesquisa, análise, dados..."
-                    />
-                  </div>
-                </div>
+              <div className="admin-form-group admin-form-group-compact">
+                <label className="admin-form-label">Google Search Console ID</label>
+                <input
+                  type="text"
+                  value={settings.google_search_console_id}
+                  onChange={(e) => setSettings({ ...settings, google_search_console_id: e.target.value })}
+                  className="admin-form-input"
+                  placeholder="google-site-verification=..."
+                />
               </div>
-
-              {/* Open Graph */}
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Open Graph (Facebook)</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      OG Title
-                    </label>
-                    <input
-                      type="text"
-                      value={settings.og_title}
-                      onChange={(e) => setSettings({...settings, og_title: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Título para compartilhamento no Facebook"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      OG Description
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={settings.og_description}
-                      onChange={(e) => setSettings({...settings, og_description: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Descrição para compartilhamento no Facebook..."
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      OG Image URL
-                    </label>
-                    <input
-                      type="text"
-                      value={settings.og_image}
-                      onChange={(e) => setSettings({...settings, og_image: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="/logo.png"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Twitter Cards */}
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Twitter Cards</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Twitter Card Type
-                    </label>
-                    <select
-                      value={settings.twitter_card}
-                      onChange={(e) => setSettings({...settings, twitter_card: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="summary">Summary</option>
-                      <option value="summary_large_image">Summary Large Image</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Twitter Site (@username)
-                    </label>
-                    <input
-                      type="text"
-                      value={settings.twitter_site}
-                      onChange={(e) => setSettings({...settings, twitter_site: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="@inpacta"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Technical SEO */}
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">SEO Técnico</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Robots.txt
-                    </label>
-                    <textarea
-                      rows={4}
-                      value={settings.robots_txt}
-                      onChange={(e) => setSettings({...settings, robots_txt: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="User-agent: *&#10;Allow: /"
-                    />
-                  </div>
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id="sitemap_enabled"
-                      checked={settings.sitemap_enabled}
-                      onChange={(e) => setSettings({...settings, sitemap_enabled: e.target.checked})}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    />
-                    <label htmlFor="sitemap_enabled" className="ml-2 text-sm text-gray-700">
-                      Gerar sitemap.xml automaticamente
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              {/* Submit Button */}
-              <div className="flex justify-end pt-6">
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium px-8 py-3 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {saving ? 'Salvando...' : 'Salvar Configurações'}
-                </button>
-              </div>
-            </form>
+            </div>
           </div>
-        </ScrollReveal>
-      </main>
+
+          <div className="admin-form-section admin-form-section-pad admin-form-section-compact">
+            <h2>Meta Tags</h2>
+            <div className="admin-form-group">
+              <label className="admin-form-label">Título da página (Meta Title)</label>
+              <input
+                type="text"
+                value={settings.meta_title}
+                onChange={(e) => setSettings({ ...settings, meta_title: e.target.value })}
+                className="admin-form-input"
+                placeholder="INPACTA - Instituto de Pesquisa e Análise"
+              />
+            </div>
+            <div className="admin-form-group">
+              <label className="admin-form-label">Descrição (Meta Description)</label>
+              <textarea
+                rows={3}
+                value={settings.meta_description}
+                onChange={(e) => setSettings({ ...settings, meta_description: e.target.value })}
+                className="admin-form-input admin-form-textarea"
+                placeholder="Descrição do site para motores de busca..."
+              />
+            </div>
+            <div className="admin-form-group admin-form-group-compact">
+              <label className="admin-form-label">Palavras-chave (Meta Keywords)</label>
+              <input
+                type="text"
+                value={settings.meta_keywords}
+                onChange={(e) => setSettings({ ...settings, meta_keywords: e.target.value })}
+                className="admin-form-input"
+                placeholder="inpacta, pesquisa, análise, dados..."
+              />
+            </div>
+          </div>
+
+          <div className="admin-form-section admin-form-section-pad admin-form-section-compact">
+            <h2>Open Graph</h2>
+            <div className="admin-form-group">
+              <label className="admin-form-label">OG Title</label>
+              <input
+                type="text"
+                value={settings.og_title}
+                onChange={(e) => setSettings({ ...settings, og_title: e.target.value })}
+                className="admin-form-input"
+                placeholder="Título para compartilhamento"
+              />
+            </div>
+            <div className="admin-form-group">
+              <label className="admin-form-label">OG Description</label>
+              <textarea
+                rows={3}
+                value={settings.og_description}
+                onChange={(e) => setSettings({ ...settings, og_description: e.target.value })}
+                className="admin-form-input admin-form-textarea"
+                placeholder="Descrição para compartilhamento..."
+              />
+            </div>
+            <div className="admin-form-group admin-form-group-compact">
+              <label className="admin-form-label">OG Image URL</label>
+              <input
+                type="text"
+                value={settings.og_image}
+                onChange={(e) => setSettings({ ...settings, og_image: e.target.value })}
+                className="admin-form-input"
+                placeholder="/logo.png"
+              />
+            </div>
+          </div>
+
+          <div className="admin-form-section admin-form-section-pad admin-form-section-compact">
+            <h2>Twitter Cards</h2>
+            <div className="admin-form-row">
+              <div className="admin-form-group admin-form-group-compact">
+                <label className="admin-form-label">Tipo de card</label>
+                <select
+                  value={settings.twitter_card}
+                  onChange={(e) => setSettings({ ...settings, twitter_card: e.target.value })}
+                  className="admin-form-input"
+                >
+                  <option value="summary">Summary</option>
+                  <option value="summary_large_image">Summary Large Image</option>
+                </select>
+              </div>
+
+              <div className="admin-form-group admin-form-group-compact">
+                <label className="admin-form-label">Twitter Site (@usuário)</label>
+                <input
+                  type="text"
+                  value={settings.twitter_site}
+                  onChange={(e) => setSettings({ ...settings, twitter_site: e.target.value })}
+                  className="admin-form-input"
+                  placeholder="@inpacta"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="admin-form-section admin-form-section-pad admin-form-section-compact admin-form-section-borderless">
+            <h2>SEO Técnico</h2>
+            <div className="admin-form-group">
+              <label className="admin-form-label">Robots.txt</label>
+              <textarea
+                rows={4}
+                value={settings.robots_txt}
+                onChange={(e) => setSettings({ ...settings, robots_txt: e.target.value })}
+                className="admin-form-input admin-form-textarea"
+                placeholder="User-agent: *\nAllow: /"
+              />
+            </div>
+
+            <div className="admin-form-group admin-form-group-compact">
+              <label className="admin-checkbox-label" htmlFor="sitemap_enabled">
+                <input
+                  type="checkbox"
+                  id="sitemap_enabled"
+                  checked={settings.sitemap_enabled}
+                  onChange={(e) => setSettings({ ...settings, sitemap_enabled: e.target.checked })}
+                  className="admin-checkbox"
+                />
+                Gerar sitemap.xml automaticamente
+              </label>
+            </div>
+          </div>
+
+          <div className="admin-form-actions admin-form-actions-flush">
+            <button type="submit" className="admin-btn-primary" disabled={saving}>
+              {saving ? 'Salvando...' : 'Salvar configurações'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

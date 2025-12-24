@@ -17,6 +17,12 @@
 /.next/
 /out/
 
+# uploads/runtime
+/public/uploads/
+
+# screenshots locais
+/public/FireShot Capture *.png
+
 # production
 /build
 

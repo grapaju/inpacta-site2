@@ -88,6 +88,11 @@ export default function DesktopMenu() {
       label: "Licitação",
       submenu: [
         {
+          href: "/licitacao/editais",
+          label: "Editais",
+          description: "Editais e processos licitatórios"
+        },
+        {
           href: "/licitacao/regulamento",
           label: "Regulamento de Licitações e Contratos",
           description: "Diretrizes, procedimentos e compliance"

@@ -86,7 +86,7 @@ export async function GET(request) {
         createdAt: item.createdAt,
         updatedAt: item.updatedAt,
         action: item.createdAt.getTime() === item.updatedAt.getTime() ? 'criou' : 'atualizou',
-        icon: '📰',
+        icon: '',
         link: `/admin/news/${item.id}`
       })),
       ...recentServices.map(item => ({
@@ -99,7 +99,7 @@ export async function GET(request) {
         createdAt: item.createdAt,
         updatedAt: item.updatedAt,
         action: item.createdAt.getTime() === item.updatedAt.getTime() ? 'criou' : 'atualizou',
-        icon: '🔧',
+        icon: '',
         link: `/admin/services/${item.id}`
       })),
       ...recentProjects.map(item => ({
@@ -112,7 +112,7 @@ export async function GET(request) {
         createdAt: item.createdAt,
         updatedAt: item.updatedAt,
         action: item.createdAt.getTime() === item.updatedAt.getTime() ? 'criou' : 'atualizou',
-        icon: '🚀',
+        icon: '',
         link: `/admin/projects/${item.id}`
       }))
     ]

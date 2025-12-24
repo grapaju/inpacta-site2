@@ -10,6 +10,7 @@
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "node scripts/setup-production.js",
+    "db:seed:documents": "node prisma/seed.js",
     "deploy": "node scripts/deploy.js",
     "deploy:fast": "npm run build",
     "deploy:aapanel": "npm run db:migrate && npm run build",

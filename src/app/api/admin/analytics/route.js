@@ -3,21 +3,35 @@ import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'inpacta-jwt-secret-2024';
 
+function verifyToken(request) {
+  // Tentar primeiro Authorization header
+  const authHeader = request.headers.get('authorization');
+  let token = null;
+  
+  if (authHeader?.startsWith('Bearer ')) {
+    token = authHeader.substring(7);
+  } else {
+    // Fallback para cookies (para navegador simples do VS Code)
+    const cookies = request.headers.get('cookie') || '';
+    const tokenMatch = cookies.match(/adminToken=([^;]+)/);
+    if (tokenMatch) {
+      token = tokenMatch[1];
+    }
+  }
+  
+  if (!token) {
+    throw new Error('Token não fornecido');
+  }
+  
+  const decoded = jwt.verify(token, JWT_SECRET);
+  return decoded;
+}
+
 export async function GET(request) {
   try {
     // Verificar token JWT
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'Token não fornecido' }, { status: 401 });
-    }
+    const decoded = verifyToken(request);
 
-    const token = authHeader.split(' ')[1];
-    
-    try {
-      jwt.verify(token, JWT_SECRET);
-    } catch (error) {
-      return NextResponse.json({ error: 'Token inválido' }, { status: 401 });
-    }
 
     const { searchParams } = new URL(request.url);
     const dateRange = searchParams.get('dateRange') || '7d';

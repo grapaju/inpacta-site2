@@ -2,23 +2,37 @@ import { NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
 
+function verifyToken(request) {
+  // Tentar primeiro Authorization header
+  const authHeader = request.headers.get('authorization');
+  let token = null;
+  
+  if (authHeader?.startsWith('Bearer ')) {
+    token = authHeader.substring(7);
+  } else {
+    // Fallback para cookies (para navegador simples do VS Code)
+    const cookies = request.headers.get('cookie') || '';
+    const tokenMatch = cookies.match(/adminToken=([^;]+)/);
+    if (tokenMatch) {
+      token = tokenMatch[1];
+    }
+  }
+  
+  if (!token) {
+    throw new Error('Token não fornecido');
+  }
+  
+  const decoded = jwt.verify(token, process.env.JWT_SECRET || 'inpacta-jwt-secret-2024');
+  return decoded;
+}
+
 // GET - Buscar notícia por ID
 export async function GET(request, { params }) {
   try {
     const resolvedParams = await params;
     
     // Verificar token JWT
-    const token = request.headers.get('authorization')?.replace('Bearer ', '')
-    
-    if (!token) {
-      return NextResponse.json({ error: 'Token não fornecido' }, { status: 401 })
-    }
-
-    try {
-      jwt.verify(token, process.env.JWT_SECRET || 'inpacta-jwt-secret-2024')
-    } catch (error) {
-      return NextResponse.json({ error: 'Token inválido' }, { status: 401 })
-    }
+    const decoded = verifyToken(request);
 
     const news = await prisma.news.findUnique({
       where: { id: resolvedParams.id },
@@ -51,19 +65,8 @@ export async function PUT(request, { params }) {
     const resolvedParams = await params;
     
     // Verificar token JWT
-    const token = request.headers.get('authorization')?.replace('Bearer ', '')
-    
-    if (!token) {
-      return NextResponse.json({ error: 'Token não fornecido' }, { status: 401 })
-    }
-
-    let userId
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'inpacta-jwt-secret-2024')
-      userId = decoded.userId
-    } catch (error) {
-      return NextResponse.json({ error: 'Token inválido' }, { status: 401 })
-    }
+    const decoded = verifyToken(request);
+    const userId = decoded.userId;
 
     const body = await request.json()
     const { title, summary, content, category, tags, published, featuredImage, metaTitle, metaDescription, ogImage } = body
@@ -152,17 +155,7 @@ export async function DELETE(request, { params }) {
     const resolvedParams = await params;
     
     // Verificar token JWT
-    const token = request.headers.get('authorization')?.replace('Bearer ', '')
-    
-    if (!token) {
-      return NextResponse.json({ error: 'Token não fornecido' }, { status: 401 })
-    }
-
-    try {
-      jwt.verify(token, process.env.JWT_SECRET || 'inpacta-jwt-secret-2024')
-    } catch (error) {
-      return NextResponse.json({ error: 'Token inválido' }, { status: 401 })
-    }
+    const decoded = verifyToken(request);
 
     // Verificar se a notícia existe
     const existingNews = await prisma.news.findUnique({

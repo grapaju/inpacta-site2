@@ -28,22 +28,69 @@ Abra http://localhost:3000
 - Cookie banner sem coleta prévia; registra preferências em `localStorage`
 - Páginas dedicadas: `lgpd` e `acessibilidade`
 
-### Deploy
+### Deploy e Infraestrutura
 
-- Build: `npm run build`
-- Produção na VPS (aaPanel): veja `DEPLOY.md` para passos e CI/CD via GitHub Actions.
+#### 🚀 Início Rápido
+Para configurar o banco de dados no aaPanel e fazer deploy:
+```bash
+# Guia rápido (30 min)
+cat QUICKSTART-AAPANEL.md
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# Build e deploy
+npm run deploy:aapanel
+```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+#### 📚 Documentação Completa
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to optimize and load fonts.
+**Configuração do Servidor:**
+- **[QUICKSTART-AAPANEL.md](./QUICKSTART-AAPANEL.md)** - Guia rápido de 30 minutos
+- **[AAPANEL-DATABASE-SETUP.md](./AAPANEL-DATABASE-SETUP.md)** - Instalação detalhada do PostgreSQL
+- **[AAPANEL-CONFIG.md](./AAPANEL-CONFIG.md)** - Configurações do aaPanel, Nginx e otimizações
+- **[DEPLOY.md](./DEPLOY.md)** - Processo de deploy e CI/CD
+
+**Banco de Dados:**
+- **PostgreSQL** local no aaPanel (recomendado para produção)
+- Scripts de migração do Neon: `scripts/migrate-from-neon.js`
+- Backup automático: `scripts/backup.sh`
+- Restauração: `scripts/restore.sh`
+
+**Painel Administrativo:**
+- **[ADMIN-IMPROVEMENTS.md](./ADMIN-IMPROVEMENTS.md)** - Roadmap de melhorias
+- Sistema de autenticação com NextAuth
+- Editor TipTap para conteúdo rico
+- Gerenciamento de notícias, serviços e projetos
+
+#### 📦 Comandos Úteis
+
+```bash
+# Desenvolvimento
+npm run dev              # Servidor de desenvolvimento
+
+# Banco de Dados
+npm run db:migrate       # Executar migrações
+npm run db:seed          # Criar usuário admin
+
+# Deploy
+npm run deploy:aapanel   # Migrações + Build
+npm run deploy:fast      # Apenas build
+npm run deploy:ci        # Instalação limpa + deploy
+
+# Build
+npm run build            # Build de produção
+npm run start            # Iniciar em produção
+```
+
+#### 🔐 Acesso Administrativo
+
+Após configurar o banco e executar `npm run db:seed`:
+- URL: `https://inpacta.org.br/admin/login`
+- Credenciais: Consulte `scripts/setup-production.js`
+
+---
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [Next.js Documentation](https://nextjs.org/docs) - Next.js features and API
+- [aaPanel Documentation](https://doc.aapanel.com/) - Server management
+- [PostgreSQL Docs](https://www.postgresql.org/docs/) - Database documentation
+- [Prisma Docs](https://www.prisma.io/docs) - ORM and migrations

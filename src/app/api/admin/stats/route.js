@@ -4,13 +4,24 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(request) {
   try {
-    // Verificar token de autenticação
-    const authHeader = request.headers.get('authorization')
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'Token de acesso requerido' }, { status: 401 })
+    // Verificar token de autenticação - usando cookies como fallback
+    let token = null;
+    const authHeader = request.headers.get('authorization');
+    
+    if (authHeader?.startsWith('Bearer ')) {
+      token = authHeader.split(' ')[1];
+    } else {
+      // Fallback para cookies (para navegador simples do VS Code)
+      const cookies = request.headers.get('cookie') || '';
+      const tokenMatch = cookies.match(/adminToken=([^;]+)/);
+      if (tokenMatch) {
+        token = tokenMatch[1];
+      }
     }
-
-    const token = authHeader.split(' ')[1]
+    
+    if (!token) {
+      return NextResponse.json({ error: 'Token de acesso requerido' }, { status: 401 });
+    }
     
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'inpacta-jwt-secret-2024')

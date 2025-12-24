@@ -166,83 +166,71 @@ export default function ServiceForm() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando...</p>
+      <div className="admin-page">
+        <div className="admin-loading">
+          <div className="admin-spinner" />
+          <p>Carregando...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <Link href="/admin/services" className="text-blue-600 hover:text-blue-700">
-                ← Voltar aos Serviços
-              </Link>
-              <h1 className="text-2xl font-bold text-gray-900">
-                {isEdit ? 'Editar Serviço' : 'Novo Serviço'}
-              </h1>
-            </div>
-          </div>
+    <div className="admin-page">
+      <div className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">{isEdit ? 'Editar Serviço' : 'Novo Serviço'}</h1>
         </div>
-      </header>
+        <Link href="/admin/services" className="admin-btn-secondary">
+          Voltar
+        </Link>
+      </div>
 
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Card Principal */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Informações do Serviço</h2>
-            
-            <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="admin-form">
+        <div className="admin-form-section">
+          <h2>Informações do Serviço</h2>
+
+          <div>
               {/* Título */}
-              <div>
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-                  Título *
+              <div className="admin-form-group">
+                <label htmlFor="title" className="admin-form-label">
+                  Título <span className="admin-required">*</span>
                 </label>
                 <input
                   type="text"
                   id="title"
                   value={service.title}
                   onChange={(e) => handleChange('title', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="admin-form-input"
                   placeholder="Digite o título do serviço"
                   required
                 />
               </div>
 
               {/* Resumo */}
-              <div>
-                <label htmlFor="summary" className="block text-sm font-medium text-gray-700 mb-2">
-                  Resumo *
+              <div className="admin-form-group">
+                <label htmlFor="summary" className="admin-form-label">
+                  Resumo <span className="admin-required">*</span>
                 </label>
                 <textarea
                   id="summary"
                   value={service.summary}
                   onChange={(e) => handleChange('summary', e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="admin-form-input admin-form-textarea"
                   placeholder="Resumo do serviço (será exibido na listagem)"
                   required
                 />
               </div>
 
               {/* Categoria */}
-              <div>
-                <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
-                  Categoria
-                </label>
+              <div className="admin-form-group">
+                <label htmlFor="category" className="admin-form-label">Categoria</label>
                 <select
                   id="category"
                   value={service.category}
                   onChange={(e) => handleChange('category', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="admin-form-input"
                 >
                   <option value="consultoria">Consultoria</option>
                   <option value="desenvolvimento">Desenvolvimento</option>
@@ -254,30 +242,26 @@ export default function ServiceForm() {
               </div>
 
               {/* Preço e Tipo */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
-                    Preço (R$)
-                  </label>
+              <div className="admin-form-row">
+                <div className="admin-form-group">
+                  <label htmlFor="price" className="admin-form-label">Preço (R$)</label>
                   <input
                     type="number"
                     step="0.01"
                     id="price"
                     value={service.price}
                     onChange={(e) => handleChange('price', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="admin-form-input"
                     placeholder="0.00"
                   />
                 </div>
-                <div>
-                  <label htmlFor="priceType" className="block text-sm font-medium text-gray-700 mb-2">
-                    Tipo de Preço
-                  </label>
+                <div className="admin-form-group">
+                  <label htmlFor="priceType" className="admin-form-label">Tipo de Preço</label>
                   <select
                     id="priceType"
                     value={service.priceType}
                     onChange={(e) => handleChange('priceType', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="admin-form-input"
                   >
                     <option value="custom">Sob consulta</option>
                     <option value="fixed">Preço fixo</option>
@@ -289,30 +273,26 @@ export default function ServiceForm() {
               </div>
 
               {/* Duração */}
-              <div>
-                <label htmlFor="duration" className="block text-sm font-medium text-gray-700 mb-2">
-                  Duração Estimada
-                </label>
+              <div className="admin-form-group">
+                <label htmlFor="duration" className="admin-form-label">Duração Estimada</label>
                 <input
                   type="text"
                   id="duration"
                   value={service.duration}
                   onChange={(e) => handleChange('duration', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="admin-form-input"
                   placeholder="Ex: 2-4 semanas, 3 meses, etc."
                 />
               </div>
 
               {/* Características */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Características do Serviço
-                </label>
-                <div className="flex gap-2 mb-2">
+              <div className="admin-form-group">
+                <label className="admin-form-label">Características do Serviço</label>
+                <div className="admin-inline-row">
                   <input
                     type="text"
                     id="featureInput"
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="admin-form-input"
                     placeholder="Digite uma característica e pressione Enter"
                     onKeyPress={(e) => {
                       if (e.key === 'Enter') {
@@ -324,22 +304,20 @@ export default function ServiceForm() {
                   <button
                     type="button"
                     onClick={addFeature}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    className="admin-btn-secondary"
                   >
                     Adicionar
                   </button>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="admin-tag-list">
                   {service.features.map((feature, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                    >
+                    <span key={index} className="admin-tag">
                       {feature}
                       <button
                         type="button"
                         onClick={() => removeFeature(index)}
-                        className="ml-2 text-blue-600 hover:text-blue-800"
+                        className="admin-tag-remove"
+                        aria-label="Remover característica"
                       >
                         ×
                       </button>
@@ -349,15 +327,13 @@ export default function ServiceForm() {
               </div>
 
               {/* Benefícios */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Benefícios para o Cliente
-                </label>
-                <div className="flex gap-2 mb-2">
+              <div className="admin-form-group">
+                <label className="admin-form-label">Benefícios para o Cliente</label>
+                <div className="admin-inline-row">
                   <input
                     type="text"
                     id="benefitInput"
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="admin-form-input"
                     placeholder="Digite um benefício e pressione Enter"
                     onKeyPress={(e) => {
                       if (e.key === 'Enter') {
@@ -369,22 +345,20 @@ export default function ServiceForm() {
                   <button
                     type="button"
                     onClick={addBenefit}
-                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                    className="admin-btn-secondary"
                   >
                     Adicionar
                   </button>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="admin-tag-list">
                   {service.benefits.map((benefit, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"
-                    >
+                    <span key={index} className="admin-tag">
                       {benefit}
                       <button
                         type="button"
                         onClick={() => removeBenefit(index)}
-                        className="ml-2 text-green-600 hover:text-green-800"
+                        className="admin-tag-remove"
+                        aria-label="Remover benefício"
                       >
                         ×
                       </button>
@@ -394,72 +368,64 @@ export default function ServiceForm() {
               </div>
 
               {/* Descrição */}
-              <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                  Descrição Completa *
+              <div className="admin-form-group">
+                <label htmlFor="description" className="admin-form-label">
+                  Descrição Completa <span className="admin-required">*</span>
                 </label>
                 <textarea
                   id="description"
                   value={service.description}
                   onChange={(e) => handleChange('description', e.target.value)}
                   rows={10}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="admin-form-input admin-form-textarea"
                   placeholder="Descrição completa do serviço (aceita Markdown)"
                   required
                 />
-                <p className="text-sm text-gray-500 mt-1">
-                  Você pode usar Markdown para formatação do texto
-                </p>
+                <span className="admin-form-hint">Você pode usar Markdown para formatação do texto.</span>
               </div>
             </div>
           </div>
 
           {/* Card SEO */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Otimização SEO</h2>
-            
-            <div className="space-y-6">
+          <div className="admin-form-section">
+            <h2>Otimização SEO</h2>
+
+            <div>
               {/* Meta Title */}
-              <div>
-                <label htmlFor="metaTitle" className="block text-sm font-medium text-gray-700 mb-2">
-                  Meta Título
-                </label>
+              <div className="admin-form-group">
+                <label htmlFor="metaTitle" className="admin-form-label">Meta Título</label>
                 <input
                   type="text"
                   id="metaTitle"
                   value={service.metaTitle}
                   onChange={(e) => handleChange('metaTitle', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="admin-form-input"
                   placeholder="Título para SEO (deixe vazio para usar o título do serviço)"
                 />
               </div>
 
               {/* Meta Description */}
-              <div>
-                <label htmlFor="metaDescription" className="block text-sm font-medium text-gray-700 mb-2">
-                  Meta Descrição
-                </label>
+              <div className="admin-form-group">
+                <label htmlFor="metaDescription" className="admin-form-label">Meta Descrição</label>
                 <textarea
                   id="metaDescription"
                   value={service.metaDescription}
                   onChange={(e) => handleChange('metaDescription', e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="admin-form-input admin-form-textarea"
                   placeholder="Descrição para SEO (deixe vazio para usar o resumo)"
                 />
               </div>
 
               {/* OG Image */}
-              <div>
-                <label htmlFor="ogImage" className="block text-sm font-medium text-gray-700 mb-2">
-                  Imagem de Compartilhamento (URL)
-                </label>
+              <div className="admin-form-group">
+                <label htmlFor="ogImage" className="admin-form-label">Imagem de Compartilhamento (URL)</label>
                 <input
                   type="url"
                   id="ogImage"
                   value={service.ogImage}
                   onChange={(e) => handleChange('ogImage', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="admin-form-input"
                   placeholder="URL da imagem para redes sociais"
                 />
               </div>
@@ -467,44 +433,32 @@ export default function ServiceForm() {
           </div>
 
           {/* Card Status */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Status do Serviço</h2>
-            
-            <div className="flex items-center">
+          <div className="admin-form-section">
+            <h2>Status do Serviço</h2>
+
+            <label className="admin-checkbox-label" htmlFor="active">
               <input
                 type="checkbox"
                 id="active"
                 checked={service.active}
                 onChange={(e) => handleChange('active', e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="admin-checkbox"
               />
-              <label htmlFor="active" className="ml-2 block text-sm text-gray-900">
-                Serviço ativo
-              </label>
-            </div>
-            <p className="text-sm text-gray-500 mt-1">
-              Serviços inativos não aparecem no site público
-            </p>
+              <span>Serviço ativo</span>
+            </label>
+            <span className="admin-form-hint">Serviços inativos não aparecem no site público.</span>
           </div>
 
           {/* Botões */}
-          <div className="flex justify-end space-x-4">
-            <Link
-              href="/admin/services"
-              className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-            >
-              Cancelar
-            </Link>
-            <button
-              type="submit"
-              disabled={saving}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 transition-colors"
-            >
-              {saving ? 'Salvando...' : (isEdit ? 'Atualizar' : 'Criar')} Serviço
-            </button>
-          </div>
-        </form>
-      </main>
+        <div className="admin-form-actions">
+          <Link href="/admin/services" className="admin-btn-secondary">
+            Cancelar
+          </Link>
+          <button type="submit" disabled={saving} className="admin-btn-primary">
+            {saving ? 'Salvando...' : (isEdit ? 'Atualizar' : 'Criar')} Serviço
+          </button>
+        </div>
+      </form>
     </div>
   )
 }

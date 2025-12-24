@@ -51,112 +51,71 @@ export default function AdminLogin() {
   }
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      padding: '20px',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontFamily: 'Arial, sans-serif'
-    }}>
-      <div style={{
-        background: 'white',
-        padding: '40px',
-        borderRadius: '10px',
-        boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-        width: '100%',
-        maxWidth: '400px'
-      }}>
-        <h1 style={{ 
-          textAlign: 'center', 
-          marginBottom: '30px',
-          color: '#333',
-          fontSize: '28px'
-        }}>
-          🔐 Admin INPACTA
-        </h1>
+    <div className="min-h-screen bg-[var(--background)] px-4 py-10 flex items-center justify-center">
+      <div className="w-full max-w-md bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-[0_10px_30px_rgba(15,23,42,0.12)] p-6 sm:p-8">
+        <div className="flex items-center justify-center mb-6">
+          <img
+            src="/logo-clara.svg?v=20251110"
+            alt="INPACTA"
+            className="h-10 w-auto"
+          />
+        </div>
 
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '5px',
-              color: '#555',
-              fontWeight: 'bold'
-            }}>
-              Email:
+        <h1 className="text-center text-xl font-semibold text-[var(--foreground)]">
+          Entrar no Admin
+        </h1>
+        <p className="mt-1 text-center text-sm text-[var(--muted-text)]">
+          Use suas credenciais para acessar o painel.
+        </p>
+
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-[var(--foreground)] mb-1">
+              Email
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '2px solid #ddd',
-                borderRadius: '5px',
-                fontSize: '16px',
-                boxSizing: 'border-box'
-              }}
+              className="w-full rounded-lg border border-[var(--border)] bg-white px-3 py-2.5 text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30 focus:border-[var(--primary)]"
+              placeholder="admin@inpacta.org.br"
+              autoComplete="username"
             />
           </div>
 
-          <div style={{ marginBottom: '25px' }}>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '5px',
-              color: '#555',
-              fontWeight: 'bold'
-            }}>
-              Senha:
+          <div>
+            <label className="block text-sm font-medium text-[var(--foreground)] mb-1">
+              Senha
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '2px solid #ddd',
-                borderRadius: '5px',
-                fontSize: '16px',
-                boxSizing: 'border-box'
-              }}
+              className="w-full rounded-lg border border-[var(--border)] bg-white px-3 py-2.5 text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30 focus:border-[var(--primary)]"
+              placeholder="••••••••"
+              autoComplete="current-password"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            style={{
-              width: '100%',
-              padding: '15px',
-              background: loading ? '#ccc' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              cursor: loading ? 'not-allowed' : 'pointer'
-            }}
+            className="w-full admin-btn-primary disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {loading ? 'PROCESSANDO...' : 'ENTRAR'}
+            {loading ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
 
         {message && (
-          <div style={{
-            marginTop: '20px',
-            padding: '15px',
-            background: message.includes('Erro') ? '#ffebee' : '#e8f5e8',
-            border: `1px solid ${message.includes('Erro') ? '#f44336' : '#4caf50'}`,
-            borderRadius: '5px',
-            textAlign: 'center',
-            color: message.includes('Erro') ? '#c62828' : '#2e7d32'
-          }}>
+          <div
+            className={`mt-5 rounded-lg border px-4 py-3 text-sm ${
+              message.includes('Erro')
+                ? 'bg-red-50 border-red-200 text-red-700'
+                : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+            }`}
+          >
             {message}
           </div>
         )}

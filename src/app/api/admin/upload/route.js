@@ -84,7 +84,8 @@ export async function POST(request) {
 
     // VERCEL FIX: Em produção no Vercel, não podemos escrever no sistema de arquivos
     // Por isso, vamos usar uma solução temporária com Base64
-    if (process.env.VERCEL) {
+    // NOTA: No aaPanel, sempre usar sistema de arquivos (process.env.VERCEL === undefined)
+    if (process.env.VERCEL && process.env.USE_DATAURL === 'true') {
       // Converter arquivo para base64 para armazenamento temporário
       const bytes = await file.arrayBuffer()
       const base64 = Buffer.from(bytes).toString('base64')

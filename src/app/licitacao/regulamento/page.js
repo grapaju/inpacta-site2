@@ -1,4 +1,5 @@
 import { ScrollReveal } from "@/hooks/useScrollAnimations";
+import prisma from "@/lib/prisma";
 
 export const metadata = {
   title: "Regulamento de Licitações e Contratos — InPACTA",
@@ -8,7 +9,57 @@ export const metadata = {
   },
 };
 
-export default function Page() {
+export default async function Page() {
+  const documentos = await prisma.documento.findMany({
+    where: {
+      status: "PUBLISHED",
+      apareceEm: { has: "LICITACOES" },
+    },
+    include: {
+      versaoVigente: true,
+    },
+    orderBy: [{ ordemExibicao: "asc" }, { updatedAt: "desc" }],
+  });
+
+  const groups = documentos.reduce(
+    (acc, doc) => {
+      const sub = String((doc?.subcategoriaLicitacoes ?? doc?.subcategoria) || "").toLowerCase();
+      const title = String(doc?.titulo || "").toLowerCase();
+      const slug = String(doc?.slug || "").toLowerCase();
+
+      const isRegulamento =
+        sub.includes("regulamento") ||
+        title.includes("regulamento") ||
+        slug.includes("regulamento");
+      const isModeloEdital =
+        sub.includes("modelo") ||
+        title.includes("modelo") ||
+        sub.includes("edital") ||
+        title.includes("edital");
+      const isTermoReferencia =
+        sub.includes("termo") ||
+        title.includes("termo") ||
+        sub.includes("referência") ||
+        sub.includes("referencia") ||
+        title.includes("referência") ||
+        title.includes("referencia");
+
+      if (isModeloEdital) {
+        acc.modelos.push(doc);
+      } else if (isTermoReferencia) {
+        acc.termos.push(doc);
+      } else if (isRegulamento) {
+        acc.regulamentos.push(doc);
+      } else {
+        // fallback para não “sumir” documentos novos
+        acc.regulamentos.push(doc);
+      }
+
+      return acc;
+    },
+    { regulamentos: [], modelos: [], termos: [] }
+  );
+
   return (
     <div>
       {/* Hero */}
@@ -19,14 +70,14 @@ export default function Page() {
             <div className="max-w-4xl">
               <div className="flex items-center gap-3 mb-4">
                 <div className="h-1 w-16 bg-white rounded-full" />
-                <span className="text-white/80 font-medium">Licitação</span>
+                <span className="text-white/80 font-medium">Licitações e Contratações</span>
               </div>
               <h1 className="text-3xl md:text-5xl font-bold mb-4">
                 {colorizeTitle("Regulamento de Licitações e Contratos")}
               </h1>
               <p className="text-white/90 text-lg md:text-xl max-w-3xl">
-                Diretrizes para contratações com integridade, eficiência e transparência, 
-                em conformidade com a legislação aplicável.
+                Regulamento que estabelece normas e procedimentos para os processos de licitação e contratação do InPACTA,
+                observando os princípios da legalidade, integridade, eficiência e transparência.
               </p>
             </div>
           </ScrollReveal>
@@ -42,8 +93,8 @@ export default function Page() {
               <h2 className="text-2xl md:text-3xl font-bold text-[var(--primary)]">Introdução</h2>
             </div>
             <p className="mt-4 text-lg text-[color:var(--muted)] max-w-3xl mx-auto">
-              Este regulamento define princípios, responsabilidades e procedimentos para licitações e contratos, 
-              assegurando legalidade, isonomia, seleção da proposta mais vantajosa e promoção do desenvolvimento sustentável.
+              Este regulamento estabelece princípios, responsabilidades e procedimentos aplicáveis às licitações e contratos do InPACTA,
+              assegurando a legalidade, a isonomia entre os participantes, a seleção da proposta mais vantajosa e a promoção do desenvolvimento sustentável.
             </p>
           </div>
         </ScrollReveal>
@@ -54,15 +105,15 @@ export default function Page() {
               <h3 className="text-lg font-bold text-[var(--primary)] mb-2">Base Legal</h3>
               <ul className="space-y-2 text-sm text-[color:var(--muted)]">
                 <li>• Lei nº 14.133/2021 — Nova Lei de Licitações e Contratos</li>
-                <li>• Decreto Municipal/Estadual aplicável (quando pertinente)</li>
-                <li>• Normas internas de compliance e integridade</li>
+                <li>• Normas e atos administrativos aplicáveis, quando pertinentes</li>
+                <li>• Normas internas de compliance, integridade e governança</li>
               </ul>
             </div>
             <div>
               <h3 className="text-lg font-bold text-[var(--primary)] mb-2">Abrangência</h3>
               <p className="text-sm text-[color:var(--muted)]">
-                Aplica-se às contratações de obras, serviços, compras e alienações realizadas pelo InPACTA e parceiros, 
-                observando regimes e modalidades previstos em lei.
+                Aplica-se às contratações de obras, serviços, compras e alienações realizadas pelo InPACTA, observados os regimes,
+                modalidades e procedimentos previstos na legislação aplicável.
               </p>
             </div>
           </div>
@@ -79,8 +130,8 @@ export default function Page() {
             <div>
               <h3 className="text-lg font-bold text-[var(--primary)] mb-2">Governança</h3>
               <p className="text-sm text-[color:var(--muted)]">
-                Define papéis e responsabilidades, incluindo autoridade competente, comissão de contratação e fiscalização, 
-                com fluxo de aprovação e monitoramento.
+                O regulamento define os papéis e responsabilidades dos agentes envolvidos nos processos de contratação, incluindo a autoridade
+                competente, a comissão de contratação e a fiscalização, bem como os fluxos de aprovação, acompanhamento e monitoramento.
               </p>
             </div>
           </div>
@@ -97,19 +148,38 @@ export default function Page() {
                 <h2 className="text-2xl md:text-3xl font-bold text-[var(--primary)]">Procedimentos</h2>
               </div>
               <p className="mt-4 text-lg text-[color:var(--muted)] max-w-3xl mx-auto">
-                Etapas essenciais para planejamento, seleção e execução contratual.
+                Os procedimentos para licitações e contratações abrangem etapas essenciais de planejamento, seleção e execução contratual,
+                observando a legislação vigente e as diretrizes institucionais.
               </p>
             </div>
           </ScrollReveal>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              { title: "Planejamento da Contratação", desc: "Estudo técnico preliminar, termo de referência e estimativa de custos." },
-              { title: "Divulgação e Publicidade", desc: "Editais, prazos, canais oficiais e mecanismos de impugnação." },
-              { title: "Julgamento de Propostas", desc: "Critérios objetivos, habilitação e análise de conformidade." },
-              { title: "Adjudicação e Homologação", desc: "Formalização da escolha e validação pela autoridade competente." },
-              { title: "Execução e Fiscalização", desc: "Acompanhamento de metas, qualidade e conformidade contratual." },
-              { title: "Gestão de Riscos", desc: "Matriz de riscos, garantias e sanções aplicáveis." },
+              {
+                title: "Planejamento da Contratação",
+                desc: "Compreende a elaboração de estudo técnico preliminar, termo de referência e estimativa de custos, de forma a subsidiar a tomada de decisão e a adequada definição do objeto.",
+              },
+              {
+                title: "Divulgação e Publicidade",
+                desc: "Envolve a publicação de editais, definição de prazos, utilização de canais oficiais de comunicação e a disponibilização de mecanismos para esclarecimentos e impugnações.",
+              },
+              {
+                title: "Julgamento de Propostas",
+                desc: "Realizado com base em critérios objetivos, análise de habilitação dos proponentes e verificação da conformidade das propostas com os requisitos estabelecidos.",
+              },
+              {
+                title: "Adjudicação e Homologação",
+                desc: "Consiste na formalização da escolha da proposta vencedora e na homologação do resultado pela autoridade competente.",
+              },
+              {
+                title: "Execução e Fiscalização",
+                desc: "Abrange o acompanhamento da execução contratual, com foco no cumprimento de metas, na qualidade dos serviços ou bens contratados e na conformidade com as obrigações assumidas.",
+              },
+              {
+                title: "Gestão de Riscos",
+                desc: "Prevê a identificação e o tratamento de riscos por meio de matriz de riscos, definição de garantias e aplicação de sanções, quando cabível.",
+              },
             ].map((item, idx) => (
               <div key={idx} className="interactive-card bg-[var(--card)] p-6 rounded-2xl border-2 border-[var(--border)]">
                 <h3 className="text-lg font-bold text-[var(--primary)] mb-2">{item.title}</h3>
@@ -126,18 +196,21 @@ export default function Page() {
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-[var(--primary)] mb-4">Contratos</h2>
             <p className="text-sm text-[color:var(--muted)] mb-4">
-              Cláusulas essenciais, vigência, reajustes, garantias, penalidades e mecanismos de resolução de conflitos.
+              Os contratos celebrados pelo InPACTA observam cláusulas essenciais relativas à vigência, reajustes, garantias, penalidades e
+              mecanismos de resolução de conflitos, em conformidade com a legislação aplicável e as diretrizes institucionais.
             </p>
+            <p className="text-sm text-[color:var(--muted)] mb-3">Incluem-se, entre outros aspectos:</p>
             <ul className="space-y-2 text-sm text-[color:var(--muted)]">
               <li>• Termos aditivos e repactuações</li>
-              <li>• Medição e pagamento por resultados</li>
-              <li>• Encerramento e prestação de contas</li>
+              <li>• Medição e pagamento vinculados a resultados</li>
+              <li>• Encerramento contratual e prestação de contas</li>
             </ul>
           </div>
           <div className="glass rounded-2xl p-6 bg-gradient-to-br from-[var(--card)] to-[var(--background)] border-2 border-[var(--border)]">
             <h3 className="text-lg font-bold text-[var(--primary)] mb-3">Transparência e Compliance</h3>
             <p className="text-sm text-[color:var(--muted)] mb-3">
-              Publicação de editais, resultados e contratos; canal de integridade e auditoria interna para prevenção a fraudes.
+              Os processos de licitação e contratação asseguram a ampla publicidade dos editais, resultados e contratos firmados, bem como a adoção
+              de práticas de integridade, com canal específico para apuração de irregularidades e atuação de auditoria interna voltada à prevenção de fraudes.
             </p>
             <div className="flex flex-wrap gap-2">
               {["Editais", "Resultados", "Contratos", "Integridade"].map((tag) => (
@@ -154,17 +227,174 @@ export default function Page() {
       <div className="section-alt">
         <section className="max-w-7xl mx-auto px-4 py-16">
           <h2 className="text-2xl md:text-3xl font-bold text-[var(--primary)] mb-6">Downloads</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { name: "Regulamento (PDF)", href: "#" },
-              { name: "Modelos de Edital", href: "#" },
-              { name: "Termo de Referência", href: "#" },
-            ].map((d, i) => (
-              <a key={i} href={d.href} className="interactive-card block p-6 rounded-2xl border-2 border-[var(--border)] bg-[var(--card)] hover:bg-[var(--background)] transition-colors">
-                <div className="font-semibold text-[var(--primary)] mb-2">{d.name}</div>
-                <div className="text-sm text-[color:var(--muted)]">Clique para baixar</div>
-              </a>
-            ))}
+
+          <div className="space-y-10">
+            {/* Regulamento */}
+            <div>
+              <h3 className="text-xl font-bold text-[var(--primary)] mb-4">Regulamento</h3>
+              {groups.regulamentos.length === 0 ? (
+                <div className="p-4 rounded-2xl bg-[var(--card)] border-2 border-[var(--border)]">
+                  <p className="text-sm text-[color:var(--muted)]">Não há documentos publicados nesta seção no momento.</p>
+                </div>
+              ) : (
+                <div className="bg-[var(--card)] rounded-2xl border-2 border-[var(--border)] overflow-hidden">
+                  {groups.regulamentos.map((doc, idx) => {
+                    const vigente = doc.versaoVigente;
+                    const metaParts = [];
+                    if (vigente?.dataAprovacao) {
+                      metaParts.push(`Aprovado em ${new Date(vigente.dataAprovacao).toLocaleDateString("pt-BR")}`);
+                    }
+                    if (typeof vigente?.versao === "number") {
+                      metaParts.push(`Versão ${vigente.versao}`);
+                    }
+
+                    return (
+                      <div key={doc.id} className={`p-6 ${idx === 0 ? "" : "border-t border-[var(--border)]"}`}>
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                          <div className="min-w-0">
+                            <div className="font-semibold text-[var(--primary)] mb-2 whitespace-normal break-words">
+                              {doc.titulo}
+                            </div>
+                            {metaParts.length > 0 && (
+                              <div className="text-sm text-[color:var(--muted)]">{metaParts.join(" · ")}</div>
+                            )}
+                          </div>
+
+                          {vigente?.arquivoPdf ? (
+                            <a
+                              href={vigente.arquivoPdf}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-[var(--border)] font-semibold hover:bg-[var(--background)] transition-colors ring-focus shrink-0"
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <polyline points="14,2 14,8 20,8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                              Download PDF
+                            </a>
+                          ) : (
+                            <span className="text-sm font-semibold text-[color:var(--muted)] shrink-0">Em breve</span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Modelos de Edital */}
+            <div>
+              <h3 className="text-xl font-bold text-[var(--primary)] mb-4">Modelos de Edital</h3>
+              {groups.modelos.length === 0 ? (
+                <div className="p-4 rounded-2xl bg-[var(--card)] border-2 border-[var(--border)]">
+                  <p className="text-sm text-[color:var(--muted)]">Não há modelos de edital publicados até o momento.</p>
+                </div>
+              ) : (
+                <div className="bg-[var(--card)] rounded-2xl border-2 border-[var(--border)] overflow-hidden">
+                  {groups.modelos.map((doc, idx) => {
+                    const vigente = doc.versaoVigente;
+                    const metaParts = [];
+                    if (vigente?.dataAprovacao) {
+                      metaParts.push(`Aprovado em ${new Date(vigente.dataAprovacao).toLocaleDateString("pt-BR")}`);
+                    }
+                    if (typeof vigente?.versao === "number") {
+                      metaParts.push(`Versão ${vigente.versao}`);
+                    }
+
+                    return (
+                      <div key={doc.id} className={`p-6 ${idx === 0 ? "" : "border-t border-[var(--border)]"}`}>
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                          <div className="min-w-0">
+                            <div className="font-semibold text-[var(--primary)] mb-2 whitespace-normal break-words">
+                              {doc.titulo}
+                            </div>
+                            {metaParts.length > 0 && (
+                              <div className="text-sm text-[color:var(--muted)]">{metaParts.join(" · ")}</div>
+                            )}
+                          </div>
+
+                          {vigente?.arquivoPdf ? (
+                            <a
+                              href={vigente.arquivoPdf}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-[var(--border)] font-semibold hover:bg-[var(--background)] transition-colors ring-focus shrink-0"
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <polyline points="14,2 14,8 20,8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                              Download PDF
+                            </a>
+                          ) : (
+                            <span className="text-sm font-semibold text-[color:var(--muted)] shrink-0">Em breve</span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Termos de Referência */}
+            <div>
+              <h3 className="text-xl font-bold text-[var(--primary)] mb-4">Termos de Referência</h3>
+              {groups.termos.length === 0 ? (
+                <div className="p-4 rounded-2xl bg-[var(--card)] border-2 border-[var(--border)]">
+                  <p className="text-sm text-[color:var(--muted)]">
+                    Os termos de referência serão disponibilizados conforme a abertura de procedimentos de contratação.
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-[var(--card)] rounded-2xl border-2 border-[var(--border)] overflow-hidden">
+                  {groups.termos.map((doc, idx) => {
+                    const vigente = doc.versaoVigente;
+                    const metaParts = [];
+                    if (vigente?.dataAprovacao) {
+                      metaParts.push(`Aprovado em ${new Date(vigente.dataAprovacao).toLocaleDateString("pt-BR")}`);
+                    }
+                    if (typeof vigente?.versao === "number") {
+                      metaParts.push(`Versão ${vigente.versao}`);
+                    }
+
+                    return (
+                      <div key={doc.id} className={`p-6 ${idx === 0 ? "" : "border-t border-[var(--border)]"}`}>
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                          <div className="min-w-0">
+                            <div className="font-semibold text-[var(--primary)] mb-2 whitespace-normal break-words">
+                              {doc.titulo}
+                            </div>
+                            {metaParts.length > 0 && (
+                              <div className="text-sm text-[color:var(--muted)]">{metaParts.join(" · ")}</div>
+                            )}
+                          </div>
+
+                          {vigente?.arquivoPdf ? (
+                            <a
+                              href={vigente.arquivoPdf}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-[var(--border)] font-semibold hover:bg-[var(--background)] transition-colors ring-focus shrink-0"
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <polyline points="14,2 14,8 20,8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                              Download PDF
+                            </a>
+                          ) : (
+                            <span className="text-sm font-semibold text-[color:var(--muted)] shrink-0">Em breve</span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
         </section>
       </div>
