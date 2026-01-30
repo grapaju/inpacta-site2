@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
+import { parseDateInputToUTC } from '@/lib/dateOnly';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'inpacta-jwt-secret-2024';
 
@@ -176,7 +177,20 @@ export async function PATCH(request, { params }) {
     if (title !== undefined) updateData.title = title;
     if (description !== undefined) updateData.description = description;
     if (identifier !== undefined) updateData.identifier = identifier || null;
-    if (approvalDate !== undefined) updateData.approvalDate = approvalDate ? new Date(approvalDate) : null;
+    if (approvalDate !== undefined) {
+      if (approvalDate) {
+        const parsedApprovalDate = parseDateInputToUTC(approvalDate);
+        if (!parsedApprovalDate) {
+          return NextResponse.json(
+            { success: false, error: 'approvalDate inválida. Use YYYY-MM-DD (input date) ou DD/MM/AAAA.' },
+            { status: 400 }
+          );
+        }
+        updateData.approvalDate = parsedApprovalDate;
+      } else {
+        updateData.approvalDate = null;
+      }
+    }
     if (issuingBody !== undefined) updateData.issuingBody = issuingBody || null;
     if (shortDescription !== undefined) updateData.shortDescription = shortDescription || null;
     if (transparencyStatus !== undefined) updateData.transparencyStatus = transparencyStatus;

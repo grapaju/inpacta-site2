@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
+import { parseDateInputToUTC } from '@/lib/dateOnly';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'inpacta-jwt-secret-2024';
 
@@ -11,7 +12,19 @@ function verifyToken(request) {
   }
 
   const token = authHeader.substring(7);
-  return jwt.verify(token, JWT_SECRET);
+  try {
+    return jwt.verify(token, JWT_SECRET);
+  } catch (err) {
+    if (err?.name === 'TokenExpiredError') {
+      const error = new Error('Token expirado');
+      error.status = 401;
+      throw error;
+    }
+
+    const error = new Error('Token inválido');
+    error.status = 401;
+    throw error;
+  }
 }
 
 /**
@@ -35,6 +48,14 @@ export async function GET(request, { params }) {
     return NextResponse.json({ success: true, data: versoes });
   } catch (error) {
     console.error('❌ Erro ao listar versões (admin):', error);
+
+    if (error?.status === 401 || error?.message === 'Token não fornecido') {
+      return NextResponse.json(
+        { success: false, error: error?.message || 'Não autorizado' },
+        { status: 401 }
+      );
+    }
+
     return NextResponse.json({ success: false, error: 'Erro ao listar versões' }, { status: 500 });
   }
 }
@@ -67,6 +88,14 @@ export async function POST(request, { params }) {
     }
     if (!dataAprovacao) {
       return NextResponse.json({ success: false, error: 'data_aprovacao é obrigatório' }, { status: 400 });
+    }
+
+    const parsedDataAprovacao = parseDateInputToUTC(dataAprovacao);
+    if (!parsedDataAprovacao) {
+      return NextResponse.json(
+        { success: false, error: 'data_aprovacao inválida. Use YYYY-MM-DD (input date) ou DD/MM/AAAA.' },
+        { status: 400 }
+      );
     }
     if (!arquivoPdf) {
       return NextResponse.json({ success: false, error: 'arquivo_pdf é obrigatório' }, { status: 400 });
@@ -101,7 +130,7 @@ export async function POST(request, { params }) {
           documentoId: id,
           numeroIdentificacao,
           versao: nextVersion,
-          dataAprovacao: new Date(dataAprovacao),
+          dataAprovacao: parsedDataAprovacao,
           descricaoAlteracao: descricaoAlteracao || null,
           arquivoPdf,
           fileSize: parseInt(String(fileSize), 10),
@@ -126,6 +155,13 @@ export async function POST(request, { params }) {
     return NextResponse.json({ success: true, data: result.data, message: 'Versão adicionada e definida como vigente' });
   } catch (error) {
     console.error('❌ Erro ao criar versão (admin):', error);
+
+    if (error?.status === 401 || error?.message === 'Token não fornecido') {
+      return NextResponse.json(
+        { success: false, error: error?.message || 'Não autorizado' },
+        { status: 401 }
+      );
+    }
 
     if (String(error?.code) === 'P2002') {
       return NextResponse.json(

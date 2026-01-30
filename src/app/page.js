@@ -1,28 +1,38 @@
 import Link from "next/link";
-import { news as staticNews } from "@/data/news";
 import { services } from "@/data/services";
 import { IconCity, IconCpu, IconLightbulb, IconShield } from "@/components/Icons";
 import { ScrollReveal, StaggeredReveal } from "@/hooks/useScrollAnimations";
+import { prisma } from "@/lib/prisma";
+
+export const revalidate = 300;
 
 // Função para buscar notícias mais recentes
 async function getLatestNews() {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'https://inpacta.org.br'}/api/public/news?limit=3`, {
-      next: { revalidate: 300 } // Revalida a cada 5 minutos
-    });
-    
-    if (response.ok) {
-      const data = await response.json();
-      if (data.news && data.news.length > 0) {
-        return data.news;
+    const items = await prisma.news.findMany({
+      where: { published: true },
+      take: 3,
+      orderBy: { publishedAt: 'desc' },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        summary: true,
+        publishedAt: true,
+        createdAt: true
       }
-    }
+    });
+
+    return items.map((item) => ({
+      ...item,
+      date: item.publishedAt || item.createdAt
+    }));
   } catch (error) {
-    console.error('Erro ao buscar notícias da API:', error);
+    console.error('Erro ao buscar notícias do banco (Home):', error);
   }
-  
-  // Fallback para dados estáticos
-  return staticNews.slice(0, 3);
+
+  // Sem fallback para notícias fake: se não conseguir acessar o DB, não exibe itens.
+  return [];
 }
 
 export default async function Home() {
@@ -323,7 +333,6 @@ export default async function Home() {
           {[
             { href: "/transparencia", label: "Transparência", desc: "Dados e informações públicas acessíveis", color: "#0A2540" },
             { href: "/lgpd", label: "LGPD", desc: "Proteção e privacidade de dados pessoais", color: "#FF6B35" },
-            { href: "/dados", label: "Dados Abertos", desc: "Informações governamentais abertas ao público", color: "#3a6fa6" },
             { href: "/governanca", label: "Governança", desc: "Processos e estrutura organizacional", color: "#27AE60" },
           ].map((d) => (
             <div 
@@ -385,11 +394,7 @@ export default async function Home() {
           animation="fadeUp" 
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          {news
-            .slice()
-            .sort((a, b) => (a.date < b.date ? 1 : -1))
-            .slice(0, 3)
-            .map((n, index) => (
+          {(news || []).map((n, index) => (
               <article 
                 key={n.slug} 
                 className="news-card interactive-card ripple-effect group glass rounded-2xl overflow-hidden"
@@ -401,7 +406,7 @@ export default async function Home() {
                   <div className="flex items-center gap-3 mb-4">
                     <span className="size-2 bg-[var(--accent)] rounded-full card-icon-depth"></span>
                     <time className="text-sm font-medium text-[color:var(--muted)]">
-                      {new Date(n.date).toLocaleDateString("pt-BR", {
+                      {new Date(n.date || n.createdAt || n.publishedAt).toLocaleDateString("pt-BR", {
                         day: "numeric",
                         month: "long",
                         year: "numeric"
@@ -428,6 +433,12 @@ export default async function Home() {
               </article>
             ))}
         </StaggeredReveal>
+
+        {(!news || news.length === 0) && (
+          <div className="mt-10 text-center text-[color:var(--muted)]">
+            Nenhuma notícia publicada ainda.
+          </div>
+        )}
       </section>
       </div>
 

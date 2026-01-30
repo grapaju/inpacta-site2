@@ -197,7 +197,7 @@ function Footer() {
               {[
                 { href: "/sobre", label: "Quem Somos" },
                 { href: "/estrutura", label: "Estrutura" },
-                { href: "/equipe", label: "Equipe e Práticas" },
+                { href: "/equipe", label: "Equipe" },
                 { href: "/servicos", label: "Serviços" },
               ].map((link) => (
                 <li key={link.href}>
@@ -221,7 +221,6 @@ function Footer() {
             <ul className="space-y-2.5 sm:space-y-3">
               {[
                 { href: "/transparencia", label: "Portal da Transparência" },
-                { href: "/dados", label: "Dados Abertos" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link 

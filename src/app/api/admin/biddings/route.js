@@ -81,6 +81,11 @@ export async function GET(request) {
       prisma.bidding.findMany({
         where,
         include: {
+          movements: {
+            take: 1,
+            orderBy: { date: 'desc' },
+            select: { date: true, phase: true }
+          },
           _count: {
             select: {
               movements: true

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ScrollReveal, StaggeredReveal } from "@/hooks/useScrollAnimations";
 import prisma from "@/lib/prisma";
+import { formatDateOnlyPtBR } from "@/lib/dateOnly";
 
 export const metadata = {
   title: "Transparência — InPACTA",
@@ -193,7 +194,7 @@ export default async function Page() {
                             const vigente = doc.versaoVigente;
                             const metaParts = [];
                             if (vigente?.dataAprovacao) {
-                              metaParts.push(`Aprovado em ${new Date(vigente.dataAprovacao).toLocaleDateString("pt-BR")}`);
+                              metaParts.push(`Aprovado em ${formatDateOnlyPtBR(vigente.dataAprovacao)}`);
                             }
                             if (typeof vigente?.versao === "number") {
                               metaParts.push(`Versão ${vigente.versao}`);
@@ -253,7 +254,7 @@ export default async function Page() {
 
                               const metaParts = [];
                               if (vigente?.dataAprovacao) {
-                                metaParts.push(`Aprovado em ${new Date(vigente.dataAprovacao).toLocaleDateString("pt-BR")}`);
+                                metaParts.push(`Aprovado em ${formatDateOnlyPtBR(vigente.dataAprovacao)}`);
                               }
                               if (typeof vigente?.versao === "number") {
                                 metaParts.push(`Versão ${vigente.versao}`);

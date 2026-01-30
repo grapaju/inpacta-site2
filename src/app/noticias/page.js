@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from "next/link"
 import Image from "next/image"
-import { news as staticNews } from "@/data/news"
 import { ScrollReveal, StaggeredReveal } from "@/hooks/useScrollAnimations"
 
 export default function Page() {
@@ -37,36 +36,20 @@ export default function Page() {
       
       if (response.ok) {
         const data = await response.json()
-        // Se não há notícias no banco, usar notícias estáticas
-        if (data.news.length === 0) {
-          const filteredStatic = selectedCategory === 'all' 
-            ? staticNews 
-            : staticNews.filter(item => item.category === selectedCategory)
-          setNews(filteredStatic.sort((a, b) => (a.date < b.date ? 1 : -1)))
-        } else {
-          // Converter dados do banco para formato compatível
-          const convertedNews = data.news.map(item => ({
-            ...item,
-            date: item.publishedAt || item.createdAt,
-            link: `/noticias/${item.slug}`,
-            author: item.author.name || item.author.email
-          }))
-          setNews(convertedNews)
-        }
+        // Converter dados do banco para formato compatível
+        const convertedNews = (data.news || []).map(item => ({
+          ...item,
+          date: item.publishedAt || item.createdAt,
+          link: `/noticias/${item.slug}`,
+          author: item.author?.name || item.author?.email
+        }))
+        setNews(convertedNews)
       } else {
-        // Fallback para notícias estáticas
-        const filteredStatic = selectedCategory === 'all' 
-          ? staticNews 
-          : staticNews.filter(item => item.category === selectedCategory)
-        setNews(filteredStatic.sort((a, b) => (a.date < b.date ? 1 : -1)))
+        setNews([])
       }
     } catch (error) {
       console.error('Erro ao carregar notícias:', error)
-      // Fallback para notícias estáticas
-      const filteredStatic = selectedCategory === 'all' 
-        ? staticNews 
-        : staticNews.filter(item => item.category === selectedCategory)
-      setNews(filteredStatic.sort((a, b) => (a.date < b.date ? 1 : -1)))
+      setNews([])
     } finally {
       setLoading(false)
     }

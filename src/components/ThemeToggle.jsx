@@ -22,13 +22,13 @@ export default function ThemeToggle() {
   if (!mounted) {
     return (
       <div className="inline-flex items-center gap-1" role="group" aria-label="Alternância de tema">
-        <button
+        {/* <button
           type="button"
           className="px-2 py-1 text-xs rounded-md border border-[var(--border)] hover:bg-[var(--card)] ring-focus"
           disabled
         >
           Claro
-        </button>
+        </button> */}
         {/* <button
           type="button"
           className="px-2 py-1 text-xs rounded-md border border-[var(--border)] hover:bg-[var(--card)] ring-focus"
@@ -49,15 +49,15 @@ export default function ThemeToggle() {
 
   return (
     <div className="inline-flex items-center gap-1" role="group" aria-label="Alternância de tema">
-      <button
+      {/* <button
         type="button"
         onClick={() => setTheme("light")}
         className="px-2 py-1 text-xs rounded-md border border-[var(--border)] hover:bg-[var(--card)] ring-focus"
         aria-pressed={theme === "light"}
       >
         Claro
-      </button>
-     {/*  <button
+      </button> */}
+      {/*  <button
         type="button"
         onClick={() => setTheme("dark")}
         className="px-2 py-1 text-xs rounded-md border border-[var(--border)] hover:bg-[var(--card)] ring-focus"

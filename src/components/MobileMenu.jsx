@@ -42,7 +42,7 @@ export default function MobileMenu() {
       submenu: [
         { href: "/sobre", label: "Quem Somos", description: "Propósito, Missão e Visão do InPACTA" },
         { href: "/estrutura", label: "Estrutura", description: "Conselho de Administração e membros" },
-        { href: "/equipe", label: "Equipe e Práticas", description: "Nossa equipe e experiência" },
+        { href: "/equipe", label: "Equipe", description: "Nossa equipe e experiência" },
         { href: "/transparencia", label: "Lei Acesso à Informação", description: "Direito de acesso às informações públicas" },
       ],
     },
@@ -58,7 +58,6 @@ export default function MobileMenu() {
       label: "Transparência",
       submenu: [
         { href: "/transparencia", label: "Portal da Transparência", description: "Informações públicas e prestação de contas" },
-        { href: "/dados", label: "Dados Abertos", description: "Datasets e APIs públicas para consulta" },
       ],
     },
     {

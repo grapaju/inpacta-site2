@@ -51,7 +51,19 @@ function verifyToken(request) {
   }
 
   const token = authHeader.substring(7);
-  return jwt.verify(token, JWT_SECRET);
+  try {
+    return jwt.verify(token, JWT_SECRET);
+  } catch (err) {
+    if (err?.name === 'TokenExpiredError') {
+      const error = new Error('Token expirado');
+      error.status = 401;
+      throw error;
+    }
+
+    const error = new Error('Token inválido');
+    error.status = 401;
+    throw error;
+  }
 }
 
 function slugify(value) {
@@ -79,6 +91,15 @@ async function ensureUniqueSlug(baseSlug) {
   }
 
   return `${normalized}-${Date.now()}`;
+}
+
+function parseOptionalInt(value) {
+  if (value === undefined || value === null) return null;
+  const raw = String(value).trim();
+  if (!raw) return null;
+  const parsed = parseInt(raw, 10);
+  if (Number.isNaN(parsed)) return null;
+  return parsed;
 }
 
 /**
@@ -148,6 +169,14 @@ export async function GET(request) {
     });
   } catch (error) {
     console.error('❌ Erro ao listar documentos (admin):', error);
+
+    if (error?.status === 401 || error?.message === 'Token não fornecido') {
+      return NextResponse.json(
+        { success: false, error: error?.message || 'Não autorizado' },
+        { status: 401 }
+      );
+    }
+
     return NextResponse.json(
       { success: false, error: 'Erro ao listar documentos' },
       { status: 500 }
@@ -259,6 +288,16 @@ export async function POST(request) {
       return NextResponse.json({ success: false, error: 'Não foi possível gerar slug' }, { status: 400 });
     }
 
+    let effectiveOrdemExibicao = parseOptionalInt(ordemExibicao);
+
+    if (effectiveOrdemExibicao === null) {
+      const aggregate = await prisma.documento.aggregate({
+        where: { categoriaMacro },
+        _max: { ordemExibicao: true },
+      });
+      effectiveOrdemExibicao = (aggregate?._max?.ordemExibicao ?? -1) + 1;
+    }
+
     const documento = await prisma.documento.create({
       data: {
         titulo,
@@ -271,7 +310,7 @@ export async function POST(request) {
         orgaoEmissor,
         apareceEm,
         status: status || 'DRAFT',
-        ordemExibicao: ordemExibicao ? parseInt(String(ordemExibicao), 10) : 0,
+        ordemExibicao: effectiveOrdemExibicao,
       },
     });
 
@@ -282,6 +321,13 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error('❌ Erro ao criar documento (admin):', error);
+
+    if (error?.status === 401 || error?.message === 'Token não fornecido') {
+      return NextResponse.json(
+        { success: false, error: error?.message || 'Não autorizado' },
+        { status: 401 }
+      );
+    }
 
     if (String(error?.code) === 'P2002') {
       return NextResponse.json(

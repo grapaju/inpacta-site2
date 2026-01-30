@@ -1,14 +1,17 @@
 import { ScrollReveal, StaggeredReveal } from "@/hooks/useScrollAnimations";
 import { IconEye, IconFileText, IconShield } from "@/components/Icons";
 import prisma from "@/lib/prisma";
+import { getSiteUrl } from "@/lib/siteUrl";
 import Link from "next/link";
 import EditaisFilters from "./EditaisFilters";
+
+const SITE_URL = getSiteUrl();
 
 export const metadata = {
   title: "Editais — Licitações — InPACTA",
   description: "Listagem de editais e processos licitatórios do InPACTA.",
   alternates: {
-    canonical: "https://inpacta.org.br/licitacao/editais",
+    canonical: `${SITE_URL}/licitacao/editais`,
   },
 };
 
@@ -142,7 +145,7 @@ function labelModality(modality) {
 }
 export default async function Page({ searchParams }) {
   const now = new Date();
-  const sp = searchParams || {};
+  const sp = (await searchParams) || {};
 
   const selectedStatus = (sp.status || "").toString();
   const selectedModality = (sp.modality || "").toString();

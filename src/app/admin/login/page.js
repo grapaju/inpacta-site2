@@ -42,35 +42,35 @@ export default function AdminLogin() {
         }, 1500)
       } else {
         setMessage('Erro: ' + (data.message || 'Credenciais inválidas'))
+        setLoading(false)
       }
     } catch (error) {
       setMessage('Erro de conexão: ' + error.message)
-    } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-[var(--background)] px-4 py-10 flex items-center justify-center">
-      <div className="w-full max-w-md bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-[0_10px_30px_rgba(15,23,42,0.12)] p-6 sm:p-8">
+    <div className="min-h-screen bg-gray-50 px-4 py-10 flex items-center justify-center" suppressHydrationWarning>
+      <div className="w-full max-w-md bg-white border border-gray-200 rounded-xl shadow-lg p-6 sm:p-8">
         <div className="flex items-center justify-center mb-6">
-          <img
-            src="/logo-clara.svg?v=20251110"
-            alt="INPACTA"
-            className="h-10 w-auto"
-          />
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" className="h-10 w-auto">
+            <text x="10" y="40" fontFamily="Arial, sans-serif" fontSize="32" fontWeight="bold" fill="#0A2540">
+              InPACTA
+            </text>
+          </svg>
         </div>
 
-        <h1 className="text-center text-xl font-semibold text-[var(--foreground)]">
+        <h1 className="text-center text-xl font-semibold text-gray-900">
           Entrar no Admin
         </h1>
-        <p className="mt-1 text-center text-sm text-[var(--muted-text)]">
+        <p className="mt-1 text-center text-sm text-gray-600">
           Use suas credenciais para acessar o painel.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-sm font-medium text-gray-900 mb-1">
               Email
             </label>
             <input
@@ -78,14 +78,14 @@ export default function AdminLogin() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full rounded-lg border border-[var(--border)] bg-white px-3 py-2.5 text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30 focus:border-[var(--primary)]"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
               placeholder="admin@inpacta.org.br"
               autoComplete="username"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-sm font-medium text-gray-900 mb-1">
               Senha
             </label>
             <input
@@ -93,7 +93,7 @@ export default function AdminLogin() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full rounded-lg border border-[var(--border)] bg-white px-3 py-2.5 text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30 focus:border-[var(--primary)]"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
               placeholder="••••••••"
               autoComplete="current-password"
             />
@@ -102,7 +102,7 @@ export default function AdminLogin() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full admin-btn-primary disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full bg-blue-600 text-white py-2.5 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {loading ? 'Entrando...' : 'Entrar'}
           </button>

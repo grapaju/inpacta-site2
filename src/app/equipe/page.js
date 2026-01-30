@@ -113,11 +113,12 @@ export default function Page() {
             </div>
           </ScrollReveal>
 
-        <StaggeredReveal staggerDelay={200} className="grid md:grid-cols-3 gap-8">
+        <StaggeredReveal staggerDelay={200} className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {[
             { name: "Cristiane Hasegawa", role: "Diretora Presidente" },
             { name: "Ideuber Carlos Celeste", role: "Diretor Administrativo Financeiro" },
-            { name: "Márcio Luis Catelan", role: "Diretor Técnico" }
+            { name: "Márcio Luis Catelan", role: "Diretor Técnico" },
+            { name: "Odacir Cristovan Fiorini Júnior", role: "Procurador Jurídico" }
           ].map((leader, index) => (
             <div key={index} className="interactive-card bg-[var(--card)] p-8 rounded-2xl border-2 border-[var(--border)] h-full flex flex-col">
               <div className="text-center mb-4">

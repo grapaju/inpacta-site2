@@ -57,7 +57,7 @@ const searchableContent = [
     slug: "estrutura"
   },
   {
-    title: "Equipe e Práticas",
+    title: "Equipe",
     description: "Conheça nossa equipe especializada, metodologias de trabalho e práticas inovadoras.",
     type: "página",
     url: "/equipe",

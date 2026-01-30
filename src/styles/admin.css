@@ -1907,3 +1907,40 @@
   gap: 0.5rem;
   flex-shrink: 0;
 }
+
+/* ===== ESTILOS PARA MELHORIAS DE LICITAÇÕES ===== */
+
+/* Barra de informações */
+.admin-info-bar {
+  background: var(--section-alt-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.875rem 1.125rem;
+  margin-bottom: 1.25rem;
+}
+
+.admin-info-bar p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--muted-text);
+}
+
+.admin-info-bar strong {
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+/* Estado vazio */
+.admin-empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: var(--card);
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+}
+
+.admin-empty-state p {
+  margin: 0 0 1.5rem 0;
+  color: var(--muted-text);
+  font-size: 0.9375rem;
+}

@@ -55,6 +55,7 @@ export default function NovoDocumentoPage() {
   const [error, setError] = useState(null);
 
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+  const [ordemManuallyEdited, setOrdemManuallyEdited] = useState(false);
 
   const [formData, setFormData] = useState({
     titulo: '',
@@ -67,7 +68,7 @@ export default function NovoDocumentoPage() {
     orgao_emissor: '',
     aparece_em: ['TRANSPARENCIA'],
     status: 'DRAFT',
-    ordem_exibicao: 0,
+    ordem_exibicao: '',
   });
 
   useEffect(() => {
@@ -90,6 +91,58 @@ export default function NovoDocumentoPage() {
     }
     return base;
   }, [formData.categoria_macro_licitacoes, formData.subcategoria_licitacoes]);
+
+  const fetchOrdemSugerida = async (categoriaMacro) => {
+    const token = localStorage.getItem('adminToken');
+    if (!token) return null;
+
+    const res = await fetch(`/api/admin/documentos/ordem-sugerida?categoria_macro=${encodeURIComponent(categoriaMacro)}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    const data = await res.json().catch(() => null);
+
+    if (res.status === 401) {
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminUser');
+      router.push('/admin/login');
+      return null;
+    }
+
+    if (!res.ok) return null;
+
+    const suggested = data?.data?.suggested_ordem_exibicao;
+    if (typeof suggested !== 'number') return null;
+    return suggested;
+  };
+
+  const applySuggestedOrdemIfAllowed = async (categoriaMacro) => {
+    const suggested = await fetchOrdemSugerida(categoriaMacro);
+    if (suggested === null) return;
+
+    setFormData((prev) => {
+      if (ordemManuallyEdited) return prev;
+      const raw = prev.ordem_exibicao;
+      const isEmpty = raw === '' || raw === null || raw === undefined;
+      if (!isEmpty) return prev;
+      if (prev.categoria_macro !== categoriaMacro) return prev;
+      return { ...prev, ordem_exibicao: suggested };
+    });
+  };
+
+  useEffect(() => {
+    if (!formData.categoria_macro) return;
+    if (ordemManuallyEdited) return;
+
+    const raw = formData.ordem_exibicao;
+    const isEmpty = raw === '' || raw === null || raw === undefined;
+    if (!isEmpty) return;
+
+    applySuggestedOrdemIfAllowed(formData.categoria_macro);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.categoria_macro, ordemManuallyEdited]);
 
   const toggleApareceEm = (value) => {
     setFormData((prev) => {
@@ -139,6 +192,10 @@ export default function NovoDocumentoPage() {
       setSlugManuallyEdited(true);
     }
 
+    if (name === 'ordem_exibicao') {
+      setOrdemManuallyEdited(true);
+    }
+
     if (name === 'categoria_macro') {
       const nextMacro = value;
       const nextSubcats = subcategoriasPorMacro[nextMacro] || [];
@@ -165,7 +222,7 @@ export default function NovoDocumentoPage() {
 
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'number' ? Number(value) : value,
+      [name]: type === 'number' ? (value === '' ? '' : Number(value)) : value,
     }));
   };
 
@@ -200,6 +257,13 @@ export default function NovoDocumentoPage() {
       });
 
       const data = await res.json();
+
+      if (res.status === 401) {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUser');
+        router.push('/admin/login');
+        return;
+      }
 
       if (!res.ok) {
         throw new Error(data?.error || 'Erro ao criar documento');
@@ -320,13 +384,31 @@ export default function NovoDocumentoPage() {
 
             <div className="admin-form-group">
               <label className="admin-form-label">Ordem de exibição</label>
-              <input
-                name="ordem_exibicao"
-                type="number"
-                className="admin-form-input"
-                value={formData.ordem_exibicao}
-                onChange={handleChange}
-              />
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <input
+                  name="ordem_exibicao"
+                  type="number"
+                  className="admin-form-input"
+                  value={formData.ordem_exibicao}
+                  onChange={handleChange}
+                  placeholder="Automático"
+                  style={{ flex: 1 }}
+                />
+                <button
+                  type="button"
+                  className="admin-btn-sm admin-btn-secondary"
+                  onClick={async () => {
+                    setOrdemManuallyEdited(false);
+                    setFormData((prev) => ({ ...prev, ordem_exibicao: '' }));
+                    await applySuggestedOrdemIfAllowed(formData.categoria_macro);
+                  }}
+                >
+                  Auto
+                </button>
+              </div>
+              <div className="admin-inline-muted" style={{ marginTop: '0.35rem' }}>
+                Deixe vazio (ou clique em Auto) para sugerir automaticamente.
+              </div>
             </div>
           </div>
 

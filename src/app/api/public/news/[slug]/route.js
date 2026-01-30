@@ -59,24 +59,6 @@ export async function GET(request, { params }) {
   } catch (error) {
     console.error('[API PUBLIC NEWS BY SLUG] Erro:', error)
 
-    // Fallback amigável em desenvolvimento quando DB não está disponível
-    const isDevelopment = !process.env.VERCEL_URL && process.env.NODE_ENV !== 'production'
-    if (isDevelopment && (error.message?.includes('datasource') || error.message?.includes('DATABASE_URL'))) {
-      const { news: staticNews } = await import('@/data/news')
-      const staticItem = staticNews.find(n => n.slug === slug)
-      if (staticItem) {
-        const converted = {
-          ...staticItem,
-          id: `static-${staticItem.slug}`,
-          author: { name: staticItem.author || 'InPACTA' },
-          publishedAt: staticItem.date,
-          createdAt: staticItem.date,
-          published: true
-        }
-        return NextResponse.json(converted, { headers: { 'Cache-Control': 'no-store' } })
-      }
-    }
-
     return new NextResponse(
       JSON.stringify({ error: 'Erro interno do servidor' }),
       {

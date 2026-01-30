@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
+import { parseDateInputToUTC } from '@/lib/dateOnly';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'inpacta-jwt-secret-2024';
 
@@ -291,13 +292,21 @@ export async function POST(request) {
     else if (decoded.role === 'AUTHOR') {
       initialStatus = 'DRAFT';
     }
+
+    const parsedApprovalDate = approvalDate ? parseDateInputToUTC(approvalDate) : null;
+    if (approvalDate && !parsedApprovalDate) {
+      return NextResponse.json(
+        { success: false, error: 'approvalDate inválida. Use YYYY-MM-DD (input date) ou DD/MM/AAAA.' },
+        { status: 400 }
+      );
+    }
     
     const document = await prisma.document.create({
       data: {
         title,
         description,
         identifier: identifier || null,
-        approvalDate: approvalDate ? new Date(approvalDate) : null,
+        approvalDate: parsedApprovalDate,
         issuingBody: issuingBody || null,
         shortDescription: shortDescription || null,
         transparencyStatus: transparencyStatus || 'PUBLICADO',

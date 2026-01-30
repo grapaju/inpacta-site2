@@ -1,6 +1,7 @@
 import { services } from "@/data/services";
 import Link from "next/link";
 import { ScrollReveal, StaggeredReveal } from "@/hooks/useScrollAnimations";
+import { getSiteUrl } from "@/lib/siteUrl";
 
 export function generateStaticParams() {
   return services.map((s) => ({ slug: s.slug }));
@@ -10,7 +11,7 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const item = services.find((s) => s.slug === slug);
   if (!item) return { title: "Serviço • InPACTA" };
-  const base = "https://inpacta.org.br";
+  const base = getSiteUrl();
   return { 
     title: `${item.title} • InPACTA`, 
     description: item.description,

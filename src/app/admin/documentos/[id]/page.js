@@ -5,6 +5,7 @@ import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigat
 import Link from 'next/link';
 import DocumentUpload from '@/components/admin/DocumentUpload';
 import StatusBadge from '@/components/admin/StatusBadge';
+import { formatDateOnlyPtBR, getYearFromDateInputUTC } from '@/lib/dateOnly';
 
 function slugify(value) {
   return String(value || '')
@@ -59,10 +60,7 @@ function toDateInputValue(value) {
 }
 
 function formatDate(dateString) {
-  if (!dateString) return '-';
-  const date = new Date(dateString);
-  if (Number.isNaN(date.getTime())) return '-';
-  return date.toLocaleDateString('pt-BR');
+  return formatDateOnlyPtBR(dateString);
 }
 
 function fileNameFromPath(filePath) {
@@ -171,6 +169,13 @@ export default function DocumentoAdminPage() {
       });
 
       const data = await res.json();
+
+      if (res.status === 401) {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUser');
+        router.push('/admin/login');
+        return;
+      }
 
       if (!res.ok) {
         throw new Error(data?.error || 'Erro ao carregar documento');
@@ -762,7 +767,7 @@ export default function DocumentoAdminPage() {
                   onUploadComplete={handleUploadComplete}
                   uploadContext={{
                     documentSlug: formData.slug,
-                    year: (novaVersao.data_aprovacao ? new Date(novaVersao.data_aprovacao).getFullYear() : new Date().getFullYear()),
+                    year: (getYearFromDateInputUTC(novaVersao.data_aprovacao) || new Date().getFullYear()),
                   }}
                   currentFile={novaVersao.arquivo_pdf
                     ? {

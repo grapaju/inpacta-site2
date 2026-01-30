@@ -1,8 +1,14 @@
+import { getSiteUrl, isIndexingDisallowed } from "@/lib/siteUrl";
+
 export default function robots() {
-  const base = "https://inpacta.org.br";
+  const base = getSiteUrl();
+  const disallowIndexing = isIndexingDisallowed();
+
   return {
     rules: [
-      { userAgent: "*", allow: "/" },
+      disallowIndexing
+        ? { userAgent: "*", disallow: "/" }
+        : { userAgent: "*", allow: "/" },
     ],
     sitemap: `${base}/sitemap.xml`,
   };

@@ -1,8 +1,14 @@
+import { NextResponse } from 'next/server'
+
 export function middleware(request) {
-  // Middleware temporariamente desabilitado para debug
-  return
+  const { pathname } = request.nextUrl
+  
+  // Redirecionar acessos a /dados para a página inicial
+  if (pathname.startsWith('/dados')) {
+    return NextResponse.redirect(new URL('/', request.url))
+  }
 }
 
 export const config = {
-  matcher: []
+  matcher: ['/dados/:path*']
 }

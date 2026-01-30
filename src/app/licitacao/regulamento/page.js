@@ -1,15 +1,25 @@
 import { ScrollReveal } from "@/hooks/useScrollAnimations";
 import prisma from "@/lib/prisma";
+import { formatDateOnlyPtBR } from "@/lib/dateOnly";
+import { getSiteUrl } from "@/lib/siteUrl";
+import { unstable_noStore as noStore } from "next/cache";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
+
+const SITE_URL = getSiteUrl();
 
 export const metadata = {
   title: "Regulamento de Licitações e Contratos — InPACTA",
   description: "Diretrizes, procedimentos e bases legais para licitações e contratos do InPACTA, assegurando transparência, integridade e conformidade.",
   alternates: {
-    canonical: "https://inpacta.org.br/licitacao/regulamento",
+    canonical: `${SITE_URL}/licitacao/regulamento`,
   },
 };
 
 export default async function Page() {
+  noStore();
   const documentos = await prisma.documento.findMany({
     where: {
       status: "PUBLISHED",
@@ -242,119 +252,7 @@ export default async function Page() {
                     const vigente = doc.versaoVigente;
                     const metaParts = [];
                     if (vigente?.dataAprovacao) {
-                      metaParts.push(`Aprovado em ${new Date(vigente.dataAprovacao).toLocaleDateString("pt-BR")}`);
-                    }
-                    if (typeof vigente?.versao === "number") {
-                      metaParts.push(`Versão ${vigente.versao}`);
-                    }
-
-                    return (
-                      <div key={doc.id} className={`p-6 ${idx === 0 ? "" : "border-t border-[var(--border)]"}`}>
-                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                          <div className="min-w-0">
-                            <div className="font-semibold text-[var(--primary)] mb-2 whitespace-normal break-words">
-                              {doc.titulo}
-                            </div>
-                            {metaParts.length > 0 && (
-                              <div className="text-sm text-[color:var(--muted)]">{metaParts.join(" · ")}</div>
-                            )}
-                          </div>
-
-                          {vigente?.arquivoPdf ? (
-                            <a
-                              href={vigente.arquivoPdf}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-[var(--border)] font-semibold hover:bg-[var(--background)] transition-colors ring-focus shrink-0"
-                            >
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                <polyline points="14,2 14,8 20,8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                              </svg>
-                              Download PDF
-                            </a>
-                          ) : (
-                            <span className="text-sm font-semibold text-[color:var(--muted)] shrink-0">Em breve</span>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            {/* Modelos de Edital */}
-            <div>
-              <h3 className="text-xl font-bold text-[var(--primary)] mb-4">Modelos de Edital</h3>
-              {groups.modelos.length === 0 ? (
-                <div className="p-4 rounded-2xl bg-[var(--card)] border-2 border-[var(--border)]">
-                  <p className="text-sm text-[color:var(--muted)]">Não há modelos de edital publicados até o momento.</p>
-                </div>
-              ) : (
-                <div className="bg-[var(--card)] rounded-2xl border-2 border-[var(--border)] overflow-hidden">
-                  {groups.modelos.map((doc, idx) => {
-                    const vigente = doc.versaoVigente;
-                    const metaParts = [];
-                    if (vigente?.dataAprovacao) {
-                      metaParts.push(`Aprovado em ${new Date(vigente.dataAprovacao).toLocaleDateString("pt-BR")}`);
-                    }
-                    if (typeof vigente?.versao === "number") {
-                      metaParts.push(`Versão ${vigente.versao}`);
-                    }
-
-                    return (
-                      <div key={doc.id} className={`p-6 ${idx === 0 ? "" : "border-t border-[var(--border)]"}`}>
-                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                          <div className="min-w-0">
-                            <div className="font-semibold text-[var(--primary)] mb-2 whitespace-normal break-words">
-                              {doc.titulo}
-                            </div>
-                            {metaParts.length > 0 && (
-                              <div className="text-sm text-[color:var(--muted)]">{metaParts.join(" · ")}</div>
-                            )}
-                          </div>
-
-                          {vigente?.arquivoPdf ? (
-                            <a
-                              href={vigente.arquivoPdf}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-[var(--border)] font-semibold hover:bg-[var(--background)] transition-colors ring-focus shrink-0"
-                            >
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                <polyline points="14,2 14,8 20,8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                              </svg>
-                              Download PDF
-                            </a>
-                          ) : (
-                            <span className="text-sm font-semibold text-[color:var(--muted)] shrink-0">Em breve</span>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            {/* Termos de Referência */}
-            <div>
-              <h3 className="text-xl font-bold text-[var(--primary)] mb-4">Termos de Referência</h3>
-              {groups.termos.length === 0 ? (
-                <div className="p-4 rounded-2xl bg-[var(--card)] border-2 border-[var(--border)]">
-                  <p className="text-sm text-[color:var(--muted)]">
-                    Os termos de referência serão disponibilizados conforme a abertura de procedimentos de contratação.
-                  </p>
-                </div>
-              ) : (
-                <div className="bg-[var(--card)] rounded-2xl border-2 border-[var(--border)] overflow-hidden">
-                  {groups.termos.map((doc, idx) => {
-                    const vigente = doc.versaoVigente;
-                    const metaParts = [];
-                    if (vigente?.dataAprovacao) {
-                      metaParts.push(`Aprovado em ${new Date(vigente.dataAprovacao).toLocaleDateString("pt-BR")}`);
+                      metaParts.push(`Aprovado em ${formatDateOnlyPtBR(vigente.dataAprovacao)}`);
                     }
                     if (typeof vigente?.versao === "number") {
                       metaParts.push(`Versão ${vigente.versao}`);

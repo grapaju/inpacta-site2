@@ -51,7 +51,19 @@ function verifyToken(request) {
   }
 
   const token = authHeader.substring(7);
-  return jwt.verify(token, JWT_SECRET);
+  try {
+    return jwt.verify(token, JWT_SECRET);
+  } catch (err) {
+    if (err?.name === 'TokenExpiredError') {
+      const error = new Error('Token expirado');
+      error.status = 401;
+      throw error;
+    }
+
+    const error = new Error('Token inválido');
+    error.status = 401;
+    throw error;
+  }
 }
 
 /**
@@ -82,6 +94,14 @@ export async function GET(request, { params }) {
     return NextResponse.json({ success: true, data: documento });
   } catch (error) {
     console.error('❌ Erro ao buscar documento (admin):', error);
+
+    if (error?.status === 401 || error?.message === 'Token não fornecido') {
+      return NextResponse.json(
+        { success: false, error: error?.message || 'Não autorizado' },
+        { status: 401 }
+      );
+    }
+
     return NextResponse.json({ success: false, error: 'Erro ao buscar documento' }, { status: 500 });
   }
 }
@@ -240,6 +260,14 @@ export async function PATCH(request, { params }) {
     return NextResponse.json({ success: true, data: documento, message: 'Metadados atualizados' });
   } catch (error) {
     console.error('❌ Erro ao atualizar documento (admin):', error);
+
+    if (error?.status === 401 || error?.message === 'Token não fornecido') {
+      return NextResponse.json(
+        { success: false, error: error?.message || 'Não autorizado' },
+        { status: 401 }
+      );
+    }
+
     return NextResponse.json({ success: false, error: 'Erro ao atualizar documento' }, { status: 500 });
   }
 }

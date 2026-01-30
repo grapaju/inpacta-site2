@@ -70,6 +70,13 @@ export default function AdminDocumentosPage() {
         });
         const data = await res.json();
 
+        if (res.status === 401) {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUser');
+          router.push('/admin/login');
+          return;
+        }
+
         if (!res.ok) {
           throw new Error(data?.error || 'Erro ao buscar documentos');
         }

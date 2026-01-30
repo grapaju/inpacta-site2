@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ScrollReveal, StaggeredReveal } from "@/hooks/useScrollAnimations";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import { getSiteUrl } from "@/lib/siteUrl";
 
 // Forçar renderização dinâmica e desabilitar cache
 export const dynamic = 'force-dynamic';
@@ -13,49 +14,54 @@ export const runtime = 'nodejs';
 // Função para buscar notícia da API
 async function fetchNewsItem(slug) {
   console.log('[DEBUG] Buscando notícia com slug:', slug);
-  
-  // Detectar se estamos em produção (Vercel) ou desenvolvimento
+
   const isProduction = process.env.VERCEL_URL || process.env.NODE_ENV === 'production';
-  
-  // Em produção, priorizar acesso direto ao banco (evita qualquer cache/CDN da API interna)
-  if (isProduction) {
-    try {
-      // Preferir Prisma direto
-      const dbItem = await prisma.news.findFirst({
-        where: {
-          AND: [
-            { slug: { equals: slug, mode: 'insensitive' } },
-            { published: true }
-          ]
-        },
+  const isDevelopment = !isProduction;
+
+  // Sempre priorizar acesso direto ao banco (SSR). Em dev isso evita chamadas acidentais
+  // para produção quando NEXT_PUBLIC_BASE_URL/SITE_URL estiver configurado.
+  try {
+    const publishedItem = await prisma.news.findFirst({
+      where: {
+        AND: [
+          { slug: { equals: slug, mode: 'insensitive' } },
+          { published: true }
+        ]
+      },
+      include: {
+        author: { select: { name: true, email: true } }
+      }
+    });
+
+    if (publishedItem) {
+      console.log('[DEBUG] Notícia publicada encontrada no banco (SSR):', publishedItem.title);
+      return publishedItem;
+    }
+
+    // Em desenvolvimento, permitir visualizar rascunhos (ajuda no fluxo do admin).
+    if (isDevelopment) {
+      const draftItem = await prisma.news.findFirst({
+        where: { slug: { equals: slug, mode: 'insensitive' } },
         include: {
           author: { select: { name: true, email: true } }
         }
       });
 
-      if (dbItem) {
-        console.log('[DEBUG] Notícia encontrada direto no banco (SSR):', dbItem.title);
-        return dbItem;
+      if (draftItem) {
+        console.log('[DEBUG] Notícia encontrada no banco mas está como rascunho (dev):', draftItem.title);
+        return draftItem;
       }
-
-      // Fallback: tentar API interna caso acesso direto não retorne
-      const url = `/api/public/news/${slug}`;
-      const response = await fetch(url, { cache: 'no-store', headers: { 'Content-Type': 'application/json' } });
-      if (response.ok) return response.json();
-      console.log('[DEBUG] Fallback via API também não encontrou a notícia.');
-      return null;
-    } catch (error) {
-      console.error('[DEBUG] Erro ao buscar notícia da API:', error);
-      return null;
     }
+  } catch (error) {
+    console.error('[DEBUG] Erro ao buscar notícia no banco (SSR):', error);
   }
-  
-  // Em desenvolvimento, usar dados estáticos como primário
+
+  // Fallback: em desenvolvimento, tentar dados estáticos (quando DB não está disponível)
   const staticNews = news.find((n) => n.slug === slug);
   console.log('[DEBUG] Verificando dados estáticos:', staticNews?.title || 'Não encontrado');
-  
+
   if (staticNews) {
-    console.log('[DEBUG] Usando dados estáticos (desenvolvimento):', staticNews.title);
+    console.log('[DEBUG] Usando dados estáticos (fallback):', staticNews.title);
     return {
       ...staticNews,
       author: staticNews.author || 'InPACTA',
@@ -65,25 +71,24 @@ async function fetchNewsItem(slug) {
       category: staticNews.category || 'geral'
     };
   }
-  
-  // Fallback para API em desenvolvimento
+
+  // Último fallback: API pública (mantém compatibilidade caso prisma não esteja acessível)
   try {
-    const devPort = process.env.PORT || 3000;
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `http://localhost:${devPort}`;
+    const baseUrl = getSiteUrl();
     const response = await fetch(`${baseUrl}/api/public/news/${slug}`, {
       cache: 'no-store',
       headers: { 'Content-Type': 'application/json' },
     });
-    
+
     if (response.ok) {
       const data = await response.json();
-      console.log('[DEBUG] Notícia encontrada na API:', data.title);
+      console.log('[DEBUG] Notícia encontrada via API:', data.title);
       return data;
     }
   } catch (error) {
-    console.error('[DEBUG] Erro ao buscar notícia da API:', error);
+    console.error('[DEBUG] Erro ao buscar notícia via API:', error);
   }
-  
+
   console.log('[DEBUG] Nenhuma notícia encontrada para o slug:', slug);
   return null;
 }
@@ -91,9 +96,7 @@ async function fetchNewsItem(slug) {
 // Função para buscar todas as notícias para gerar static params
 async function fetchAllNews() {
   try {
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : process.env.NEXT_PUBLIC_BASE_URL || 'https://inpacta.org.br';
+    const baseUrl = getSiteUrl();
       
     const response = await fetch(`${baseUrl}/api/public/news`, {
       cache: 'force-cache'
@@ -198,8 +201,7 @@ export default async function Page({ params }) {
   // Buscar notícias relacionadas (sempre do banco via API)
   let relatedNews = [];
   try {
-    const devPort = process.env.PORT || 3000;
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : `http://localhost:${devPort}`);
+    const baseUrl = getSiteUrl();
     const response = await fetch(`${baseUrl}/api/public/news?page=1&limit=12`, {
       next: { revalidate: 300 },
       headers: { 'Content-Type': 'application/json' }

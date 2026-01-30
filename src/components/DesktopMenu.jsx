@@ -39,7 +39,7 @@ export default function DesktopMenu() {
         },
         { 
           href: "/equipe", 
-          label: "Equipe e Práticas",
+          label: "Equipe",
           description: "Nossa equipe e experiência"
         },
         { 
@@ -76,11 +76,6 @@ export default function DesktopMenu() {
           href: "/transparencia", 
           label: "Portal da Transparência",
           description: "Informações públicas e prestação de contas"
-        },
-        { 
-          href: "/dados", 
-          label: "Dados Abertos",
-          description: "Datasets e APIs públicas para consulta"
         },
       ]
     },
