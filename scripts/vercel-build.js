@@ -2,7 +2,21 @@ const { execSync } = require('child_process');
 
 function run(cmd, options = {}) {
   console.log(`\n> ${cmd}`);
-  execSync(cmd, { stdio: 'inherit', ...options });
+  try {
+    execSync(cmd, { stdio: 'inherit', ...options });
+  } catch (err) {
+    const nodeMajor = Number(String(process.versions.node || '').split('.')[0]);
+    console.error(`\nFalha ao executar: ${cmd}`);
+    if (err && typeof err.status !== 'undefined') {
+      console.error(`Exit code: ${err.status}`);
+    }
+    if (Number.isFinite(nodeMajor) && nodeMajor >= 24) {
+      console.error(
+        `\nDetectei Node.js ${process.versions.node}. Para Next 15 + Prisma, recomendo configurar o Vercel para Node 20 (Project Settings → General → Node.js Version) ou respeitar package.json engines.`
+      );
+    }
+    throw err;
+  }
 }
 
 function ensureEnv() {
@@ -28,6 +42,7 @@ function migrateWithDirectIfPresent() {
 }
 
 function main() {
+  console.log(`Node.js: ${process.versions.node}`);
   ensureEnv();
 
   // Em Vercel, as dependências já foram instaladas antes do build.
