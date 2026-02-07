@@ -76,7 +76,7 @@ function Header() {
             <Link href="/" className="flex items-center group" aria-label="Página inicial do InPACTA">
               <div className="relative h-10 sm:h-12">
                 <Image
-                  src="/logo-clara.svg?v=20251110"
+                  src="/logo-clara.svg"
                   alt="InPACTA Logo"
                   width={160}
                   height={50}
@@ -84,7 +84,7 @@ function Header() {
                   priority
                 />
                 <Image
-                  src="/logo-escura.svg?v=20251110"
+                  src="/logo-escura.svg"
                   alt="InPACTA Logo"
                   width={160}
                   height={50}
@@ -116,7 +116,7 @@ function Footer() {
             <Link href="/" className="inline-block group">
               <div className="relative h-9 sm:h-10 transition-transform group-hover:scale-105">
                 <Image
-                  src="/logo-clara.svg?v=20251110"
+                  src="/logo-clara.svg"
                   alt="InPACTA Logo"
                   width={140}
                   height={48}

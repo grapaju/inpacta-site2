@@ -123,12 +123,12 @@ const AdminHeader = () => {
           <Link href="/admin" className="lg:hidden">
             <img
               className="h-8 dark:hidden"
-              src="/logo-clara.svg?v=20251110"
+              src="/logo-escura.svg"
               alt="INPACTA"
             />
             <img
               className="hidden h-8 dark:block"
-              src="/logo-clara.svg?v=20251110"
+              src="/logo-clara.svg"
               alt="INPACTA"
             />
           </Link>

@@ -1,3 +1,30 @@
 {
-    "prisma.pinToPrisma6": true
-}
+  "prisma.pinToPrisma6": true,
+
+  /* 🔥 Reduz carga do VS Code */
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.next/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/vendor/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.next": true,
+    "**/dist": true,
+    "**/vendor": true
+  },
+
+  /* 🤖 Copilot focado no que importa */
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": false,
+    "yaml": false,
+    "json": false
+  },
+
+  /* 🧠 Menos contexto = respostas mais rápidas */
+  "github.copilot.adv
+

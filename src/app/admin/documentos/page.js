@@ -6,12 +6,157 @@ import Link from 'next/link';
 import StatusBadge from '@/components/admin/StatusBadge';
 import Pagination from '@/components/admin/Pagination';
 
-const categoriaMacroLabels = {
-  RELATORIOS_FINANCEIROS: 'Relatórios Financeiros',
-  RELATORIOS_GESTAO: 'Relatórios de Gestão',
-  DOCUMENTOS_OFICIAIS: 'Documentos Oficiais',
-  LICITACOES_E_REGULAMENTOS: 'Licitações e Regulamentos',
-};
+import { categoriaMacroLabels, categoriaMacroOptions } from '@/lib/documentosTaxonomy';
+import { canCreateNewVersion } from '@/lib/documentosVersioning';
+
+// Componente de menu dropdown para ações
+function ActionsMenu({ doc, canVersion }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
+  const [openUpwards, setOpenUpwards] = useState(false);
+  const buttonRef = useState(null)[0];
+  const router = useRouter();
+
+  const handleToggle = (e) => {
+    if (!isOpen) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const menuHeight = canVersion ? 200 : 160; // Altura aproximada do menu
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      
+      // Abre para cima se não houver espaço suficiente abaixo
+      const shouldOpenUpwards = spaceBelow < menuHeight && spaceAbove > menuHeight;
+      setOpenUpwards(shouldOpenUpwards);
+      
+      setMenuPosition({
+        top: shouldOpenUpwards ? rect.top - 4 : rect.bottom + 4,
+        right: window.innerWidth - rect.right,
+      });
+    }
+    setIsOpen(!isOpen);
+  };
+
+  const handleRevogar = async () => {
+    if (!confirm('Tem certeza que deseja revogar este documento?')) return;
+    
+    try {
+      const token = localStorage.getItem('adminToken');
+      const res = await fetch(`/api/admin/documentos/${doc.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: 'ARCHIVED' }),
+      });
+
+      if (res.ok) {
+        alert('Documento revogado com sucesso');
+        window.location.reload();
+      } else {
+        const data = await res.json();
+        alert(data?.error || 'Erro ao revogar documento');
+      }
+    } catch (err) {
+      alert('Erro ao revogar documento');
+    }
+  };
+
+  return (
+    <div className="admin-dropdown">
+      <button
+        type="button"
+        className="admin-dropdown-trigger"
+        onClick={handleToggle}
+        aria-label="Menu de ações"
+      >
+        ⋮
+      </button>
+      
+      {isOpen && (
+        <>
+          <div 
+            className="admin-dropdown-overlay" 
+            onClick={() => setIsOpen(false)}
+          />
+          <div 
+            className="admin-dropdown-menu" 
+            style={{
+              position: 'fixed',
+              top: openUpwards ? 'auto' : `${menuPosition.top}px`,
+              bottom: openUpwards ? `${window.innerHeight - menuPosition.top}px` : 'auto',
+              right: `${menuPosition.right}px`,
+              left: 'auto',
+            }}
+          >
+            {canVersion ? (
+              <>
+                <Link
+                  href={`/admin/documentos/${doc.id}?tab=versoes&action=nova`}
+                  className="admin-dropdown-item"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Nova versão
+                </Link>
+                <Link
+                  href={`/admin/documentos/${doc.id}?tab=versoes`}
+                  className="admin-dropdown-item"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Ver versões
+                </Link>
+                <Link
+                  href={`/admin/documentos/${doc.id}`}
+                  className="admin-dropdown-item"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Editar dados básicos
+                </Link>
+                <button
+                  type="button"
+                  className="admin-dropdown-item admin-dropdown-item-danger"
+                  onClick={() => {
+                    setIsOpen(false);
+                    handleRevogar();
+                  }}
+                >
+                  Revogar documento
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href={`/admin/documentos/${doc.id}?view=true`}
+                  className="admin-dropdown-item"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Visualizar
+                </Link>
+                <Link
+                  href={`/admin/documentos/${doc.id}`}
+                  className="admin-dropdown-item"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Editar
+                </Link>
+                <button
+                  type="button"
+                  className="admin-dropdown-item admin-dropdown-item-danger"
+                  onClick={() => {
+                    setIsOpen(false);
+                    handleRevogar();
+                  }}
+                >
+                  Revogar
+                </button>
+              </>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 const apareceEmLabels = {
   TRANSPARENCIA: 'Transparência',
@@ -132,7 +277,18 @@ export default function AdminDocumentosPage() {
           onChange={(e) => handleFilterChange('categoria_macro', e.target.value)}
         >
           <option value="">Todas as Categorias Macro</option>
-          {Object.entries(categoriaMacroLabels).map(([value, label]) => (
+          {categoriaMacroOptions.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+          {/* Legado (caso existam documentos antigos nesta categoria) */}
+          <option value="CONTRATOS_PARCERIAS">{categoriaMacroLabels.CONTRATOS_PARCERIAS}</option>
+
+          {/* mantém compatibilidade para quaisquer outros valores existentes no mapa */}
+          {Object.entries(categoriaMacroLabels)
+            .filter(([value]) => !categoriaMacroOptions.some((opt) => opt.value === value) && value !== 'CONTRATOS_PARCERIAS')
+            .map(([value, label]) => (
             <option key={value} value={value}>
               {label}
             </option>
@@ -153,7 +309,7 @@ export default function AdminDocumentosPage() {
         <input
           type="search"
           className="admin-filter-input"
-          placeholder="Buscar por título, slug, subcategoria..."
+          placeholder="Buscar por título, slug, tipo..."
           value={filters.search}
           onChange={(e) => handleFilterChange('search', e.target.value)}
         />
@@ -183,9 +339,10 @@ export default function AdminDocumentosPage() {
                 <tr>
                   <th>Título</th>
                   <th>Categoria</th>
-                  <th>Subcategoria</th>
+                  <th>Tipo</th>
                   <th>Destino</th>
                   <th>Status</th>
+                  <th>Versão atual</th>
                   <th>Atualizado</th>
                   <th className="admin-table-actions">Ações</th>
                 </tr>
@@ -193,7 +350,7 @@ export default function AdminDocumentosPage() {
               <tbody>
                 {documents.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="admin-table-empty">
+                    <td colSpan="8" className="admin-table-empty">
                       Nenhum documento encontrado
                     </td>
                   </tr>
@@ -218,16 +375,17 @@ export default function AdminDocumentosPage() {
                       <td>
                         <StatusBadge status={doc.status} />
                       </td>
+                      <td>
+                        {canCreateNewVersion(doc.categoriaMacro, doc.subcategoria) && doc?.versaoVigente?.versao
+                          ? `v${doc.versaoVigente.versao}`
+                          : '—'}
+                      </td>
                       <td>{formatDate(doc.updatedAt)}</td>
                       <td className="admin-table-actions">
-                        <div className="admin-table-actions-inner">
-                          <Link
-                            href={`/admin/documentos/${doc.id}`}
-                            className="admin-btn-sm admin-btn-secondary"
-                          >
-                            Editar
-                          </Link>
-                        </div>
+                        <ActionsMenu 
+                          doc={doc} 
+                          canVersion={canCreateNewVersion(doc.categoriaMacro, doc.subcategoria)} 
+                        />
                       </td>
                     </tr>
                   ))

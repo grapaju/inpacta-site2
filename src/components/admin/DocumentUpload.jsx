@@ -113,6 +113,8 @@ export default function DocumentUpload({ onUploadComplete, uploadContext, curren
       formData.append('file', selectedFile);
       formData.append('documentSlug', uploadContext.documentSlug);
       if (uploadContext?.year) formData.append('year', String(uploadContext.year));
+      if (uploadContext?.subcategoria) formData.append('subcategoria', uploadContext.subcategoria);
+      if (uploadContext?.numeroDocumento) formData.append('numeroDocumento', uploadContext.numeroDocumento);
 
       const xhr = new XMLHttpRequest();
 

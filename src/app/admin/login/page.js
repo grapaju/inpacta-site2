@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('admin@inpacta.org.br')
@@ -54,11 +55,14 @@ export default function AdminLogin() {
     <div className="min-h-screen bg-gray-50 px-4 py-10 flex items-center justify-center" suppressHydrationWarning>
       <div className="w-full max-w-md bg-white border border-gray-200 rounded-xl shadow-lg p-6 sm:p-8">
         <div className="flex items-center justify-center mb-6">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" className="h-10 w-auto">
-            <text x="10" y="40" fontFamily="Arial, sans-serif" fontSize="32" fontWeight="bold" fill="#0A2540">
-              InPACTA
-            </text>
-          </svg>
+          <Image
+            src="/logo-escura.svg"
+            alt="InPACTA"
+            width={180}
+            height={56}
+            className="h-10 w-auto"
+            priority
+          />
         </div>
 
         <h1 className="text-center text-xl font-semibold text-gray-900">

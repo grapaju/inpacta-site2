@@ -657,10 +657,6 @@
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 8px;
-  overflow: hidden;
-}
-
-.admin-table-container {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   max-width: 100%;
@@ -702,6 +698,10 @@
 
 .admin-table tbody tr:hover {
   background: var(--section-alt-bg);
+}
+
+.admin-table tbody tr {
+  position: relative;
 }
 
 .admin-table-actions {
@@ -771,6 +771,74 @@
 .admin-badge-info {
   background: rgba(58, 111, 166, 0.10);
   color: var(--accent);
+}
+
+/* Dropdown Menu para Ações */
+.admin-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.admin-dropdown-trigger {
+  background: transparent;
+  border: none;
+  color: var(--foreground);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.admin-dropdown-trigger:hover {
+  background: var(--section-alt-bg);
+  color: var(--primary);
+}
+
+.admin-dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9998;
+}
+
+.admin-dropdown-menu {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-width: 180px;
+  z-index: 9999;
+}
+
+.admin-dropdown-item {
+  display: block;
+  padding: 0.625rem 1rem;
+  color: var(--foreground);
+  text-decoration: none;
+  font-size: 0.875rem;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.admin-dropdown-item:hover {
+  background: var(--section-alt-bg);
+}
+
+.admin-dropdown-item-danger {
+  color: var(--danger);
+}
+
+.admin-dropdown-item-danger:hover {
+  background: rgba(239, 68, 68, 0.1);
 }
 
 /* Paginação */
@@ -960,6 +1028,180 @@
   margin-top: 0.25rem;
   font-size: 0.8125rem;
   color: var(--muted-text);
+}
+
+/* Documento (admin/documentos) - melhorias de UX/layout */
+.admin-doc-form-block {
+  margin-top: 1.25rem;
+  background: color-mix(in oklab, var(--section-alt-bg), var(--card) 65%);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.admin-doc-form-block:first-of-type {
+  margin-top: 0;
+}
+
+.admin-doc-form-block-title {
+  margin: 0 0 1rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.admin-form-label-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.admin-form-label-row .admin-form-label {
+  margin: 0;
+}
+
+.admin-badge-lock {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(58, 111, 166, 0.10);
+  border: 1px solid rgba(58, 111, 166, 0.18);
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.admin-segmented {
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.35rem;
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--section-alt-bg), var(--card) 40%);
+  border: 1px solid var(--border);
+}
+
+.admin-segmented-btn {
+  flex: 1;
+  border: none;
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  background: transparent;
+  color: var(--muted-text);
+}
+
+.admin-segmented-btn:hover {
+  background: rgba(var(--primary-rgb), 0.06);
+  color: var(--foreground);
+}
+
+.admin-segmented-btn[aria-pressed='true'] {
+  background: var(--primary);
+  color: var(--primary-contrast);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
+}
+
+.admin-doc-stepper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.admin-doc-step {
+  position: relative;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--section-alt-bg), var(--card) 60%);
+  text-align: left;
+}
+
+.admin-doc-step[disabled] {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.admin-doc-step-dot {
+  width: 34px;
+  height: 34px;
+  border-radius: 9999px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 0.95rem;
+  border: 2px solid rgba(var(--primary-rgb), 0.28);
+  color: var(--primary);
+  background: rgba(var(--primary-rgb), 0.06);
+  flex: 0 0 auto;
+}
+
+.admin-doc-step[data-state='active'] {
+  border-color: rgba(var(--primary-rgb), 0.38);
+  box-shadow: 0 10px 26px -18px rgba(15, 23, 42, 0.35);
+}
+
+.admin-doc-step[data-state='active'] .admin-doc-step-dot {
+  border-color: rgba(var(--primary-rgb), 0.55);
+}
+
+.admin-doc-step[data-state='completed'] {
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.admin-doc-step[data-state='completed'] .admin-doc-step-dot {
+  border-color: rgba(34, 197, 94, 0.55);
+  background: rgba(34, 197, 94, 0.12);
+  color: color-mix(in oklab, var(--success), black 12%);
+}
+
+.admin-doc-step-title {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--foreground);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.admin-doc-step-sub {
+  font-size: 0.8125rem;
+  color: var(--muted-text);
+  margin-top: 0.2rem;
+}
+
+.admin-tooltip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--muted-text);
+  font-size: 0.75rem;
+  font-weight: 800;
+  margin-left: 0.35rem;
+}
+
+.admin-form-meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+  color: var(--muted-text);
+  font-size: 0.8125rem;
 }
 
 .admin-help-text {

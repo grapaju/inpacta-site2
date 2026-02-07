@@ -2,33 +2,39 @@ import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
 
+import { parseDateInputToUTC } from '@/lib/dateOnly';
+import {
+  categoriaMacroLabels,
+  subcategoriasPorMacro,
+  getCamposObrigatorios,
+} from '@/lib/documentosTaxonomy';
+
 const JWT_SECRET = process.env.JWT_SECRET || 'inpacta-jwt-secret-2024';
 
-const subcategoriasPorMacro = {
-  RELATORIOS_FINANCEIROS: [
-    'Balanços',
-    'Demonstrativos de Receitas e Despesas',
-    'Execução Orçamentária',
-    'Auditorias',
-  ],
-  RELATORIOS_GESTAO: [
-    'Relatórios de Atividades',
-    'Resultados Alcançados',
-    'Impacto dos Projetos',
-  ],
-  DOCUMENTOS_OFICIAIS: [
-    'Atos Normativos',
-    'Regimentos',
-    'Estatuto Social',
-    'Documentos de Constituição',
-    'Resoluções da Diretoria',
-  ],
-  LICITACOES_E_REGULAMENTOS: [
-    'Regulamento',
-    'Modelos de Edital',
-    'Termos de Referência',
-  ],
-};
+const safeTrim = (value) => (typeof value === 'string' ? value.trim() : '');
+
+function parseOptionalDecimalString(value) {
+  const raw = safeTrim(value);
+  if (!raw) return null;
+
+  // Aceita formatos como: 1234.56, 1234,56, 1.234,56, R$ 1.234,56
+  let cleaned = raw.replace(/[^0-9,\.]/g, '');
+  if (!cleaned) return null;
+
+  if (cleaned.includes(',')) {
+    cleaned = cleaned.replace(/\./g, '').replace(',', '.');
+  } else {
+    const parts = cleaned.split('.').filter(Boolean);
+    if (parts.length > 2) {
+      const decimal = parts.pop();
+      const integer = parts.join('');
+      cleaned = `${integer}.${decimal}`;
+    }
+  }
+
+  if (!/^\d+(?:\.\d{1,2})?$/.test(cleaned)) return null;
+  return cleaned;
+}
 
 function isSubcategoriaValida(categoriaMacro, subcategoria) {
   const allowed = subcategoriasPorMacro[categoriaMacro];
@@ -122,35 +128,82 @@ export async function PATCH(request, { params }) {
     const { id } = await params;
     const body = await request.json();
 
+    const current = await prisma.documento.findUnique({
+      where: { id },
+      select: {
+        categoriaMacro: true,
+        subcategoria: true,
+        status: true,
+        versaoVigenteId: true,
+        ano: true,
+        dataDocumento: true,
+        descricaoCurta: true,
+        orgaoEmissor: true,
+        numeroDocumento: true,
+        contratadaParceiro: true,
+        valorGlobal: true,
+        vigenciaMeses: true,
+        vigenciaInicio: true,
+        vigenciaFim: true,
+        periodo: true,
+        categoriaMacroLicitacoes: true,
+        subcategoriaLicitacoes: true,
+      },
+    });
+
+    if (!current) {
+      return NextResponse.json({ success: false, error: 'Documento não encontrado' }, { status: 404 });
+    }
+
+    // Bloqueia mudanças estruturais após existir versão publicada.
+    // Consideramos "publicada" quando o Documento está PUBLISHED e já há versão vigente.
+    if (
+      current.status === 'PUBLISHED' &&
+      current.versaoVigenteId &&
+      (body?.categoria_macro !== undefined || body?.subcategoria !== undefined)
+    ) {
+      const incomingMacro = body?.categoria_macro !== undefined
+        ? String(body.categoria_macro || '').trim()
+        : current.categoriaMacro;
+      const incomingSub = body?.subcategoria !== undefined
+        ? String(body.subcategoria || '').trim()
+        : current.subcategoria;
+
+      const isChanging = incomingMacro !== current.categoriaMacro || incomingSub !== current.subcategoria;
+      if (isChanging) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Não é permitido alterar categoria/tipo após existir versão publicada. Crie um novo documento.',
+          },
+          { status: 400 }
+        );
+      }
+    }
+
     const categoriaMacroProvided = body?.categoria_macro !== undefined;
     const subcategoriaProvided = body?.subcategoria !== undefined;
 
     const categoriaMacroLicitacoesProvided = body?.categoria_macro_licitacoes !== undefined;
     const subcategoriaLicitacoesProvided = body?.subcategoria_licitacoes !== undefined;
 
-    if (categoriaMacroProvided || subcategoriaProvided) {
-      let effectiveCategoriaMacro = body?.categoria_macro;
-      let effectiveSubcategoria = body?.subcategoria;
-
-      if (!categoriaMacroProvided || !subcategoriaProvided) {
-        const current = await prisma.documento.findUnique({
-          where: { id },
-          select: { categoriaMacro: true, subcategoria: true },
-        });
-
-        if (!current) {
-          return NextResponse.json({ success: false, error: 'Documento não encontrado' }, { status: 404 });
-        }
-
-        if (!categoriaMacroProvided) effectiveCategoriaMacro = current.categoriaMacro;
-        if (!subcategoriaProvided) effectiveSubcategoria = current.subcategoria;
-      }
+    // Normaliza/valida categoria + subcategoria
+    {
+      const effectiveCategoriaMacro = safeTrim(
+        categoriaMacroProvided ? body?.categoria_macro : current.categoriaMacro
+      );
+      const effectiveSubcategoriaIncoming = safeTrim(
+        subcategoriaProvided ? body?.subcategoria : current.subcategoria
+      );
 
       if (!effectiveCategoriaMacro) {
         return NextResponse.json({ success: false, error: 'categoria_macro é obrigatório' }, { status: 400 });
       }
+      if (!categoriaMacroLabels[effectiveCategoriaMacro]) {
+        return NextResponse.json({ success: false, error: 'categoria_macro inválido' }, { status: 400 });
+      }
 
-      effectiveSubcategoria = normalizeSubcategoria(effectiveCategoriaMacro, effectiveSubcategoria);
+      const effectiveSubcategoria = normalizeSubcategoria(effectiveCategoriaMacro, effectiveSubcategoriaIncoming);
       if (!effectiveSubcategoria) {
         return NextResponse.json(
           {
@@ -162,72 +215,126 @@ export async function PATCH(request, { params }) {
         );
       }
 
-      // Se subcategoria foi enviada (mesmo vazia), persistimos a efetiva (normalizada)
-      if (subcategoriaProvided) {
-        body.subcategoria = effectiveSubcategoria;
-      }
+      if (categoriaMacroProvided) body.categoria_macro = effectiveCategoriaMacro;
+      if (subcategoriaProvided) body.subcategoria = effectiveSubcategoria;
     }
 
     if (categoriaMacroLicitacoesProvided || subcategoriaLicitacoesProvided) {
-      const rawIncomingMacro = typeof body?.categoria_macro_licitacoes === 'string'
-        ? body.categoria_macro_licitacoes.trim()
-        : body?.categoria_macro_licitacoes;
-      const rawIncomingSub = typeof body?.subcategoria_licitacoes === 'string'
-        ? body.subcategoria_licitacoes.trim()
-        : body?.subcategoria_licitacoes;
+      const rawIncomingMacro = safeTrim(body?.categoria_macro_licitacoes);
+      const rawIncomingSub = safeTrim(body?.subcategoria_licitacoes);
 
-      if (categoriaMacroLicitacoesProvided && subcategoriaLicitacoesProvided && !rawIncomingMacro && !rawIncomingSub) {
+      const clearBoth = categoriaMacroLicitacoesProvided && subcategoriaLicitacoesProvided && !rawIncomingMacro && !rawIncomingSub;
+
+      if (clearBoth) {
         body.categoria_macro_licitacoes = null;
         body.subcategoria_licitacoes = null;
       } else {
-      let effectiveCategoriaMacroLicitacoes = body?.categoria_macro_licitacoes;
-      let effectiveSubcategoriaLicitacoes = body?.subcategoria_licitacoes;
-
-      if (!categoriaMacroLicitacoesProvided || !subcategoriaLicitacoesProvided) {
-        const current = await prisma.documento.findUnique({
-          where: { id },
-          select: { categoriaMacroLicitacoes: true, subcategoriaLicitacoes: true },
-        });
-
-        if (!current) {
-          return NextResponse.json({ success: false, error: 'Documento não encontrado' }, { status: 404 });
-        }
-
-        if (!categoriaMacroLicitacoesProvided) {
-          effectiveCategoriaMacroLicitacoes = current.categoriaMacroLicitacoes;
-        }
-        if (!subcategoriaLicitacoesProvided) {
-          effectiveSubcategoriaLicitacoes = current.subcategoriaLicitacoes;
-        }
-      }
-
-      if (!effectiveCategoriaMacroLicitacoes) {
-        return NextResponse.json(
-          { success: false, error: 'categoria_macro_licitacoes é obrigatório' },
-          { status: 400 }
+        const effectiveMacro = safeTrim(
+          categoriaMacroLicitacoesProvided ? body?.categoria_macro_licitacoes : current.categoriaMacroLicitacoes
         );
-      }
+        const effectiveSubIncoming = safeTrim(
+          subcategoriaLicitacoesProvided ? body?.subcategoria_licitacoes : current.subcategoriaLicitacoes
+        );
 
-      effectiveSubcategoriaLicitacoes = normalizeSubcategoria(
-        effectiveCategoriaMacroLicitacoes,
-        effectiveSubcategoriaLicitacoes
+        if (!effectiveMacro) {
+          return NextResponse.json(
+            { success: false, error: 'categoria_macro_licitacoes é obrigatório' },
+            { status: 400 }
+          );
+        }
+        if (!categoriaMacroLabels[effectiveMacro]) {
+          return NextResponse.json(
+            { success: false, error: 'categoria_macro_licitacoes inválido' },
+            { status: 400 }
+          );
+        }
+
+        const effectiveSub = normalizeSubcategoria(effectiveMacro, effectiveSubIncoming);
+        if (!effectiveSub) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: 'subcategoria_licitacoes é obrigatório',
+              suggested: subcategoriasPorMacro[effectiveMacro] || [],
+            },
+            { status: 400 }
+          );
+        }
+
+        if (categoriaMacroLicitacoesProvided) body.categoria_macro_licitacoes = effectiveMacro;
+        if (subcategoriaLicitacoesProvided) body.subcategoria_licitacoes = effectiveSub;
+      }
+    }
+
+    // Validações base + por categoria (usando valores efetivos)
+    const effectiveCategoriaMacro = safeTrim(
+      body?.categoria_macro !== undefined ? body.categoria_macro : current.categoriaMacro
+    );
+    const effectiveSubcategoria = safeTrim(
+      body?.subcategoria !== undefined ? body.subcategoria : current.subcategoria
+    );
+    const effectiveAno = body?.ano !== undefined
+      ? (typeof body.ano === 'number' ? body.ano : parseInt(String(body.ano || '').trim(), 10))
+      : current.ano;
+    const effectiveDataDocumento = body?.data_documento !== undefined
+      ? parseDateInputToUTC(body.data_documento)
+      : current.dataDocumento;
+    const effectiveDescricaoCurta = body?.descricao_curta !== undefined
+      ? safeTrim(body.descricao_curta)
+      : (current.descricaoCurta || '');
+
+    if (!Number.isInteger(effectiveAno) || effectiveAno < 1900 || effectiveAno > new Date().getFullYear() + 10) {
+      return NextResponse.json({ success: false, error: 'Ano é obrigatório e deve ser válido' }, { status: 400 });
+    }
+    if (!effectiveDataDocumento) {
+      return NextResponse.json({ success: false, error: 'data_documento é obrigatório e deve ser válido' }, { status: 400 });
+    }
+    if (!effectiveDescricaoCurta) {
+      return NextResponse.json({ success: false, error: 'descricao_curta é obrigatório' }, { status: 400 });
+    }
+
+    const effectiveOrgaoEmissor = body?.orgao_emissor !== undefined ? safeTrim(body.orgao_emissor) : (current.orgaoEmissor || '');
+    const effectiveNumeroDocumento = body?.numero_documento !== undefined ? safeTrim(body.numero_documento) : (current.numeroDocumento || '');
+    const effectiveContratadaParceiro = body?.contratada_parceiro !== undefined ? safeTrim(body.contratada_parceiro) : (current.contratadaParceiro || '');
+    const effectiveValorGlobal = body?.valor_global !== undefined
+      ? parseOptionalDecimalString(body.valor_global)
+      : (current.valorGlobal ? String(current.valorGlobal) : null);
+    const effectivePeriodo = body?.periodo !== undefined ? safeTrim(body.periodo) : (current.periodo || '');
+
+    if (body?.valor_global !== undefined && safeTrim(body.valor_global) && !effectiveValorGlobal) {
+      return NextResponse.json({ success: false, error: 'valor_global inválido (use números com 2 casas decimais)' }, { status: 400 });
+    }
+
+    const required = getCamposObrigatorios(effectiveCategoriaMacro, effectiveSubcategoria);
+    if (required.has('orgao_emissor') && !effectiveOrgaoEmissor) {
+      return NextResponse.json(
+        { success: false, error: 'orgao_emissor é obrigatório para este tipo de documento' },
+        { status: 400 }
       );
-
-      if (!effectiveSubcategoriaLicitacoes) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'subcategoria_licitacoes é obrigatório',
-            suggested: subcategoriasPorMacro[effectiveCategoriaMacroLicitacoes] || [],
-          },
-          { status: 400 }
-        );
-      }
-
-      if (subcategoriaLicitacoesProvided) {
-        body.subcategoria_licitacoes = effectiveSubcategoriaLicitacoes;
-      }
-      }
+    }
+    if (required.has('numero_documento') && !effectiveNumeroDocumento) {
+      return NextResponse.json(
+        { success: false, error: 'numero_documento é obrigatório para este tipo de documento' },
+        { status: 400 }
+      );
+    }
+    if (required.has('contratada_parceiro') && !effectiveContratadaParceiro) {
+      return NextResponse.json(
+        { success: false, error: 'contratada_parceiro é obrigatório para este tipo de documento' },
+        { status: 400 }
+      );
+    }
+    if (required.has('valor_global') && !effectiveValorGlobal) {
+      return NextResponse.json(
+        { success: false, error: 'valor_global é obrigatório para este tipo de documento' },
+        { status: 400 }
+      );
+    }
+    if (required.has('periodo') && !effectivePeriodo) {
+      return NextResponse.json(
+        { success: false, error: 'periodo é obrigatório para este tipo de documento' },
+        { status: 400 }
+      );
     }
 
     const updateData = {};
@@ -243,6 +350,17 @@ export async function PATCH(request, { params }) {
     }
     if (body?.descricao_curta !== undefined) updateData.descricaoCurta = body.descricao_curta;
     if (body?.orgao_emissor !== undefined) updateData.orgaoEmissor = body.orgao_emissor;
+    if (body?.ano !== undefined) updateData.ano = effectiveAno;
+    if (body?.data_documento !== undefined) updateData.dataDocumento = effectiveDataDocumento;
+    if (body?.numero_documento !== undefined) updateData.numeroDocumento = safeTrim(body.numero_documento) || null;
+    if (body?.contratada_parceiro !== undefined) updateData.contratadaParceiro = safeTrim(body.contratada_parceiro) || null;
+    if (body?.valor_global !== undefined) updateData.valorGlobal = (effectiveValorGlobal || null);
+    if (body?.vigencia_meses !== undefined) {
+      updateData.vigenciaMeses = safeTrim(body.vigencia_meses) ? parseOptionalInt(body.vigencia_meses) : null;
+    }
+    if (body?.vigencia_inicio !== undefined) updateData.vigenciaInicio = parseDateInputToUTC(body.vigencia_inicio);
+    if (body?.vigencia_fim !== undefined) updateData.vigenciaFim = parseDateInputToUTC(body.vigencia_fim);
+    if (body?.periodo !== undefined) updateData.periodo = safeTrim(body.periodo) || null;
     if (body?.aparece_em !== undefined) updateData.apareceEm = body.aparece_em;
     if (body?.status !== undefined) updateData.status = body.status;
     if (body?.ordem_exibicao !== undefined) {

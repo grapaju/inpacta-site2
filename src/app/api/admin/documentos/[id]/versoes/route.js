@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
 import { parseDateInputToUTC } from '@/lib/dateOnly';
+import { getRegrasVersaoPorTipo } from '@/lib/documentosTaxonomy';
+import { canCreateNewVersion } from '@/lib/documentosVersioning';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'inpacta-jwt-secret-2024';
 
@@ -79,6 +81,8 @@ export async function POST(request, { params }) {
     const numeroIdentificacao = body?.numero_identificacao;
     const dataAprovacao = body?.data_aprovacao;
     const descricaoAlteracao = body?.descricao_alteracao;
+    const statusNormativo = body?.status_normativo;
+    const statusContrato = body?.status_contrato;
     const arquivoPdf = body?.arquivo_pdf;
     const fileSize = body?.file_size;
     const fileHash = body?.file_hash;
@@ -120,6 +124,43 @@ export async function POST(request, { params }) {
 
       const nextVersion = (max?._max?.versao || 0) + 1;
 
+      // Para tipos NÃO versionáveis, permitimos apenas a primeira versão (v1)
+      // para anexar o PDF inicial.
+      if (!canCreateNewVersion(documento.categoriaMacro, documento.subcategoria) && nextVersion > 1) {
+        return {
+          error: {
+            status: 400,
+            message: 'Este tipo de documento não permite versionamento. Para alterações, crie um novo documento.',
+          },
+        };
+      }
+
+      // Status específicos por tipo (salvos na versão)
+      const categoriaMacro = String(documento.categoriaMacro || '');
+      const subcategoria = String(documento.subcategoria || '');
+      const normalizedStatusNormativo = typeof statusNormativo === 'string' ? statusNormativo.trim() : '';
+      const normalizedStatusContrato = typeof statusContrato === 'string' ? statusContrato.trim() : '';
+
+      const rules = getRegrasVersaoPorTipo(categoriaMacro, subcategoria);
+
+      if (rules.requiresStatusNormativo) {
+        if (!normalizedStatusNormativo) {
+          return { error: { status: 400, message: 'status_normativo é obrigatório para este tipo de documento' } };
+        }
+        if (!['VIGENTE', 'REVOGADO'].includes(normalizedStatusNormativo)) {
+          return { error: { status: 400, message: 'status_normativo inválido' } };
+        }
+      }
+
+      if (rules.requiresStatusContrato) {
+        if (!normalizedStatusContrato) {
+          return { error: { status: 400, message: 'status_contrato é obrigatório para este tipo de documento' } };
+        }
+        if (!['VIGENTE', 'ENCERRADO'].includes(normalizedStatusContrato)) {
+          return { error: { status: 400, message: 'status_contrato inválido' } };
+        }
+      }
+
       await tx.versaoDocumento.updateMany({
         where: { documentoId: id, isVigente: true },
         data: { isVigente: false },
@@ -132,6 +173,8 @@ export async function POST(request, { params }) {
           versao: nextVersion,
           dataAprovacao: parsedDataAprovacao,
           descricaoAlteracao: descricaoAlteracao || null,
+          statusNormativo: rules.requiresStatusNormativo ? normalizedStatusNormativo : null,
+          statusContrato: rules.requiresStatusContrato ? normalizedStatusContrato : null,
           arquivoPdf,
           fileSize: parseInt(String(fileSize), 10),
           fileHash,

@@ -13,7 +13,7 @@ export default function StatusBadge({ status }) {
       className: 'admin-badge admin-badge-published'
     },
     ARCHIVED: {
-      label: 'Arquivado',
+      label: 'Revogado',
       className: 'admin-badge admin-badge-archived'
     }
   };

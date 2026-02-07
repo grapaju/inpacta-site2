@@ -4,6 +4,15 @@ import prisma from '@/lib/prisma';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'inpacta-jwt-secret-2024';
 
+function devErrorPayload(error) {
+  if (process.env.NODE_ENV === 'production') return undefined;
+  return {
+    name: error?.name,
+    message: error?.message,
+    code: error?.code,
+  };
+}
+
 function verifyToken(request) {
   const authHeader = request.headers.get('authorization');
   if (!authHeader?.startsWith('Bearer ')) {
@@ -74,7 +83,7 @@ export async function GET(request) {
     }
 
     return NextResponse.json(
-      { success: false, error: 'Erro ao sugerir ordem de exibição' },
+      { success: false, error: 'Erro ao sugerir ordem de exibição', debug: devErrorPayload(error) },
       { status: 500 }
     );
   }

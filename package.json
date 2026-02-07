@@ -6,12 +6,13 @@
     "node": "20.x"
   },
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "prisma generate && next build",
+    "dev": "next dev",
+    "dev:turbo": "next dev --turbopack",
+    "build": "node scripts/prisma-generate-retry.js && next build",
     "vercel-build": "node scripts/vercel-build.js",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate",
+    "postinstall": "node scripts/prisma-generate-retry.js",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "node scripts/setup-production.js",
     "db:seed:documents": "node prisma/seed.js",

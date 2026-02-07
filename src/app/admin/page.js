@@ -6,30 +6,31 @@ import PageBreadcrumb from '@/components/admin/tailadmin/PageBreadcrumb'
 import ComponentCard from '@/components/admin/tailadmin/ComponentCard'
 import PageMeta from '@/components/admin/tailadmin/PageMeta'
 
-const mockActivities = [
-  {
-    type: 'news',
-    author: 'Admin',
-    action: 'criou uma notícia',
-    title: 'Nova funcionalidade no portal',
-    timeAgo: 'há 2 horas',
-    link: '/admin/news'
-  },
-  {
-    type: 'user',
-    author: 'Sistema',
-    action: 'cadastrou um usuário',
-    title: 'João Silva',
-    timeAgo: 'há 5 horas',
-    link: '/admin/users'
-  }
-]
+function formatTimeAgo(dateLike) {
+  const date = dateLike ? new Date(dateLike) : null
+  if (!date || Number.isNaN(date.getTime())) return ''
+
+  const diffMs = Date.now() - date.getTime()
+  const diffSeconds = Math.max(0, Math.floor(diffMs / 1000))
+
+  if (diffSeconds < 60) return 'agora'
+  const diffMinutes = Math.floor(diffSeconds / 60)
+  if (diffMinutes < 60) return `há ${diffMinutes} min`
+  const diffHours = Math.floor(diffMinutes / 60)
+  if (diffHours < 24) return `há ${diffHours} h`
+  const diffDays = Math.floor(diffHours / 24)
+  if (diffDays < 30) return `há ${diffDays} d`
+  const diffMonths = Math.floor(diffDays / 30)
+  if (diffMonths < 12) return `há ${diffMonths} mês${diffMonths > 1 ? 'es' : ''}`
+  const diffYears = Math.floor(diffMonths / 12)
+  return `há ${diffYears} ano${diffYears > 1 ? 's' : ''}`
+}
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
     news: 0,
-    services: 0,
-    projects: 0,
+    documentos: 0,
+    biddings: 0,
     users: 0
   })
   const [loading, setLoading] = useState(true)
@@ -91,11 +92,38 @@ export default function AdminDashboard() {
 
   const fetchActivities = async () => {
     try {
-      // TODO: Implementar API de activities
-      setActivities(mockActivities)
+      const token = localStorage.getItem('adminToken')
+      if (!token) {
+        setActivities([])
+        return
+      }
+
+      const response = await fetch('/api/admin/activity?limit=10', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      if (!response.ok) {
+        console.error('Erro ao buscar atividades:', response.status, response.statusText)
+        setActivities([])
+        return
+      }
+
+      const data = await response.json()
+      const normalized = Array.isArray(data)
+        ? data.map((a) => ({
+            ...a,
+            author: a.author || 'Sistema',
+            action: a.action || 'atualizou',
+            timeAgo: a.timeAgo || formatTimeAgo(a.updatedAt || a.createdAt),
+          }))
+        : []
+
+      setActivities(normalized)
     } catch (error) {
       console.error('Erro ao buscar atividades:', error);
-      setActivities(mockActivities)
+      setActivities([])
     } finally {
       setLoadingActivities(false);
     }
@@ -120,18 +148,18 @@ export default function AdminDashboard() {
               <p className="text-sm text-gray-500">Total de notícias</p>
             </ComponentCard>
 
-            <ComponentCard title="Serviços">
+            <ComponentCard title="Documentos">
               <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {loading ? '—' : stats.services}
+                {loading ? '—' : stats.documentos}
               </div>
-              <p className="text-sm text-gray-500">Serviços cadastrados</p>
+              <p className="text-sm text-gray-500">Documentos cadastrados</p>
             </ComponentCard>
 
-            <ComponentCard title="Projetos">
+            <ComponentCard title="Licitações">
               <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {loading ? '—' : stats.projects}
+                {loading ? '—' : stats.biddings}
               </div>
-              <p className="text-sm text-gray-500">Projetos ativos</p>
+              <p className="text-sm text-gray-500">Processos cadastrados</p>
             </ComponentCard>
 
             <ComponentCard title="Usuários">

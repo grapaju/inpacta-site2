@@ -234,7 +234,7 @@ export default function AdminLayout({ children }) {
           <div className="flex items-center flex-shrink-0 px-6 py-4">
             <Link href="/" className="flex items-center">
               <img
-                src="/logo-clara.svg?v=20251110"
+                src="/logo-escura.svg"
                 alt="INPACTA"
                 className="h-8 w-auto"
               />

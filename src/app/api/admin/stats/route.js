@@ -32,16 +32,18 @@ export async function GET(request) {
       }
 
       // Buscar estatísticas
-      const [newsCount, projectsCount, usersCount, publishedNewsCount] = await Promise.all([
+      const [newsCount, documentosCount, biddingsCount, usersCount, publishedNewsCount] = await Promise.all([
         prisma.news.count(),
-        prisma.project.count(),
+        prisma.documento.count(),
+        prisma.bidding.count(),
         prisma.user.count(),
         prisma.news.count({ where: { published: true } })
       ])
 
       return NextResponse.json({
         news: newsCount,
-        projects: projectsCount,
+        documentos: documentosCount,
+        biddings: biddingsCount,
         users: usersCount,
         publishedNews: publishedNewsCount
       })

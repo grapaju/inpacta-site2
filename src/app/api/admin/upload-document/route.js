@@ -54,6 +54,8 @@ export async function POST(request) {
     const file = formData.get('file');
     const documentSlug = formData.get('documentSlug');
     const yearFromClient = formData.get('year');
+    const subcategoria = formData.get('subcategoria'); // Ex: "Contrato", "Termo Aditivo"
+    const numeroDocumento = formData.get('numeroDocumento'); // Ex: "001/2024"
 
     if (!file) {
       return NextResponse.json(
@@ -90,12 +92,24 @@ export async function POST(request) {
     const buffer = Buffer.from(await file.arrayBuffer());
     const fileHash = crypto.createHash('sha256').update(buffer).digest('hex');
     const ext = getFileExtension(file.name);
-    const baseName = file.name.replace(/\.[^/.]+$/, '');
-    const safeBaseName = sanitizeForUrl(baseName) || 'arquivo';
-    const timestamp = Date.now();
-    const filename = `${timestamp}-${safeBaseName}${ext ? `.${ext}` : ''}`;
-
+    
+    // Gerar nome no padrão: tipo-numero-ano-inpacta.pdf
     const year = yearFromClient ? parseInt(String(yearFromClient), 10) : new Date().getFullYear();
+    let filename;
+    
+    if (subcategoria && numeroDocumento) {
+      // Padrão personalizado: tipo-numero-ano-inpacta.pdf
+      const tipoSanitized = sanitizeForUrl(subcategoria);
+      const numeroSanitized = sanitizeForUrl(numeroDocumento).replace(/\//g, '-');
+      filename = `${tipoSanitized}-${numeroSanitized}-${year}-inpacta${ext ? `.${ext}` : '.pdf'}`;
+    } else {
+      // Fallback: timestamp-nome-original
+      const baseName = file.name.replace(/\.[^/.]+$/, '');
+      const safeBaseName = sanitizeForUrl(baseName) || 'arquivo';
+      const timestamp = Date.now();
+      filename = `${timestamp}-${safeBaseName}${ext ? `.${ext}` : ''}`;
+    }
+
     const safeSlug = sanitizeForUrl(documentSlug);
 
     const uploadDir = path.join(

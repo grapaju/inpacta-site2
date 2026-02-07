@@ -166,20 +166,24 @@ const AdminSidebar = () => {
     if (visibleItems.length === 0) return null
 
     const isGroupOpen = openSubmenu[group.id]
+    const hasActiveChild = visibleItems.some(item => isActive(item.href))
 
     return (
       <li key={group.id}>
         <button
+          type="button"
           onClick={() => handleSubmenuToggle(group.id)}
+          aria-expanded={Boolean(isGroupOpen)}
+          aria-controls={`admin-submenu-${group.id}`}
           className={`menu-item group ${
-            isGroupOpen ? 'menu-item-active' : 'menu-item-inactive'
+            hasActiveChild ? 'menu-item-active' : isGroupOpen ? 'menu-item-open' : 'menu-item-inactive'
           } cursor-pointer ${
             !isExpanded && !isHovered ? 'lg:justify-center' : 'lg:justify-start'
           } w-full`}
         >
           <span
             className={`menu-item-icon-size ${
-              isGroupOpen ? 'menu-item-icon-active' : 'menu-item-icon-inactive'
+              hasActiveChild || isGroupOpen ? 'menu-item-icon-active' : 'menu-item-icon-inactive'
             }`}
           >
             {group.items[0]?.icon}
@@ -189,8 +193,8 @@ const AdminSidebar = () => {
               <span className="menu-item-text flex-1 text-left">{group.label}</span>
               <svg
                 className={`ml-auto w-5 h-5 transition-transform duration-200 ${
-                  isGroupOpen ? 'rotate-180 text-primary' : ''
-                }`}
+                  isGroupOpen ? 'rotate-180' : ''
+                } ${hasActiveChild ? 'text-primary' : ''}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -203,6 +207,7 @@ const AdminSidebar = () => {
         
         {(isExpanded || isHovered || isMobileOpen) && (
           <div
+            id={`admin-submenu-${group.id}`}
             ref={(el) => {
               subMenuRefs.current[group.id] = el
             }}
@@ -216,6 +221,7 @@ const AdminSidebar = () => {
                 <li key={item.name}>
                   <Link
                     href={item.href}
+                    aria-current={isActive(item.href) ? 'page' : undefined}
                     className={`menu-dropdown-item ${
                       isActive(item.href)
                         ? 'menu-dropdown-item-active'
@@ -238,10 +244,10 @@ const AdminSidebar = () => {
       className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r 
         ${
           isExpanded || isMobileOpen
-            ? 'w-[290px]'
+            ? 'w-72.5'
             : isHovered
-            ? 'w-[290px]'
-            : 'w-[90px]'
+            ? 'w-72.5'
+            : 'w-22.5'
         }
         ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0`}
@@ -263,12 +269,12 @@ const AdminSidebar = () => {
             <>
               <img
                 className="h-8 dark:hidden"
-                src="/logo-clara.svg?v=20251110"
+                src="/logo-escura.svg"
                 alt="INPACTA"
               />
               <img
                 className="hidden h-8 dark:block"
-                src="/logo-clara.svg?v=20251110"
+                src="/logo-clara.svg"
                 alt="INPACTA"
               />
             </>
@@ -294,7 +300,7 @@ const AdminSidebar = () => {
           <div className="flex flex-col gap-4">
             <div>
               <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
+                className={`mb-4 text-xs uppercase flex leading-5 text-gray-400 ${
                   !isExpanded && !isHovered
                     ? 'lg:justify-center'
                     : 'justify-start'

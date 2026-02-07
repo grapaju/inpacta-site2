@@ -195,16 +195,28 @@ model ContactSubmission {
 // ============================================================================
 
 enum CategoriaMacroDocumento {
-  RELATORIOS_FINANCEIROS
-  RELATORIOS_GESTAO
+  INSTITUCIONAL
+  GOVERNANCA_GESTAO
+  NORMATIVOS_INTERNOS
+  CONTRATOS_PARCERIAS
+  PRESTACAO_CONTAS
   DOCUMENTOS_OFICIAIS
-  LICITACOES_E_REGULAMENTOS
 }
 
 enum DocumentoStatusPublicacao {
   DRAFT
   PUBLISHED
   ARCHIVED
+}
+
+enum StatusNormativo {
+  VIGENTE
+  REVOGADO
+}
+
+enum StatusContrato {
+  VIGENTE
+  ENCERRADO
 }
 
 enum DocumentoApareceEm {
@@ -218,15 +230,31 @@ model Documento {
   slug           String                    @unique
 
   categoriaMacro CategoriaMacroDocumento   @map("categoria_macro")
-  subcategoria   String
+  subcategoria   String // Agora será o "Tipo de documento"
+
+  // Campos base obrigatórios
+  ano            Int
+  dataDocumento  DateTime                  @map("data_documento")
+  descricaoCurta String                    @db.Text @map("descricao_curta")
+
+  // Campos específicos por categoria (opcionais)
+  orgaoEmissor   String?                   @map("orgao_emissor")
+  numeroDocumento String?                  @map("numero_documento")
+  
+  // Campos para Contratos e Parcerias
+  contratadaParceiro String?              @map("contratada_parceiro")
+  valorGlobal        Decimal?             @map("valor_global") @db.Decimal(15,2)
+  vigenciaMeses      Int?                 @map("vigencia_meses")
+  vigenciaInicio     DateTime?            @map("vigencia_inicio")
+  vigenciaFim        DateTime?            @map("vigencia_fim")
+  
+  // Campo para Prestação de Contas
+  periodo            String?              @map("periodo")
 
   // Classificação específica por área (opcional)
   // Permite que o mesmo documento apareça em Licitações com outra categoria/subcategoria
   categoriaMacroLicitacoes CategoriaMacroDocumento? @map("categoria_macro_licitacoes")
   subcategoriaLicitacoes   String?                  @map("subcategoria_licitacoes")
-
-  descricaoCurta String                    @db.Text @map("descricao_curta")
-  orgaoEmissor   String                    @map("orgao_emissor")
 
   apareceEm      DocumentoApareceEm[]      @map("aparece_em")
   status         DocumentoStatusPublicacao @default(DRAFT)
@@ -254,6 +282,10 @@ model VersaoDocumento {
   versao              Int
   dataAprovacao       DateTime @map("data_aprovacao")
   descricaoAlteracao  String?  @db.Text @map("descricao_alteracao")
+
+  // Status específicos para categorias especiais
+  statusNormativo     StatusNormativo? @map("status_normativo")
+  statusContrato      StatusContrato?  @map("status_contrato")
 
   arquivoPdf          String   @map("arquivo_pdf")
   fileSize            Int      @map("file_size")

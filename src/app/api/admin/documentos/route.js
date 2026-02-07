@@ -2,33 +2,49 @@ import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
 
+import { parseDateInputToUTC } from '@/lib/dateOnly';
+import {
+  categoriaMacroLabels,
+  subcategoriasPorMacro,
+  getCamposObrigatorios,
+} from '@/lib/documentosTaxonomy';
+import { canCreateNewVersion } from '@/lib/documentosVersioning';
+
 const JWT_SECRET = process.env.JWT_SECRET || 'inpacta-jwt-secret-2024';
 
-const subcategoriasPorMacro = {
-  RELATORIOS_FINANCEIROS: [
-    'Balanços',
-    'Demonstrativos de Receitas e Despesas',
-    'Execução Orçamentária',
-    'Auditorias',
-  ],
-  RELATORIOS_GESTAO: [
-    'Relatórios de Atividades',
-    'Resultados Alcançados',
-    'Impacto dos Projetos',
-  ],
-  DOCUMENTOS_OFICIAIS: [
-    'Atos Normativos',
-    'Regimentos',
-    'Estatuto Social',
-    'Documentos de Constituição',
-    'Resoluções da Diretoria',
-  ],
-  LICITACOES_E_REGULAMENTOS: [
-    'Regulamento',
-    'Modelos de Edital',
-    'Termos de Referência',
-  ],
-};
+function devErrorPayload(error) {
+  if (process.env.NODE_ENV === 'production') return undefined;
+  return {
+    name: error?.name,
+    message: error?.message,
+    code: error?.code,
+  };
+}
+
+const safeTrim = (value) => (typeof value === 'string' ? value.trim() : '');
+
+function parseOptionalDecimalString(value) {
+  const raw = safeTrim(value);
+  if (!raw) return null;
+
+  // Aceita formatos como: 1234.56, 1234,56, 1.234,56, R$ 1.234,56
+  let cleaned = raw.replace(/[^0-9,\.]/g, '');
+  if (!cleaned) return null;
+
+  if (cleaned.includes(',')) {
+    cleaned = cleaned.replace(/\./g, '').replace(',', '.');
+  } else {
+    const parts = cleaned.split('.').filter(Boolean);
+    if (parts.length > 2) {
+      const decimal = parts.pop();
+      const integer = parts.join('');
+      cleaned = `${integer}.${decimal}`;
+    }
+  }
+
+  if (!/^\d+(?:\.\d{1,2})?$/.test(cleaned)) return null;
+  return cleaned;
+}
 
 function isSubcategoriaValida(categoriaMacro, subcategoria) {
   const allowed = subcategoriasPorMacro[categoriaMacro];
@@ -178,7 +194,7 @@ export async function GET(request) {
     }
 
     return NextResponse.json(
-      { success: false, error: 'Erro ao listar documentos' },
+      { success: false, error: 'Erro ao listar documentos', debug: devErrorPayload(error) },
       { status: 500 }
     );
   }
@@ -199,23 +215,39 @@ export async function POST(request) {
 
     const body = await request.json();
 
-    const titulo = body?.titulo;
-    const categoriaMacro = body?.categoria_macro;
-    const subcategoria = body?.subcategoria;
-    const descricaoCurta = body?.descricao_curta;
-    const orgaoEmissor = body?.orgao_emissor;
+    const titulo = safeTrim(body?.titulo);
+    const categoriaMacro = safeTrim(body?.categoria_macro);
+    const subcategoria = safeTrim(body?.subcategoria);
+
+    const ano = typeof body?.ano === 'number' ? body.ano : parseInt(String(body?.ano || '').trim(), 10);
+    const dataDocumento = parseDateInputToUTC(body?.data_documento);
+
+    const descricaoCurta = safeTrim(body?.descricao_curta);
+
+    const orgaoEmissor = safeTrim(body?.orgao_emissor);
+    const numeroDocumento = safeTrim(body?.numero_documento);
+    const contratadaParceiro = safeTrim(body?.contratada_parceiro);
+    const valorGlobal = parseOptionalDecimalString(body?.valor_global);
+    const vigenciaMeses = body?.vigencia_meses === '' ? null : parseOptionalInt(body?.vigencia_meses);
+    const vigenciaInicio = parseDateInputToUTC(body?.vigencia_inicio);
+    const vigenciaFim = parseDateInputToUTC(body?.vigencia_fim);
+    const periodo = safeTrim(body?.periodo);
     const apareceEm = Array.isArray(body?.aparece_em) ? body.aparece_em : [];
     const status = body?.status;
     const ordemExibicao = body?.ordem_exibicao;
 
-    const categoriaMacroLicitacoes = body?.categoria_macro_licitacoes;
-    const subcategoriaLicitacoes = body?.subcategoria_licitacoes;
+    const categoriaMacroLicitacoes = safeTrim(body?.categoria_macro_licitacoes);
+    const subcategoriaLicitacoes = safeTrim(body?.subcategoria_licitacoes);
 
     if (!titulo) {
       return NextResponse.json({ success: false, error: 'Título é obrigatório' }, { status: 400 });
     }
     if (!categoriaMacro) {
       return NextResponse.json({ success: false, error: 'categoria_macro é obrigatório' }, { status: 400 });
+    }
+
+    if (!categoriaMacroLabels[categoriaMacro]) {
+      return NextResponse.json({ success: false, error: 'categoria_macro inválido' }, { status: 400 });
     }
 
     const effectiveSubcategoria = normalizeSubcategoria(categoriaMacro, subcategoria);
@@ -229,11 +261,54 @@ export async function POST(request) {
         { status: 400 }
       );
     }
+
+    if (!Number.isInteger(ano) || ano < 1900 || ano > new Date().getFullYear() + 10) {
+      return NextResponse.json({ success: false, error: 'Ano é obrigatório e deve ser válido' }, { status: 400 });
+    }
+
+    if (!dataDocumento) {
+      return NextResponse.json(
+        { success: false, error: 'data_documento é obrigatório e deve ser válido' },
+        { status: 400 }
+      );
+    }
+
     if (!descricaoCurta) {
       return NextResponse.json({ success: false, error: 'descricao_curta é obrigatório' }, { status: 400 });
     }
-    if (!orgaoEmissor) {
-      return NextResponse.json({ success: false, error: 'orgao_emissor é obrigatório' }, { status: 400 });
+
+    // Regras por tipo (categoria + subcategoria)
+    const required = getCamposObrigatorios(categoriaMacro, effectiveSubcategoria);
+
+    if (required.has('orgao_emissor') && !orgaoEmissor) {
+      return NextResponse.json(
+        { success: false, error: 'orgao_emissor é obrigatório para este tipo de documento' },
+        { status: 400 }
+      );
+    }
+    if (required.has('numero_documento') && !numeroDocumento) {
+      return NextResponse.json(
+        { success: false, error: 'numero_documento é obrigatório para este tipo de documento' },
+        { status: 400 }
+      );
+    }
+    if (required.has('contratada_parceiro') && !contratadaParceiro) {
+      return NextResponse.json(
+        { success: false, error: 'contratada_parceiro é obrigatório para este tipo de documento' },
+        { status: 400 }
+      );
+    }
+    if (required.has('valor_global') && !valorGlobal) {
+      return NextResponse.json(
+        { success: false, error: 'valor_global é obrigatório para este tipo de documento' },
+        { status: 400 }
+      );
+    }
+    if (required.has('periodo') && !periodo) {
+      return NextResponse.json(
+        { success: false, error: 'periodo é obrigatório para este tipo de documento' },
+        { status: 400 }
+      );
     }
     if (!Array.isArray(apareceEm) || apareceEm.length === 0) {
       return NextResponse.json({ success: false, error: 'aparece_em é obrigatório' }, { status: 400 });
@@ -242,12 +317,8 @@ export async function POST(request) {
     let effectiveCategoriaMacroLicitacoes = categoriaMacroLicitacoes;
     let effectiveSubcategoriaLicitacoes = subcategoriaLicitacoes;
 
-    const rawMacroLic = typeof effectiveCategoriaMacroLicitacoes === 'string'
-      ? effectiveCategoriaMacroLicitacoes.trim()
-      : effectiveCategoriaMacroLicitacoes;
-    const rawSubLic = typeof effectiveSubcategoriaLicitacoes === 'string'
-      ? effectiveSubcategoriaLicitacoes.trim()
-      : effectiveSubcategoriaLicitacoes;
+    const rawMacroLic = safeTrim(effectiveCategoriaMacroLicitacoes);
+    const rawSubLic = safeTrim(effectiveSubcategoriaLicitacoes);
 
     const licitacoesProvided = effectiveCategoriaMacroLicitacoes !== undefined || effectiveSubcategoriaLicitacoes !== undefined;
     const licitacoesHasValue = Boolean(rawMacroLic) || Boolean(rawSubLic);
@@ -259,6 +330,13 @@ export async function POST(request) {
       if (!rawMacroLic) {
         return NextResponse.json(
           { success: false, error: 'categoria_macro_licitacoes é obrigatório quando informar subcategoria_licitacoes' },
+          { status: 400 }
+        );
+      }
+
+      if (!categoriaMacroLabels[rawMacroLic]) {
+        return NextResponse.json(
+          { success: false, error: 'categoria_macro_licitacoes inválido' },
           { status: 400 }
         );
       }
@@ -298,16 +376,52 @@ export async function POST(request) {
       effectiveOrdemExibicao = (aggregate?._max?.ordemExibicao ?? -1) + 1;
     }
 
+    // Evita duplicação indevida: categoria + tipo + número + ano
+    // Se já existir, bloqueia criação e sinaliza o documento existente.
+    if (numeroDocumento) {
+      const existing = await prisma.documento.findFirst({
+        where: {
+          categoriaMacro,
+          subcategoria: effectiveSubcategoria,
+          ano,
+          numeroDocumento,
+        },
+        select: { id: true },
+      });
+
+      if (existing) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Documento já existe para esta combinação (categoria, tipo, número e ano).',
+            code: 'DUPLICATE_DOCUMENT',
+            existingId: existing.id,
+            canVersion: canCreateNewVersion(categoriaMacro, effectiveSubcategoria),
+          },
+          { status: 409 }
+        );
+      }
+    }
+
     const documento = await prisma.documento.create({
       data: {
         titulo,
         slug,
         categoriaMacro,
         subcategoria: effectiveSubcategoria,
+        ano,
+        dataDocumento,
         categoriaMacroLicitacoes: effectiveCategoriaMacroLicitacoes || null,
         subcategoriaLicitacoes: effectiveSubcategoriaLicitacoes || null,
         descricaoCurta,
-        orgaoEmissor,
+        orgaoEmissor: orgaoEmissor || null,
+        numeroDocumento: numeroDocumento || null,
+        contratadaParceiro: contratadaParceiro || null,
+        valorGlobal: valorGlobal || null,
+        vigenciaMeses,
+        vigenciaInicio,
+        vigenciaFim,
+        periodo: periodo || null,
         apareceEm,
         status: status || 'DRAFT',
         ordemExibicao: effectiveOrdemExibicao,
@@ -337,7 +451,7 @@ export async function POST(request) {
     }
 
     return NextResponse.json(
-      { success: false, error: 'Erro ao criar documento' },
+      { success: false, error: 'Erro ao criar documento', debug: devErrorPayload(error) },
       { status: 500 }
     );
   }
