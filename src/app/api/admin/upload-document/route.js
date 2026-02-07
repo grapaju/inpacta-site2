@@ -6,6 +6,10 @@ import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'inpacta-jwt-secret-2024';
 
+const UPLOAD_DIR = process.env.UPLOAD_DIR
+  ? path.resolve(process.env.UPLOAD_DIR)
+  : path.join(process.cwd(), 'public', 'uploads');
+
 // Função para validar JWT
 function verifyToken(request) {
   const authHeader = request.headers.get('authorization');
@@ -112,14 +116,7 @@ export async function POST(request) {
 
     const safeSlug = sanitizeForUrl(documentSlug);
 
-    const uploadDir = path.join(
-      process.cwd(),
-      'public',
-      'uploads',
-      'documentos',
-      String(year),
-      safeSlug
-    );
+    const uploadDir = path.join(UPLOAD_DIR, 'documentos', String(year), safeSlug);
 
     const publicPath = `/uploads/documentos/${year}/${safeSlug}/${filename}`;
 

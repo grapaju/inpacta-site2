@@ -9,7 +9,9 @@ const JWT_SECRET = process.env.JWT_SECRET || 'inpacta-jwt-secret-2024'
 // Configurações de upload
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads')
+const UPLOAD_DIR = process.env.UPLOAD_DIR
+  ? path.resolve(process.env.UPLOAD_DIR)
+  : path.join(process.cwd(), 'public', 'uploads')
 
 // Função para validar JWT
 function verifyToken(request) {

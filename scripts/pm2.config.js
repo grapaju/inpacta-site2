@@ -4,7 +4,7 @@ module.exports = {
       name: 'inpacta-site',
       script: 'node_modules/.bin/next',
       args: 'start -p 3000',
-      cwd: process.cwd(),
+      cwd: require('path').resolve(__dirname, '..'),
       env: {
         NODE_ENV: 'production'
       },

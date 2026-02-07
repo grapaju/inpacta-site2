@@ -93,6 +93,8 @@ async function fetchNewsItem(slug) {
   return null;
 }
 
+const shouldBypassNextImage = (src) => typeof src === 'string' && src.startsWith('/uploads/');
+
 // Função para buscar todas as notícias para gerar static params
 async function fetchAllNews() {
   try {
@@ -295,6 +297,7 @@ export default async function Page({ params }) {
                 className="object-cover"
                 sizes="(max-width: 1200px) 100vw, 1200px"
                 priority
+                unoptimized={shouldBypassNextImage(item.featuredImage)}
               />
             </div>
           </ScrollReveal>

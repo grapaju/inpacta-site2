@@ -10,6 +10,8 @@ export default function Page() {
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState('all')
 
+  const shouldBypassNextImage = (src) => typeof src === 'string' && src.startsWith('/uploads/')
+
   const categories = [
     { value: 'all', label: 'Todas' },
     { value: 'tecnologia', label: 'Tecnologia' },
@@ -209,6 +211,7 @@ export default function Page() {
                       fill
                       className="object-cover"
                       sizes="(max-width: 1024px) 100vw, 66vw"
+                      unoptimized={shouldBypassNextImage(featuredNews[0].featuredImage)}
                     />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
@@ -322,6 +325,7 @@ export default function Page() {
                         fill
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        unoptimized={shouldBypassNextImage(newsItem.featuredImage)}
                       />
                     )}
                     <div className="absolute top-4 left-4">
