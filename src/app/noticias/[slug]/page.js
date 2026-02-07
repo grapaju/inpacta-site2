@@ -96,6 +96,15 @@ async function fetchNewsItem(slug) {
 const shouldUsePlainImg = (src) =>
   typeof src === 'string' && (src.startsWith('data:') || src.includes('/uploads/'));
 
+const normalizeImageSrc = (src) => {
+  if (typeof src !== 'string') return src;
+  let value = src.trim().replace(/\\/g, '/');
+  if (value.startsWith('//')) value = `https:${value}`;
+  if (value.startsWith('http://')) value = `https://${value.slice('http://'.length)}`;
+  if (value.startsWith('uploads/')) value = `/${value}`;
+  return value;
+};
+
 // Função para buscar todas as notícias para gerar static params
 async function fetchAllNews() {
   try {
@@ -291,22 +300,25 @@ export default async function Page({ params }) {
         <section className="max-w-6xl mx-auto px-4 -mt-10 relative z-10 mb-12">
           <ScrollReveal animation="fadeUp">
             <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl">
-              {shouldUsePlainImg(item.featuredImage) ? (
+              {(() => {
+                const normalizedSrc = normalizeImageSrc(item.featuredImage);
+                return shouldUsePlainImg(normalizedSrc) ? (
                 <img
-                  src={item.featuredImage}
+                  src={normalizedSrc}
                   alt={item.title}
                   className="absolute inset-0 h-full w-full object-cover"
                 />
               ) : (
                 <Image 
-                  src={item.featuredImage} 
+                  src={normalizedSrc} 
                   alt={item.title}
                   fill
                   className="object-cover"
                   sizes="(max-width: 1200px) 100vw, 1200px"
                   priority
                 />
-              )}
+              );
+              })()}
             </div>
           </ScrollReveal>
         </section>
