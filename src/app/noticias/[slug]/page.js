@@ -93,7 +93,8 @@ async function fetchNewsItem(slug) {
   return null;
 }
 
-const shouldBypassNextImage = (src) => typeof src === 'string' && src.startsWith('/uploads/');
+const shouldUsePlainImg = (src) =>
+  typeof src === 'string' && (src.startsWith('data:') || src.includes('/uploads/'));
 
 // Função para buscar todas as notícias para gerar static params
 async function fetchAllNews() {
@@ -290,15 +291,22 @@ export default async function Page({ params }) {
         <section className="max-w-6xl mx-auto px-4 -mt-10 relative z-10 mb-12">
           <ScrollReveal animation="fadeUp">
             <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl">
-              <Image 
-                src={item.featuredImage} 
-                alt={item.title}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1200px) 100vw, 1200px"
-                priority
-                unoptimized={shouldBypassNextImage(item.featuredImage)}
-              />
+              {shouldUsePlainImg(item.featuredImage) ? (
+                <img
+                  src={item.featuredImage}
+                  alt={item.title}
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              ) : (
+                <Image 
+                  src={item.featuredImage} 
+                  alt={item.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1200px) 100vw, 1200px"
+                  priority
+                />
+              )}
             </div>
           </ScrollReveal>
         </section>

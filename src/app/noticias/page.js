@@ -10,7 +10,8 @@ export default function Page() {
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState('all')
 
-  const shouldBypassNextImage = (src) => typeof src === 'string' && src.startsWith('/uploads/')
+  const shouldUsePlainImg = (src) =>
+    typeof src === 'string' && (src.startsWith('data:') || src.includes('/uploads/'))
 
   const categories = [
     { value: 'all', label: 'Todas' },
@@ -205,14 +206,21 @@ export default function Page() {
               <article className="interactive-card group bg-[var(--card)] rounded-2xl border-2 border-[var(--border)] overflow-hidden h-full">
                 <div className="aspect-video bg-gradient-to-br from-[var(--accent)]/20 to-[var(--green)]/20 relative overflow-hidden">
                   {featuredNews[0].featuredImage && (
-                    <Image 
-                      src={featuredNews[0].featuredImage} 
-                      alt={featuredNews[0].title}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 1024px) 100vw, 66vw"
-                      unoptimized={shouldBypassNextImage(featuredNews[0].featuredImage)}
-                    />
+                    shouldUsePlainImg(featuredNews[0].featuredImage) ? (
+                      <img
+                        src={featuredNews[0].featuredImage}
+                        alt={featuredNews[0].title}
+                        className="absolute inset-0 h-full w-full object-cover"
+                      />
+                    ) : (
+                      <Image 
+                        src={featuredNews[0].featuredImage} 
+                        alt={featuredNews[0].title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 1024px) 100vw, 66vw"
+                      />
+                    )
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                   <div className="absolute bottom-4 left-4 text-white">
@@ -319,14 +327,21 @@ export default function Page() {
                 <article key={newsItem.slug} className="interactive-card group bg-[var(--card)] rounded-2xl border-2 border-[var(--border)] overflow-hidden">
                   <div className="aspect-video bg-gradient-to-br from-[var(--primary)]/10 to-[var(--accent)]/10 relative">
                     {newsItem.featuredImage && (
-                      <Image 
-                        src={newsItem.featuredImage} 
-                        alt={newsItem.title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        unoptimized={shouldBypassNextImage(newsItem.featuredImage)}
-                      />
+                      shouldUsePlainImg(newsItem.featuredImage) ? (
+                        <img
+                          src={newsItem.featuredImage}
+                          alt={newsItem.title}
+                          className="absolute inset-0 h-full w-full object-cover"
+                        />
+                      ) : (
+                        <Image 
+                          src={newsItem.featuredImage} 
+                          alt={newsItem.title}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        />
+                      )
                     )}
                     <div className="absolute top-4 left-4">
                       <span className="inline-block px-2 py-1 bg-[var(--background)]/80 backdrop-blur text-xs font-medium rounded text-[var(--foreground)]">
