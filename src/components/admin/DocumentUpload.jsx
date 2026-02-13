@@ -112,6 +112,7 @@ export default function DocumentUpload({ onUploadComplete, uploadContext, curren
       const formData = new FormData();
       formData.append('file', selectedFile);
       formData.append('documentSlug', uploadContext.documentSlug);
+      formData.append('token', token);
       if (uploadContext?.year) formData.append('year', String(uploadContext.year));
       if (uploadContext?.subcategoria) formData.append('subcategoria', uploadContext.subcategoria);
       if (uploadContext?.numeroDocumento) formData.append('numeroDocumento', uploadContext.numeroDocumento);

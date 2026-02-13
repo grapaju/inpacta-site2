@@ -151,6 +151,7 @@ export default function FileUploadZone({
         uploadForm.append('module', 'LICITACAO');
         uploadForm.append('biddingId', biddingId);
         uploadForm.append('phase', phase);
+        if (token) uploadForm.append('token', token);
 
         const uploadResponse = await fetch('/api/admin/upload-document', {
           method: 'POST',
