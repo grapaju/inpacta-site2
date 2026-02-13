@@ -34,29 +34,22 @@ function verifyToken(request) {
  */
 export async function GET(request, { params }) {
   try {
+    let decoded;
     try {
-      verifyToken(request);
-    } catch (authError) {
+      decoded = verifyToken(request);
+    } catch {
       return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 });
     }
 
-    const { id } = await params;
+    if (!['ADMIN', 'EDITOR', 'AUTHOR'].includes(decoded.role)) {
+      return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 });
+    }
+
+    const { id } = params;
 
     const bidding = await prisma.bidding.findUnique({
       where: { id },
       include: {
-        documents: {
-          orderBy: [
-            { phase: 'asc' },
-            { order: 'asc' },
-            { createdAt: 'desc' }
-          ],
-          include: {
-            createdBy: {
-              select: { id: true, name: true, email: true }
-            }
-          }
-        },
         movements: {
           orderBy: { date: 'desc' },
           include: {
@@ -75,14 +68,32 @@ export async function GET(request, { params }) {
       );
     }
 
+    // Carregar documentos em query separada para evitar 500 se a tabela/colunas estiverem divergentes no banco.
+    let documents = [];
+    try {
+      documents = await prisma.biddingDocument.findMany({
+        where: { biddingId: id },
+        orderBy: [{ phase: 'asc' }, { order: 'asc' }, { createdAt: 'desc' }],
+        include: {
+          createdBy: {
+            select: { id: true, name: true, email: true }
+          }
+        }
+      });
+    } catch (docError) {
+      console.error('⚠️ Erro ao carregar documentos da licitação:', docError);
+    }
+
     return NextResponse.json({
       success: true,
-      data: bidding
+      data: { ...bidding, documents }
     });
   } catch (error) {
     console.error('❌ Erro ao buscar licitação:', error);
+    const includeDetails = process.env.API_DEBUG_ERRORS === 'true';
+    const details = includeDetails && error?.message ? String(error.message) : undefined;
     return NextResponse.json(
-      { success: false, error: 'Erro ao buscar licitação' },
+      { success: false, error: 'Erro ao buscar licitação', ...(details ? { details } : {}) },
       { status: 500 }
     );
   }
