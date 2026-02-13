@@ -179,6 +179,7 @@ export default function FileUploadZone({
           filePath: uploadJson.filePath,
           fileSize: uploadJson.fileSize,
           fileType: uploadJson.fileType,
+          fileHash: uploadJson.fileHash,
         };
 
         const response = await fetch('/api/admin/documents', {

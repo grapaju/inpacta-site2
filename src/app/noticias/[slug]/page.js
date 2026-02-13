@@ -303,6 +303,7 @@ export default async function Page({ params }) {
               {(() => {
                 const normalizedSrc = normalizeImageSrc(item.featuredImage);
                 return shouldUsePlainImg(normalizedSrc) ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={normalizedSrc}
                   alt={item.title}

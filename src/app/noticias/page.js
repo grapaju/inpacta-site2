@@ -218,6 +218,7 @@ export default function Page() {
                     (() => {
                       const normalizedSrc = normalizeImageSrc(featuredNews[0].featuredImage)
                       return shouldUsePlainImg(normalizedSrc) ? (
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={normalizedSrc}
                         alt={featuredNews[0].title}
@@ -342,6 +343,7 @@ export default function Page() {
                       (() => {
                         const normalizedSrc = normalizeImageSrc(newsItem.featuredImage)
                         return shouldUsePlainImg(normalizedSrc) ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={normalizedSrc}
                           alt={newsItem.title}

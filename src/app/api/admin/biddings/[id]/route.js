@@ -45,6 +45,18 @@ export async function GET(request, { params }) {
     const bidding = await prisma.bidding.findUnique({
       where: { id },
       include: {
+        documents: {
+          orderBy: [
+            { phase: 'asc' },
+            { order: 'asc' },
+            { createdAt: 'desc' }
+          ],
+          include: {
+            createdBy: {
+              select: { id: true, name: true, email: true }
+            }
+          }
+        },
         movements: {
           orderBy: { date: 'desc' },
           include: {
