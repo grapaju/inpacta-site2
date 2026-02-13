@@ -45,6 +45,9 @@ prisma/*.db-journal
 *.sqlite
 *.db
 
+# artefatos locais
+prisma/seeds.zip
+
 # vercel
 .vercel
 
