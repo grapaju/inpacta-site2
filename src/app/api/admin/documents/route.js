@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
+import { randomUUID } from 'crypto';
 
 function getBearerTokenFromRequest(request) {
   const authorization = request.headers.get('authorization') || request.headers.get('Authorization');
@@ -161,30 +163,112 @@ export async function POST(request) {
 
     const initialStatus = status || (decoded.role === 'ADMIN' ? 'PUBLISHED' : 'DRAFT');
 
-    const document = await prisma.biddingDocument.create({
-      data: {
-        biddingId,
-        phase,
-        title,
-        description: description || null,
-        order: order !== undefined && order !== null ? parseInt(order, 10) : 0,
-        status: initialStatus,
-        fileName,
-        filePath,
-        fileSize: fileSize ? parseInt(fileSize, 10) : 0,
-        fileType: fileType || 'application/pdf',
-        fileHash: fileHash || null,
-        createdById: decoded.userId,
-      },
-      include: {
-        createdBy: { select: { id: true, name: true, email: true } },
-        bidding: { select: { id: true, number: true, title: true } }
-      }
-    });
+    // Hotfix compat: alguns ambientes legados possuem colunas snake_case NOT NULL (ex: file_name).
+    // Para evitar violação de constraint, inserimos preenchendo camelCase e snake_case quando existirem.
+    const now = new Date();
+    const id = randomUUID();
+
+    const cols = await prisma.$queryRaw(
+      Prisma.sql`
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'bidding_documents'
+      `
+    );
+    const columnSet = new Set((cols || []).map((c) => c.column_name));
+
+    const safeCol = (name) => {
+      if (!columnSet.has(name)) return null;
+      if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) return null;
+      return name;
+    };
+
+    const dataByColumn = {
+      id,
+
+      // FK licitação
+      biddingId,
+      bidding_id: biddingId,
+
+      // classificação
+      phase,
+      title,
+      description: description || null,
+
+      // ordenação/status
+      order: order !== undefined && order !== null ? parseInt(order, 10) : 0,
+      status: initialStatus,
+
+      // arquivo (camel + snake)
+      fileName,
+      file_name: fileName,
+      filename: fileName,
+
+      filePath,
+      file_path: filePath,
+      filepath: filePath,
+      path: filePath,
+
+      fileSize: fileSize ? parseInt(fileSize, 10) : 0,
+      file_size: fileSize ? parseInt(fileSize, 10) : 0,
+
+      fileType: fileType || 'application/pdf',
+      file_type: fileType || 'application/pdf',
+      mimetype: fileType || 'application/pdf',
+
+      fileHash: fileHash || null,
+      file_hash: fileHash || null,
+
+      // auditoria (camel + snake)
+      createdById: decoded.userId,
+      created_by: decoded.userId,
+      created_by_id: decoded.userId,
+      user_id: decoded.userId,
+
+      createdAt: now,
+      created_at: now,
+
+      updatedAt: now,
+      updated_at: now,
+    };
+
+    const insertColumns = [];
+    const insertValues = [];
+    for (const [rawName, value] of Object.entries(dataByColumn)) {
+      const name = safeCol(rawName);
+      if (!name) continue;
+      insertColumns.push(Prisma.raw(`"${name}"`));
+      insertValues.push(Prisma.sql`${value}`);
+    }
+
+    if (insertColumns.length === 0) {
+      return NextResponse.json(
+        { success: false, error: 'Tabela bidding_documents sem colunas compatíveis' },
+        { status: 500 }
+      );
+    }
+
+    await prisma.$executeRaw(
+      Prisma.sql`INSERT INTO "bidding_documents" (${Prisma.join(insertColumns)}) VALUES (${Prisma.join(insertValues)})`
+    );
+
+    let document = null;
+    try {
+      document = await prisma.biddingDocument.findUnique({
+        where: { id },
+        include: {
+          createdBy: { select: { id: true, name: true, email: true } },
+          bidding: { select: { id: true, number: true, title: true } }
+        }
+      });
+    } catch {
+      // ok: em ambientes com schema divergente, retornamos payload mínimo
+    }
 
     return NextResponse.json({
       success: true,
-      data: document,
+      data: document || { id, biddingId, phase, title, description: description || null, order: dataByColumn.order, status: initialStatus, fileName, filePath },
       message: 'Documento criado com sucesso'
     });
   } catch (error) {
