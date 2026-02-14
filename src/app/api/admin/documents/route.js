@@ -170,13 +170,17 @@ export async function POST(request) {
 
     const cols = await prisma.$queryRaw(
       Prisma.sql`
-        SELECT column_name
+        SELECT column_name, udt_name
         FROM information_schema.columns
         WHERE table_schema = 'public'
           AND table_name = 'bidding_documents'
       `
     );
-    const columnSet = new Set((cols || []).map((c) => c.column_name));
+
+    const columnInfo = new Map(
+      (cols || []).map((c) => [c.column_name, { udt_name: c.udt_name }])
+    );
+    const columnSet = new Set(columnInfo.keys());
 
     const safeCol = (name) => {
       if (!columnSet.has(name)) return null;
@@ -239,8 +243,12 @@ export async function POST(request) {
       const name = safeCol(rawName);
       if (!name) continue;
       insertColumns.push(Prisma.raw(`"${name}"`));
-      if (name === 'phase') {
+
+      const udtName = columnInfo.get(name)?.udt_name;
+      if (udtName === 'BiddingPhase') {
         insertValues.push(Prisma.sql`${value}::"BiddingPhase"`);
+      } else if (udtName === 'DocumentoStatusPublicacao') {
+        insertValues.push(Prisma.sql`${value}::"DocumentoStatusPublicacao"`);
       } else {
         insertValues.push(Prisma.sql`${value}`);
       }
