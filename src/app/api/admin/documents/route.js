@@ -239,7 +239,11 @@ export async function POST(request) {
       const name = safeCol(rawName);
       if (!name) continue;
       insertColumns.push(Prisma.raw(`"${name}"`));
-      insertValues.push(Prisma.sql`${value}`);
+      if (name === 'phase') {
+        insertValues.push(Prisma.sql`${value}::"BiddingPhase"`);
+      } else {
+        insertValues.push(Prisma.sql`${value}`);
+      }
     }
 
     if (insertColumns.length === 0) {
