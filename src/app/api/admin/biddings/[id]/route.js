@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'inpacta-jwt-secret-2024';
 
@@ -68,20 +69,77 @@ export async function GET(request, { params }) {
       );
     }
 
-    // Carregar documentos em query separada para evitar 500 se a tabela/colunas estiverem divergentes no banco.
+    // Carregar documentos em query separada. Compatível com colunas camelCase e snake_case.
     let documents = [];
     try {
-      documents = await prisma.biddingDocument.findMany({
-        where: { biddingId: id },
-        orderBy: [{ phase: 'asc' }, { order: 'asc' }, { createdAt: 'desc' }],
-        include: {
-          createdBy: {
-            select: { id: true, name: true, email: true }
+      const cols = await prisma.$queryRaw(
+        Prisma.sql`
+          SELECT column_name
+          FROM information_schema.columns
+          WHERE table_schema = 'public'
+            AND table_name = 'bidding_documents'
+        `
+      );
+      const columnSet = new Set((cols || []).map((c) => c.column_name));
+
+      const safe = (name) => {
+        if (!columnSet.has(name)) return null;
+        if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) return null;
+        return name;
+      };
+
+      const bidCol = safe('biddingId') || safe('bidding_id');
+      if (!bidCol) {
+        documents = [];
+      } else {
+        const fileNameCol = safe('fileName') || safe('file_name') || safe('filename');
+        const filePathCol = safe('filePath') || safe('file_path') || safe('filepath') || safe('path');
+        const fileSizeCol = safe('fileSize') || safe('file_size');
+        const fileTypeCol = safe('fileType') || safe('file_type') || safe('mimetype');
+        const fileHashCol = safe('fileHash') || safe('file_hash');
+        const createdAtCol = safe('createdAt') || safe('created_at');
+
+        const selectCoalesce = (primary, fallback) => {
+          if (primary && fallback && primary !== fallback) {
+            return Prisma.raw(`COALESCE("${primary}", "${fallback}")`);
           }
-        }
-      });
+          if (primary) return Prisma.raw(`"${primary}"`);
+          if (fallback) return Prisma.raw(`"${fallback}"`);
+          return Prisma.raw('NULL');
+        };
+
+        const fileNameExpr = selectCoalesce(safe('fileName'), safe('file_name') || safe('filename'));
+        const filePathExpr = selectCoalesce(safe('filePath'), safe('file_path') || safe('filepath') || safe('path'));
+        const fileSizeExpr = selectCoalesce(safe('fileSize'), safe('file_size'));
+        const fileTypeExpr = selectCoalesce(safe('fileType'), safe('file_type') || safe('mimetype'));
+        const fileHashExpr = selectCoalesce(safe('fileHash'), safe('file_hash'));
+        const createdAtExpr = selectCoalesce(safe('createdAt'), safe('created_at'));
+
+        const bidColIdent = Prisma.raw(`"${bidCol}"`);
+        documents = await prisma.$queryRaw(
+          Prisma.sql`
+            SELECT
+              "id",
+              "phase",
+              "title",
+              "description",
+              "order",
+              "status",
+              ${fileNameExpr} AS "fileName",
+              ${filePathExpr} AS "filePath",
+              ${fileSizeExpr} AS "fileSize",
+              ${fileTypeExpr} AS "fileType",
+              ${fileHashExpr} AS "fileHash",
+              ${createdAtExpr} AS "createdAt"
+            FROM "bidding_documents"
+            WHERE ${bidColIdent} = ${id}
+            ORDER BY "phase" ASC, "order" ASC, "createdAt" DESC
+          `
+        );
+      }
     } catch (docError) {
       console.error('⚠️ Erro ao carregar documentos da licitação:', docError);
+      documents = [];
     }
 
     return NextResponse.json({
