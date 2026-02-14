@@ -266,7 +266,11 @@ export async function DELETE(request, { params }) {
       );
     }
 
-    await prisma.biddingDocument.delete({ where: { id } });
+    // Evita falhas por corrida (ex: já removido em outra aba) e não lança P2025.
+    const deleted = await prisma.biddingDocument.deleteMany({ where: { id } });
+    if (!deleted?.count) {
+      return NextResponse.json({ success: false, error: 'Documento não encontrado' }, { status: 404 });
+    }
 
     const label = formatDocumentoPublicTitle({
       tipoDocumento: document.tipoDocumento,
@@ -288,6 +292,11 @@ export async function DELETE(request, { params }) {
     }
 
     console.error('❌ Erro ao deletar documento (admin):', error);
-    return NextResponse.json({ success: false, error: 'Erro ao deletar documento' }, { status: 500 });
+    const details = error?.message ? String(error.message) : undefined;
+    const code = error?.code ? String(error.code) : undefined;
+    return NextResponse.json(
+      { success: false, error: 'Erro ao deletar documento', details, code },
+      { status: 500 }
+    );
   }
 }

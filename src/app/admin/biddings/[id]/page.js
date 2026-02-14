@@ -115,15 +115,17 @@ export default function BiddingDetailPage() {
         }
       });
 
+      const data = await response.json().catch(() => null);
+
       if (!response.ok) {
-        throw new Error('Erro ao excluir documento');
+        throw new Error(data?.error || 'Erro ao excluir documento');
       }
 
       alert('Documento excluído com sucesso!');
       fetchBidding();
     } catch (error) {
       console.error('Erro ao excluir:', error);
-      alert('Erro ao excluir documento');
+      alert(`Erro ao excluir: ${error?.message || 'Erro ao excluir documento'}`);
     }
   };
 
