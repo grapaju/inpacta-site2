@@ -4,9 +4,10 @@ import { prisma } from '@/lib/prisma'
 // GET - Buscar serviço por slug (API pública)
 export async function GET(request, { params }) {
   try {
+    const resolvedParams = await params;
     const service = await prisma.service.findFirst({
       where: { 
-        slug: params.slug,
+        slug: resolvedParams.slug,
         active: true
       },
       include: {

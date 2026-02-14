@@ -1,6 +1,14 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
+import {
+  formatDocumentoPublicTitle,
+  normalizeStatusDocumento,
+  normalizeTipoDocumento,
+  validateAnexoFields,
+  validateTipoDocumentoPhase
+} from '@/lib/biddingDocumentRules';
+import { registrarHistoricoLicitacao } from '@/lib/licitacaoHistorico';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'inpacta-jwt-secret-2024';
 
@@ -56,7 +64,7 @@ export async function GET(request, { params }) {
       return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     if (!id) {
       return NextResponse.json({ success: false, error: 'ID inválido' }, { status: 400 });
     }
@@ -103,7 +111,7 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     if (!id) {
       return NextResponse.json({ success: false, error: 'ID inválido' }, { status: 400 });
     }
@@ -132,14 +140,45 @@ export async function PATCH(request, { params }) {
       updateData.order = body.order === null || body.order === '' ? 0 : parseInt(body.order, 10);
     }
 
-    if (body.status !== undefined) {
-      if (body.status === 'PUBLISHED' && decoded.role !== 'ADMIN') {
+    // Campos novos (PT-BR no payload)
+    const rawTipo = body.tipo_documento ?? body.tipoDocumento ?? body.documentType;
+    const rawNumeroAnexo = body.numero_anexo ?? body.numeroAnexo ?? body.annexNumber;
+    const rawTituloExibicao = body.titulo_exibicao ?? body.tituloExibicao ?? body.displayTitle;
+    const rawStatusDocumento = body.status_documento ?? body.statusDocumento ?? body.status;
+
+    if (rawTipo !== undefined) {
+      const normalizedTipo = normalizeTipoDocumento(rawTipo);
+      if (!normalizedTipo && rawTipo !== null && rawTipo !== '') {
+        return NextResponse.json({ success: false, error: 'tipo_documento inválido' }, { status: 400 });
+      }
+      updateData.tipoDocumento = normalizedTipo;
+    }
+
+    if (rawNumeroAnexo !== undefined) {
+      updateData.numeroAnexo =
+        rawNumeroAnexo === null || rawNumeroAnexo === '' ? null : parseInt(rawNumeroAnexo, 10);
+    }
+
+    if (rawTituloExibicao !== undefined) {
+      updateData.tituloExibicao = rawTituloExibicao ? String(rawTituloExibicao) : null;
+    }
+
+    if (rawStatusDocumento !== undefined) {
+      const normalized = normalizeStatusDocumento(rawStatusDocumento);
+      if (!normalized) {
         return NextResponse.json(
-          { success: false, error: 'Apenas ADMIN pode publicar documentos diretamente' },
+          { success: false, error: 'status_documento inválido (use RASCUNHO/PUBLICADO)' },
+          { status: 400 }
+        );
+      }
+
+      if (normalized === 'PUBLISHED' && decoded.role !== 'ADMIN') {
+        return NextResponse.json(
+          { success: false, error: 'Apenas ADMIN pode publicar documentos' },
           { status: 403 }
         );
       }
-      updateData.status = body.status;
+      updateData.status = normalized;
     }
 
     if (body.fileName !== undefined) updateData.fileName = body.fileName;
@@ -147,6 +186,20 @@ export async function PATCH(request, { params }) {
     if (body.fileSize !== undefined) updateData.fileSize = body.fileSize ? parseInt(body.fileSize, 10) : 0;
     if (body.fileType !== undefined) updateData.fileType = body.fileType || 'application/pdf';
     if (body.fileHash !== undefined) updateData.fileHash = body.fileHash || null;
+
+    // Validações de negócio (tipo → fase e campos de anexo)
+    const effectiveTipoDocumento = updateData.tipoDocumento !== undefined ? updateData.tipoDocumento : currentDocument.tipoDocumento;
+    const effectivePhase = updateData.phase !== undefined ? updateData.phase : currentDocument.phase;
+    const tipoPhaseError = validateTipoDocumentoPhase({ tipoDocumento: effectiveTipoDocumento, phase: effectivePhase });
+    if (tipoPhaseError) {
+      return NextResponse.json({ success: false, error: tipoPhaseError }, { status: 400 });
+    }
+
+    const effectiveNumeroAnexo = updateData.numeroAnexo !== undefined ? updateData.numeroAnexo : currentDocument.numeroAnexo;
+    const anexoError = validateAnexoFields({ tipoDocumento: effectiveTipoDocumento, numeroAnexo: effectiveNumeroAnexo });
+    if (anexoError) {
+      return NextResponse.json({ success: false, error: anexoError }, { status: 400 });
+    }
 
     const document = await prisma.biddingDocument.update({
       where: { id },
@@ -156,6 +209,21 @@ export async function PATCH(request, { params }) {
         bidding: { select: { id: true, number: true, title: true, modality: true } },
       },
     });
+
+    if (currentDocument.status !== document.status && document.status === 'PUBLISHED') {
+      const label = formatDocumentoPublicTitle({
+        tipoDocumento: document.tipoDocumento,
+        numeroAnexo: document.numeroAnexo,
+        tituloExibicao: document.tituloExibicao,
+        title: document.title
+      });
+      await registrarHistoricoLicitacao({
+        licitacaoId: document.biddingId,
+        acao: 'DOCUMENTO_PUBLICADO',
+        descricao: `Documento publicado: ${label}`,
+        usuarioId: decoded.userId
+      });
+    }
 
     return NextResponse.json({ success: true, data: document, message: 'Documento atualizado com sucesso' });
   } catch (error) {
@@ -181,7 +249,7 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     if (!id) {
       return NextResponse.json({ success: false, error: 'ID inválido' }, { status: 400 });
     }
@@ -199,6 +267,19 @@ export async function DELETE(request, { params }) {
     }
 
     await prisma.biddingDocument.delete({ where: { id } });
+
+    const label = formatDocumentoPublicTitle({
+      tipoDocumento: document.tipoDocumento,
+      numeroAnexo: document.numeroAnexo,
+      tituloExibicao: document.tituloExibicao,
+      title: document.title
+    });
+    await registrarHistoricoLicitacao({
+      licitacaoId: document.biddingId,
+      acao: 'DOCUMENTO_EXCLUIDO',
+      descricao: `Documento excluído: ${label}`,
+      usuarioId: decoded.userId
+    });
 
     return NextResponse.json({ success: true, message: 'Documento deletado com sucesso' });
   } catch (error) {

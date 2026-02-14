@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import { ScrollReveal } from "@/hooks/useScrollAnimations";
 import prisma from "@/lib/prisma";
 import { getSiteUrl } from "@/lib/siteUrl";
+import { Prisma } from "@prisma/client";
+import { formatDocumentoPublicTitle } from "@/lib/biddingDocumentRules";
+import OpenDetailsOnHash from "@/components/OpenDetailsOnHash";
 
 function formatDate(dateValue) {
   if (!dateValue) return "-";
@@ -71,26 +74,194 @@ function labelType(type) {
   return map[String(type)] || String(type || "-");
 }
 
-function DocumentList() {
-  const items = [
-    { title: "Edital completo (PDF)", note: "Documento será disponibilizado conforme cronograma do processo." },
-    { title: "Termo de Referência / Projeto Básico", note: "Documento será disponibilizado conforme cronograma do processo." },
-    { title: "Anexos técnicos", note: "Documento será disponibilizado conforme cronograma do processo." },
-    { title: "Minuta de contrato", note: "Documento será disponibilizado conforme cronograma do processo." },
-    { title: "Modelos de declaração", note: "Documento será disponibilizado conforme cronograma do processo." },
-    { title: "Esclarecimentos e impugnações", note: "Quando existirem, serão publicados nesta seção." },
-  ];
+function truncateText(text, maxLength) {
+  const value = String(text || "").trim();
+  if (!value) return "";
+  if (value.length <= maxLength) return value;
+  return `${value.slice(0, Math.max(0, maxLength - 1)).trimEnd()}…`;
+}
+
+function extractFirstSentence(text, maxLength = 180) {
+  const value = String(text || "").replace(/\s+/g, " ").trim();
+  if (!value) return "";
+
+  const punctuationIndex = value.search(/[.!?](\s|$)/);
+  const sentence = punctuationIndex >= 0 ? value.slice(0, punctuationIndex + 1) : value;
+  return truncateText(sentence, maxLength);
+}
+
+function normalizeObjectText(text) {
+  return String(text || "").replace(/\r\n/g, "\n").trim();
+}
+
+function parseObjectAsList(text) {
+  const value = normalizeObjectText(text);
+  if (!value) return null;
+
+  const lines = value
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+
+  const bulletPrefixRegex = /^([-•*]\s+|\d+[\.)]\s+)/;
+  const bulletLines = lines.filter((l) => bulletPrefixRegex.test(l));
+  if (lines.length >= 2 && bulletLines.length >= 2 && bulletLines.length / lines.length >= 0.5) {
+    const items = lines
+      .map((l) => l.replace(bulletPrefixRegex, "").trim())
+      .filter(Boolean);
+    return items.length >= 2 ? items : null;
+  }
+
+  const parts = value
+    .split(";")
+    .map((p) => p.trim())
+    .filter(Boolean);
+  if (parts.length >= 3 && parts.every((p) => p.length <= 220)) {
+    return parts;
+  }
+
+  // Ex: "Item A - Item B - Item C" (3+ itens). Evita conflitar com hífens comuns.
+  if (!value.includes("\n") && value.includes(" - ")) {
+    const dashParts = value
+      .split(/\s-\s/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+    if (dashParts.length >= 3 && dashParts.every((p) => p.length <= 220)) {
+      return dashParts;
+    }
+  }
+
+  return null;
+}
+
+async function getBiddingDocumentsCompat(biddingId) {
+  try {
+    const cols = await prisma.$queryRaw(
+      Prisma.sql`
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'bidding_documents'
+      `
+    );
+    const columnSet = new Set((cols || []).map((c) => c.column_name));
+
+    const safe = (name) => {
+      if (!columnSet.has(name)) return null;
+      if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) return null;
+      return name;
+    };
+
+    const bidCol = safe("biddingId") || safe("bidding_id");
+    if (!bidCol) return [];
+
+    const coalesce = (a, b) => {
+      if (a && b && a !== b) return Prisma.raw(`COALESCE(\"${a}\", \"${b}\")`);
+      if (a) return Prisma.raw(`\"${a}\"`);
+      if (b) return Prisma.raw(`\"${b}\"`);
+      return Prisma.raw("NULL");
+    };
+
+    const fileNameExpr = coalesce(safe("fileName"), safe("file_name") || safe("filename"));
+    const filePathExpr = coalesce(
+      safe("filePath"),
+      safe("file_path") || safe("filepath") || safe("path")
+    );
+    const fileSizeExpr = coalesce(safe("fileSize"), safe("file_size"));
+    const fileTypeExpr = coalesce(safe("fileType"), safe("file_type") || safe("mimetype"));
+    const createdAtExpr = coalesce(safe("createdAt"), safe("created_at"));
+    const tipoDocumentoExpr = coalesce(safe("tipoDocumento"), safe("tipo_documento") || safe("document_type"));
+    const numeroAnexoExpr = coalesce(safe("numeroAnexo"), safe("numero_anexo") || safe("annex_number"));
+    const tituloExibicaoExpr = coalesce(safe("tituloExibicao"), safe("titulo_exibicao") || safe("display_title"));
+
+    const bidColIdent = Prisma.raw(`\"${bidCol}\"`);
+
+    const hasStatus = Boolean(safe("status"));
+
+    const documents = await prisma.$queryRaw(
+      Prisma.sql`
+        SELECT
+          "id",
+          "phase",
+          "title",
+          "description",
+          "order",
+          ${hasStatus ? Prisma.raw('"status"') : Prisma.raw('NULL')} AS "status",
+          ${tipoDocumentoExpr} AS "tipoDocumento",
+          ${numeroAnexoExpr} AS "numeroAnexo",
+          ${tituloExibicaoExpr} AS "tituloExibicao",
+          ${fileNameExpr} AS "fileName",
+          ${filePathExpr} AS "filePath",
+          ${fileSizeExpr} AS "fileSize",
+          ${fileTypeExpr} AS "fileType",
+          ${createdAtExpr} AS "createdAt"
+        FROM "bidding_documents"
+        WHERE ${bidColIdent} = ${biddingId}
+        ${hasStatus ? Prisma.sql`AND "status" = 'PUBLISHED'` : Prisma.empty}
+        ORDER BY "phase" ASC, "order" ASC, "createdAt" DESC
+      `
+    );
+
+    return Array.isArray(documents) ? documents : [];
+  } catch {
+    return [];
+  }
+}
+
+function DocumentList({ documents }) {
+  if (!Array.isArray(documents) || documents.length === 0) {
+    return (
+      <div className="interactive-card bg-[var(--card)] p-8 rounded-2xl border-2 border-[var(--border)]">
+        <p className="text-sm text-[color:var(--muted)]">
+          Nenhum documento publicado para download até o momento.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[var(--card)] rounded-2xl border-2 border-[var(--border)] overflow-hidden">
-      {items.map((it, idx) => (
-        <div key={it.title} className={`p-6 ${idx === 0 ? "" : "border-t border-[var(--border)]"}`}>
-          <div className="flex items-start gap-3">
-            <div className="text-lg" aria-hidden="true">📄</div>
-            <div className="min-w-0">
-              <div className="font-semibold text-[var(--primary)]">{it.title}</div>
-              <div className="mt-1 text-sm text-[color:var(--muted)]">{it.note}</div>
+      {documents.map((doc, idx) => (
+        <div key={doc.id || `${doc.title}-${idx}`} className={`p-6 ${idx === 0 ? "" : "border-t border-[var(--border)]"}`}>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-3 min-w-0">
+              <div className="text-lg" aria-hidden="true">📄</div>
+              <div className="min-w-0">
+                <div className="font-semibold text-[var(--primary)] break-words">
+                  {formatDocumentoPublicTitle({
+                    tipoDocumento: doc.tipoDocumento,
+                    numeroAnexo: doc.numeroAnexo,
+                    tituloExibicao: doc.tituloExibicao,
+                    title: doc.title
+                  })}
+                </div>
+                <div className="mt-1 text-sm text-[color:var(--muted)]">
+                  {doc.phase ? `${labelPhase(doc.phase)} · ` : ""}
+                  {doc.fileName || "Arquivo"}
+                </div>
+              </div>
             </div>
+
+            {doc.filePath ? (
+              <div className="flex items-center gap-2 whitespace-nowrap">
+                <a
+                  href={`/api/public/biddings/documents/${doc.id}/view`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-secondary"
+                >
+                  Visualizar
+                </a>
+                <a
+                  href={`/api/public/biddings/documents/${doc.id}/download`}
+                  className="btn-secondary"
+                >
+                  Baixar
+                </a>
+              </div>
+            ) : (
+              <span className="text-sm text-[color:var(--muted)] whitespace-nowrap">Indisponível</span>
+            )}
           </div>
         </div>
       ))}
@@ -150,6 +321,14 @@ export default async function Page({ params }) {
   if (bidding.status === "PLANEJAMENTO") return notFound();
   if (bidding.publicationDate && new Date(bidding.publicationDate) > now) return notFound();
 
+  const documents = await getBiddingDocumentsCompat(id);
+  const objectFull = String(bidding.object || "").trim();
+  const summaryEditorial = String(bidding.description || "").trim();
+  const summaryFallback = extractFirstSentence(objectFull, 180);
+  const summaryText = summaryEditorial || summaryFallback;
+  const objectListItems = parseObjectAsList(objectFull);
+  const showObjectLink = Boolean(objectFull && (summaryEditorial || (summaryFallback && objectFull.length > summaryFallback.length)));
+
   return (
     <div>
       {/* Hero */}
@@ -167,9 +346,21 @@ export default async function Page({ params }) {
                   <h1 className="text-2xl md:text-4xl font-bold leading-tight break-words">
                     {bidding.number} — {bidding.title}
                   </h1>
-                  <p className="mt-3 text-white/90 text-base md:text-lg max-w-4xl">
-                    {bidding.object}
-                  </p>
+                  {summaryText ? (
+                    <div className="mt-3 max-w-4xl">
+                      <p className="text-white/90 text-sm md:text-base leading-relaxed">
+                        {summaryText}
+                      </p>
+                      {showObjectLink ? (
+                        <a
+                          href="#objeto"
+                          className="inline-flex items-center gap-2 mt-3 px-3 py-1.5 rounded-lg border border-white/30 text-sm font-semibold hover:bg-white/10 transition-colors ring-focus"
+                        >
+                          Ver objeto completo
+                        </a>
+                      ) : null}
+                    </div>
+                  ) : null}
                 </div>
 
                 <Link
@@ -197,6 +388,33 @@ export default async function Page({ params }) {
             </p>
           </div>
         </ScrollReveal>
+
+        {objectFull ? (
+          <div id="objeto" className="interactive-card bg-[var(--card)] p-6 rounded-2xl border-2 border-[var(--border)] mb-8">
+            <OpenDetailsOnHash anchorId="objeto" detailsId="objeto-details" />
+            <details id="objeto-details" className="group">
+              <summary className="cursor-pointer select-none flex items-center justify-between gap-4">
+                <h3 className="text-lg font-bold text-[var(--primary)]">Objeto da Licitação</h3>
+                <span className="text-sm text-[color:var(--muted)] group-open:hidden whitespace-nowrap">Expandir</span>
+                <span className="text-sm text-[color:var(--muted)] hidden group-open:inline whitespace-nowrap">Recolher</span>
+              </summary>
+
+              <div className="mt-3">
+                {objectListItems ? (
+                  <ul className="text-sm md:text-base text-[var(--foreground)] leading-relaxed list-disc pl-5 space-y-1">
+                    {objectListItems.map((item, idx) => (
+                      <li key={`${idx}-${item.slice(0, 16)}`}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm md:text-base text-[var(--foreground)] leading-relaxed whitespace-pre-wrap">
+                    {objectFull}
+                  </p>
+                )}
+              </div>
+            </details>
+          </div>
+        ) : null}
 
         <div className="grid lg:grid-cols-2 gap-8">
           <div className="interactive-card bg-[var(--card)] p-6 rounded-2xl border-2 border-[var(--border)]">
@@ -318,7 +536,7 @@ export default async function Page({ params }) {
           </div>
         </ScrollReveal>
 
-        <DocumentList />
+        <DocumentList documents={documents} />
       </section>
 
       {/* Histórico */}

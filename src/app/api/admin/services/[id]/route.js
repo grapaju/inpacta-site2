@@ -32,8 +32,10 @@ export async function GET(request, { params }) {
     // Verificar token JWT
     const decoded = verifyToken(request);
 
+    const resolvedParams = await params;
+
     const service = await prisma.service.findUnique({
-      where: { id: params.id },
+      where: { id: resolvedParams.id },
       include: {
         author: {
           select: {
@@ -64,6 +66,8 @@ export async function PUT(request, { params }) {
     const decoded = verifyToken(request);
     const userId = decoded.userId;
 
+    const resolvedParams = await params;
+
     const body = await request.json()
     const { 
       title, 
@@ -90,7 +94,7 @@ export async function PUT(request, { params }) {
 
     // Verificar se o serviço existe
     const existingService = await prisma.service.findUnique({
-      where: { id: params.id }
+      where: { id: resolvedParams.id }
     })
 
     if (!existingService) {
@@ -114,7 +118,7 @@ export async function PUT(request, { params }) {
       while (await prisma.service.findFirst({ 
         where: { 
           slug: newSlug,
-          NOT: { id: params.id }
+          NOT: { id: resolvedParams.id }
         } 
       })) {
         newSlug = `${baseSlug}-${counter}`
@@ -124,7 +128,7 @@ export async function PUT(request, { params }) {
     }
 
     const service = await prisma.service.update({
-      where: { id: params.id },
+      where: { id: resolvedParams.id },
       data: {
         title,
         slug,
@@ -167,9 +171,11 @@ export async function DELETE(request, { params }) {
     // Verificar token JWT
     const decoded = verifyToken(request);
 
+    const resolvedParams = await params;
+
     // Verificar se o serviço existe
     const existingService = await prisma.service.findUnique({
-      where: { id: params.id }
+      where: { id: resolvedParams.id }
     })
 
     if (!existingService) {
@@ -177,7 +183,7 @@ export async function DELETE(request, { params }) {
     }
 
     await prisma.service.delete({
-      where: { id: params.id }
+      where: { id: resolvedParams.id }
     })
 
     return NextResponse.json({ message: 'Serviço excluído com sucesso' })

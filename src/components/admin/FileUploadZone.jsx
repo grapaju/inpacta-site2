@@ -6,6 +6,31 @@
 
 import { useState, useRef } from 'react';
 
+const DOCUMENT_TYPES = [
+  'EDITAL',
+  'ANEXO',
+  'TERMO_REFERENCIA',
+  'PROJETO_BASICO',
+  'PLANILHA_ORCAMENTARIA',
+  'MINUTA_CONTRATO',
+  'ATA_SESSAO',
+  'RESULTADO_PRELIMINAR',
+  'RESULTADO_FINAL',
+  'RECURSO',
+  'CONTRARRAZAO',
+  'DECISAO_RECURSO',
+  'CONTRATO',
+  'TERMO_ADITIVO',
+  'ORDEM_SERVICO',
+  'RELATORIO_EXECUCAO',
+  'TERMO_ENCERRAMENTO'
+];
+
+const DOCUMENT_STATUS = [
+  { value: 'PUBLICADO', label: 'Publicado' },
+  { value: 'RASCUNHO', label: 'Rascunho' }
+];
+
 export default function FileUploadZone({ 
   biddingId,
   phase,
@@ -19,6 +44,8 @@ export default function FileUploadZone({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
+
+  const defaultTipoDocumento = phase === 'ABERTURA' ? 'EDITAL' : 'ANEXO';
 
   const handleDragEnter = (e) => {
     e.preventDefault();
@@ -81,6 +108,10 @@ export default function FileUploadZone({
         file,
         id: Math.random().toString(36).substr(2, 9),
         title: file.name.replace(/\.[^/.]+$/, ""), // Remove extensão
+        tipoDocumento: defaultTipoDocumento,
+        numeroAnexo: null,
+        tituloExibicao: '',
+        statusDocumento: 'PUBLICADO',
         progress: 0,
         status: 'pending' // pending, uploading, success, error
       });
@@ -98,6 +129,12 @@ export default function FileUploadZone({
   const updateFileTitle = (id, newTitle) => {
     setFiles(prev => prev.map(f => 
       f.id === id ? { ...f, title: newTitle } : f
+    ));
+  };
+
+  const updateFileField = (id, field, value) => {
+    setFiles(prev => prev.map(f =>
+      f.id === id ? { ...f, [field]: value } : f
     ));
   };
 
@@ -167,6 +204,9 @@ export default function FileUploadZone({
         }
 
         // 2) Criar registro do documento
+        const statusDocumento = fileData.statusDocumento || 'PUBLICADO';
+        const statusForApi = statusDocumento === 'RASCUNHO' ? 'DRAFT' : 'PUBLISHED';
+
         const createPayload = {
           title: fileData.title,
           description: '',
@@ -174,7 +214,11 @@ export default function FileUploadZone({
           biddingId,
           phase,
           order: i,
-          status: 'PUBLISHED',
+          status: statusForApi,
+          status_documento: statusDocumento,
+          tipo_documento: fileData.tipoDocumento,
+          numero_anexo: fileData.tipoDocumento === 'ANEXO' ? fileData.numeroAnexo : null,
+          titulo_exibicao: fileData.tituloExibicao || null,
           fileName: uploadJson.fileName,
           filePath: uploadJson.filePath,
           fileSize: uploadJson.fileSize,
@@ -313,6 +357,73 @@ export default function FileUploadZone({
                   disabled={fileData.status !== 'pending'}
                   placeholder="Título do documento"
                 />
+
+                {fileData.status === 'pending' && (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginTop: '0.5rem' }}>
+                    <div>
+                      <label className="admin-label" style={{ display: 'block', marginBottom: '0.25rem' }}>
+                        Tipo do documento
+                      </label>
+                      <select
+                        className="admin-input"
+                        value={fileData.tipoDocumento || defaultTipoDocumento}
+                        onChange={(e) => updateFileField(fileData.id, 'tipoDocumento', e.target.value)}
+                        disabled={fileData.status !== 'pending'}
+                      >
+                        {DOCUMENT_TYPES.map((t) => (
+                          <option key={t} value={t}>{t}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="admin-label" style={{ display: 'block', marginBottom: '0.25rem' }}>
+                        Status
+                      </label>
+                      <select
+                        className="admin-input"
+                        value={fileData.statusDocumento || 'PUBLICADO'}
+                        onChange={(e) => updateFileField(fileData.id, 'statusDocumento', e.target.value)}
+                        disabled={fileData.status !== 'pending'}
+                      >
+                        {DOCUMENT_STATUS.map((s) => (
+                          <option key={s.value} value={s.value}>{s.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                )}
+
+                {fileData.status === 'pending' && fileData.tipoDocumento === 'ANEXO' && (
+                  <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: '0.5rem', marginTop: '0.5rem' }}>
+                    <div>
+                      <label className="admin-label" style={{ display: 'block', marginBottom: '0.25rem' }}>
+                        Nº do anexo
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        className="admin-input"
+                        value={fileData.numeroAnexo ?? ''}
+                        onChange={(e) => updateFileField(fileData.id, 'numeroAnexo', e.target.value === '' ? null : parseInt(e.target.value, 10))}
+                        disabled={fileData.status !== 'pending'}
+                      />
+                    </div>
+                    <div>
+                      <label className="admin-label" style={{ display: 'block', marginBottom: '0.25rem' }}>
+                        Título de exibição
+                      </label>
+                      <input
+                        type="text"
+                        className="admin-input"
+                        value={fileData.tituloExibicao ?? ''}
+                        onChange={(e) => updateFileField(fileData.id, 'tituloExibicao', e.target.value)}
+                        placeholder="Ex.: Memorial descritivo"
+                        disabled={fileData.status !== 'pending'}
+                      />
+                    </div>
+                  </div>
+                )}
                 <div className="file-item-meta">
                   <span>{fileData.file.name}</span>
                   <span>{formatFileSize(fileData.file.size)}</span>

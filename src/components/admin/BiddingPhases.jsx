@@ -79,6 +79,16 @@ export default function BiddingPhases({
     return labels[ext] || 'ARQ';
   };
 
+  const formatDocumentTitle = (doc) => {
+    const tipo = doc?.tipoDocumento;
+    if (tipo === 'ANEXO') {
+      const num = doc?.numeroAnexo ? String(doc.numeroAnexo) : '?';
+      const extra = doc?.tituloExibicao ? ` – ${doc.tituloExibicao}` : '';
+      return `Anexo ${num}${extra}`;
+    }
+    return doc?.tituloExibicao || doc?.title || 'Documento';
+  };
+
   return (
     <div className="bidding-phases">
       {phases.map((phase) => {
@@ -139,9 +149,14 @@ export default function BiddingPhases({
                         
                         <div className="phase-document-info">
                           <div className="phase-document-title">
-                            {doc.title}
+                            {formatDocumentTitle(doc)}
                           </div>
                           <div className="phase-document-meta">
+                            {doc.tipoDocumento && (
+                              <span className="phase-document-filename">
+                                {doc.tipoDocumento}
+                              </span>
+                            )}
                             {filename && (
                               <span className="phase-document-filename">
                                 {filename}

@@ -3,6 +3,14 @@ import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 import { randomUUID } from 'crypto';
+import {
+  formatDocumentoPublicTitle,
+  normalizeStatusDocumento,
+  normalizeTipoDocumento,
+  validateAnexoFields,
+  validateTipoDocumentoPhase
+} from '@/lib/biddingDocumentRules';
+import { registrarHistoricoLicitacao } from '@/lib/licitacaoHistorico';
 
 function getBearerTokenFromRequest(request) {
   const authorization = request.headers.get('authorization') || request.headers.get('Authorization');
@@ -126,6 +134,30 @@ export async function POST(request) {
       fileHash,
     } = body;
 
+    // Campos novos (PT-BR no payload/UI)
+    const tipoDocumento = normalizeTipoDocumento(
+      body.tipo_documento ?? body.tipoDocumento ?? body.documentType
+    );
+    const numeroAnexoRaw = body.numero_anexo ?? body.numeroAnexo ?? body.annexNumber;
+    const numeroAnexo =
+      numeroAnexoRaw === null || numeroAnexoRaw === undefined || numeroAnexoRaw === ''
+        ? null
+        : parseInt(numeroAnexoRaw, 10);
+    const tituloExibicao =
+      body.titulo_exibicao ?? body.tituloExibicao ?? body.displayTitle ?? null;
+
+    const rawStatusForValidation = body.status_documento ?? body.statusDocumento ?? status;
+    const normalizedStatus = normalizeStatusDocumento(rawStatusForValidation);
+
+    if (rawStatusForValidation !== undefined && rawStatusForValidation !== null && rawStatusForValidation !== '') {
+      if (!normalizedStatus) {
+        return NextResponse.json(
+          { success: false, error: 'status_documento inválido (use RASCUNHO/PUBLICADO)' },
+          { status: 400 }
+        );
+      }
+    }
+
     const resolvedModule = (moduleParam || 'LICITACAO').toUpperCase();
 
     if (resolvedModule !== 'LICITACAO') {
@@ -152,6 +184,29 @@ export async function POST(request) {
       );
     }
 
+    if ((body.tipo_documento ?? body.tipoDocumento ?? body.documentType) && !tipoDocumento) {
+      return NextResponse.json(
+        { success: false, error: 'tipo_documento inválido' },
+        { status: 400 }
+      );
+    }
+
+    const tipoPhaseError = validateTipoDocumentoPhase({ tipoDocumento, phase });
+    if (tipoPhaseError) {
+      return NextResponse.json(
+        { success: false, error: tipoPhaseError },
+        { status: 400 }
+      );
+    }
+
+    const anexoError = validateAnexoFields({ tipoDocumento, numeroAnexo: numeroAnexoRaw });
+    if (anexoError) {
+      return NextResponse.json(
+        { success: false, error: anexoError },
+        { status: 400 }
+      );
+    }
+
     const bidding = await prisma.bidding.findUnique({
       where: { id: biddingId },
       select: { id: true }
@@ -161,7 +216,14 @@ export async function POST(request) {
       return NextResponse.json({ success: false, error: 'Licitação não encontrada' }, { status: 400 });
     }
 
-    const initialStatus = status || (decoded.role === 'ADMIN' ? 'PUBLISHED' : 'DRAFT');
+    const initialStatus = normalizedStatus || (decoded.role === 'ADMIN' ? 'PUBLISHED' : 'DRAFT');
+
+    if (initialStatus === 'PUBLISHED' && decoded.role !== 'ADMIN') {
+      return NextResponse.json(
+        { success: false, error: 'Apenas ADMIN pode publicar documentos' },
+        { status: 403 }
+      );
+    }
 
     // Hotfix compat: alguns ambientes legados possuem colunas snake_case NOT NULL (ex: file_name).
     // Para evitar violação de constraint, inserimos preenchendo camelCase e snake_case quando existirem.
@@ -199,6 +261,19 @@ export async function POST(request) {
       phase,
       title,
       description: description || null,
+
+      // tipagem formal
+      tipoDocumento: tipoDocumento || null,
+      tipo_documento: tipoDocumento || null,
+      document_type: tipoDocumento || null,
+
+      numeroAnexo: numeroAnexo,
+      numero_anexo: numeroAnexo,
+      annex_number: numeroAnexo,
+
+      tituloExibicao: tituloExibicao || null,
+      titulo_exibicao: tituloExibicao || null,
+      display_title: tituloExibicao || null,
 
       // ordenação/status
       order: order !== undefined && order !== null ? parseInt(order, 10) : 0,
@@ -276,6 +351,21 @@ export async function POST(request) {
       });
     } catch {
       // ok: em ambientes com schema divergente, retornamos payload mínimo
+    }
+
+    if (initialStatus === 'PUBLISHED') {
+      const label = formatDocumentoPublicTitle({
+        tipoDocumento,
+        numeroAnexo,
+        tituloExibicao,
+        title
+      });
+      await registrarHistoricoLicitacao({
+        licitacaoId: biddingId,
+        acao: 'DOCUMENTO_PUBLICADO',
+        descricao: `Documento publicado: ${label}`,
+        usuarioId: decoded.userId
+      });
     }
 
     return NextResponse.json({

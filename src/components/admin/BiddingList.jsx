@@ -530,7 +530,7 @@ export default function BiddingList() {
                               fontSize: '0.8125rem',
                               borderRadius: '6px',
                               background: 'var(--primary)',
-                              color: 'white',
+                              color: 'var(--primary-contrast)',
                               border: 'none',
                               cursor: 'pointer',
                               fontWeight: 500,

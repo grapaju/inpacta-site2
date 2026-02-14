@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
+import { registrarHistoricoLicitacao } from '@/lib/licitacaoHistorico';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'inpacta-jwt-secret-2024';
 
@@ -46,7 +47,7 @@ export async function GET(request, { params }) {
       return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     const bidding = await prisma.bidding.findUnique({
       where: { id },
@@ -98,7 +99,6 @@ export async function GET(request, { params }) {
         const fileTypeCol = safe('fileType') || safe('file_type') || safe('mimetype');
         const fileHashCol = safe('fileHash') || safe('file_hash');
         const createdAtCol = safe('createdAt') || safe('created_at');
-
         const selectCoalesce = (primary, fallback) => {
           if (primary && fallback && primary !== fallback) {
             return Prisma.raw(`COALESCE("${primary}", "${fallback}")`);
@@ -114,6 +114,11 @@ export async function GET(request, { params }) {
         const fileTypeExpr = selectCoalesce(safe('fileType'), safe('file_type') || safe('mimetype'));
         const fileHashExpr = selectCoalesce(safe('fileHash'), safe('file_hash'));
         const createdAtExpr = selectCoalesce(safe('createdAt'), safe('created_at'));
+        const tipoDocumentoExpr = selectCoalesce(safe('tipoDocumento'), safe('tipo_documento') || safe('document_type'));
+        const numeroAnexoExpr = selectCoalesce(safe('numeroAnexo'), safe('numero_anexo') || safe('annex_number'));
+        const tituloExibicaoExpr = selectCoalesce(safe('tituloExibicao'), safe('titulo_exibicao') || safe('display_title'));
+        const viewCountExpr = selectCoalesce(safe('viewCount'), safe('view_count'));
+        const downloadCountExpr = selectCoalesce(safe('downloadCount'), safe('download_count'));
 
         const bidColIdent = Prisma.raw(`"${bidCol}"`);
         documents = await prisma.$queryRaw(
@@ -125,12 +130,17 @@ export async function GET(request, { params }) {
               "description",
               "order",
               "status",
+              ${tipoDocumentoExpr} AS "tipoDocumento",
+              ${numeroAnexoExpr} AS "numeroAnexo",
+              ${tituloExibicaoExpr} AS "tituloExibicao",
               ${fileNameExpr} AS "fileName",
               ${filePathExpr} AS "filePath",
               ${fileSizeExpr} AS "fileSize",
               ${fileTypeExpr} AS "fileType",
               ${fileHashExpr} AS "fileHash",
-              ${createdAtExpr} AS "createdAt"
+              ${createdAtExpr} AS "createdAt",
+              ${viewCountExpr} AS "viewCount",
+              ${downloadCountExpr} AS "downloadCount"
             FROM "bidding_documents"
             WHERE ${bidColIdent} = ${id}
             ORDER BY "phase" ASC, "order" ASC, "createdAt" DESC
@@ -251,6 +261,13 @@ export async function PATCH(request, { params }) {
           description: `Status alterado de ${currentBidding.status} para ${updateData.status}`,
           createdById: decoded.userId
         }
+      });
+
+      await registrarHistoricoLicitacao({
+        licitacaoId: id,
+        acao: 'STATUS_ALTERADO',
+        descricao: `Status alterado de ${currentBidding.status} para ${updateData.status}`,
+        usuarioId: decoded.userId
       });
     }
 

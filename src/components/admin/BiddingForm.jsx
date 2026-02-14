@@ -7,7 +7,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import StatusBadgeBidding from './StatusBadgeBidding';
-import DocumentUpload from './DocumentUpload';
 
 export default function BiddingForm({ biddingId = null, initialData = null }) {
   const router = useRouter();
@@ -15,6 +14,15 @@ export default function BiddingForm({ biddingId = null, initialData = null }) {
 
   const [step, setStep] = useState(1); // 1: básicos, 2: prazos/valores, 3: edital, 4: revisão
   const totalSteps = 4;
+
+  const getNextStepLabel = (currentStep) => {
+    const map = {
+      1: 'Prazos e Valores',
+      2: 'Anexar Edital',
+      3: 'Revisar e Criar'
+    };
+    return map[currentStep] || null;
+  };
 
   // Helper function for date conversion (movida para antes do useState)
   const toDateInputHelper = (value) => {
@@ -88,6 +96,8 @@ export default function BiddingForm({ biddingId = null, initialData = null }) {
   const [error, setError] = useState(null);
   const [validationErrors, setValidationErrors] = useState({});
 
+  // No wizard de criação, o edital só pode ser enviado após criar a licitação (precisa do biddingId).
+  // Então aqui guardamos o arquivo local e fazemos o upload no submit.
   const [editalFile, setEditalFile] = useState(null);
 
   // Carregar dados se estiver editando
@@ -302,6 +312,28 @@ export default function BiddingForm({ biddingId = null, initialData = null }) {
         }
 
         if (editalFile) {
+          // 1) Upload do arquivo (storage LICITACAO)
+          const uploadForm = new FormData();
+          uploadForm.append('file', editalFile);
+          uploadForm.append('module', 'LICITACAO');
+          uploadForm.append('biddingId', createdBidding.id);
+          uploadForm.append('phase', 'ABERTURA');
+          if (token) uploadForm.append('token', token);
+
+          const uploadResp = await fetch('/api/admin/upload-document', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            },
+            body: uploadForm
+          });
+
+          const uploadJson = await uploadResp.json();
+          if (!uploadResp.ok || !uploadJson?.success) {
+            throw new Error(uploadJson?.error || 'Licitação criada, mas falhou ao fazer upload do Edital');
+          }
+
+          // 2) Criar registro do documento (bidding_documents)
           const createDocResp = await fetch('/api/admin/documents', {
             method: 'POST',
             headers: {
@@ -312,21 +344,26 @@ export default function BiddingForm({ biddingId = null, initialData = null }) {
               module: 'LICITACAO',
               biddingId: createdBidding.id,
               phase: 'ABERTURA',
-              subcategory: 'EDITAL',
               title: `Edital - ${formData.number}`,
               description: '',
+
+              // Tipagem/status (payload PT-BR)
+              tipo_documento: 'EDITAL',
+              titulo_exibicao: 'Edital',
+              status_documento: 'PUBLICADO',
               status: 'PUBLISHED',
-              referenceDate: formData.publicationDate || null,
-              fileName: editalFile.fileName,
-              filePath: editalFile.filePath,
-              fileSize: editalFile.fileSize,
-              fileType: editalFile.fileType
+
+              fileName: uploadJson.fileName,
+              filePath: uploadJson.filePath,
+              fileSize: uploadJson.fileSize,
+              fileType: uploadJson.fileType,
+              fileHash: uploadJson.fileHash
             })
           });
 
           const createDocData = await createDocResp.json();
-          if (!createDocResp.ok) {
-            throw new Error(createDocData.error || 'Licitação criada, mas falhou ao cadastrar o Edital');
+          if (!createDocResp.ok || !createDocData?.success) {
+            throw new Error(createDocData?.error || 'Licitação criada, mas falhou ao cadastrar o Edital');
           }
         }
 
@@ -430,7 +467,7 @@ export default function BiddingForm({ biddingId = null, initialData = null }) {
         </div>
       )}
       
-      <form onSubmit={handleSubmit} className="admin-form">
+      <form onSubmit={handleSubmit} className={`admin-form ${!isEditing ? 'admin-form-with-wizard-footer' : ''}`}>
       {error && (
         <div className="admin-error" style={{ marginBottom: '1.5rem' }}>
           <p>{error}</p>
@@ -617,17 +654,20 @@ export default function BiddingForm({ biddingId = null, initialData = null }) {
 
           <div className="admin-form-group">
             <label htmlFor="description" className="admin-label">
-              Observações internas
+              Resumo (exibição pública)
             </label>
             <textarea
               id="description"
               name="description"
               value={formData.description}
               onChange={handleChange}
-              placeholder="Notas para equipe (opcional)."
+              placeholder="Frase curta para aparecer no topo do edital (opcional)."
               rows={3}
               className="admin-textarea"
             />
+            <small className="admin-help-text">
+              Dica: use 1 frase (até ~160 caracteres). Se vazio, o site usa a 1ª frase do objeto.
+            </small>
           </div>
         </div>
       ) : null}
@@ -741,18 +781,28 @@ export default function BiddingForm({ biddingId = null, initialData = null }) {
           </div>
 
           <div className="admin-card" style={{ marginTop: '1rem' }}>
-            <DocumentUpload
-              uploadContext={{
-                module: 'LICITACAO',
-                biddingNumber: formData.number,
-                phase: 'ABERTURA'
-              }}
-              currentFile={editalFile}
-              onUploadComplete={(file) => setEditalFile(file)}
-            />
+            <div className="admin-form-group" style={{ marginBottom: 0 }}>
+              <label className="admin-label">Arquivo do edital</label>
+              <input
+                type="file"
+                className="admin-input"
+                accept=".pdf,.docx,.xlsx,.doc,.xls"
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null;
+                  setEditalFile(file);
+                }}
+                disabled={loading}
+              />
+              <small className="admin-help-text">
+                O upload será feito somente após criar a licitação (necessita do ID do processo).
+              </small>
+            </div>
 
             {editalFile ? (
-              <div style={{ marginTop: '0.75rem', display: 'flex', justifyContent: 'flex-end' }}>
+              <div style={{ marginTop: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+                <div className="admin-form-hint" style={{ margin: 0 }}>
+                  Selecionado: <strong>{editalFile?.name}</strong>
+                </div>
                 <button
                   type="button"
                   className="admin-btn-secondary"
@@ -802,7 +852,7 @@ export default function BiddingForm({ biddingId = null, initialData = null }) {
                 <label className="admin-form-label">Edital Anexado</label>
                 <div className="admin-form-hint">
                   {editalFile ? (
-                    <span style={{ color: 'var(--success)' }}>Anexado: {editalFile.fileName}</span>
+                    <span style={{ color: 'var(--success)' }}>Selecionado: {editalFile.name}</span>
                   ) : (
                     <span style={{ color: 'var(--muted)' }}>Não anexado (pode ser feito depois)</span>
                   )}
@@ -830,6 +880,49 @@ export default function BiddingForm({ biddingId = null, initialData = null }) {
           >
             {loading ? 'Salvando...' : 'Salvar alterações'}
           </button>
+        </div>
+      ) : null}
+
+      {!isEditing ? (
+        <div className="admin-wizard-footer" aria-label="Ações do assistente">
+          <div className="admin-wizard-footer-inner">
+            <div className="admin-wizard-footer-hint">
+              {step < totalSteps
+                ? `Próximo passo: ${getNextStepLabel(step)}`
+                : 'Pronto para criar a licitação'}
+            </div>
+            <div className="admin-wizard-footer-actions">
+              {step > 1 && (
+                <button
+                  type="button"
+                  className="admin-btn-secondary"
+                  onClick={handleBack}
+                  disabled={loading}
+                >
+                  Voltar
+                </button>
+              )}
+              {step < totalSteps ? (
+                <button
+                  type="button"
+                  className="admin-btn-primary"
+                  onClick={handleNext}
+                  disabled={loading}
+                >
+                  {`Próximo: ${getNextStepLabel(step)}`}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="admin-btn-primary"
+                  onClick={handleSubmit}
+                  disabled={loading}
+                >
+                  {loading ? 'Criando...' : 'Criar Licitação'}
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       ) : null}
       </form>

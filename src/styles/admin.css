@@ -275,7 +275,7 @@
 /* Botões administrativos */
 .admin-btn-primary {
   background: var(--primary);
-  color: white;
+  color: var(--primary-contrast);
   border: 1px solid var(--primary);
   padding: 0.625rem 1rem;
   border-radius: 10px;
@@ -868,7 +868,7 @@
 
 .admin-pagination-btn.active {
   background: var(--primary);
-  color: white;
+  color: var(--primary-contrast);
   border-color: var(--primary);
 }
 
@@ -1409,7 +1409,7 @@
   width: 48px;
   height: 48px;
   background: var(--primary);
-  color: white;
+  color: var(--primary-contrast);
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -1816,7 +1816,7 @@
 
 .admin-wizard-step-active .admin-wizard-step-circle {
   background: var(--primary);
-  color: white;
+  color: var(--primary-contrast);
   border-color: var(--primary);
 }
 
@@ -1876,8 +1876,60 @@
 
 .admin-wizard-actions .admin-btn-primary {
   background: var(--primary);
-  color: white;
+  color: var(--primary-contrast);
   border: 1px solid var(--primary);
+}
+
+/* Rodapé fixo do wizard (evita rolar para voltar/avançar) */
+.admin-form-with-wizard-footer {
+  padding-bottom: 6.25rem;
+}
+
+.admin-wizard-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  backdrop-filter: saturate(140%) blur(12px);
+  -webkit-backdrop-filter: saturate(140%) blur(12px);
+}
+
+.admin-wizard-footer-inner {
+  padding: 0.875rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.admin-wizard-footer-hint {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.admin-wizard-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .admin-wizard-footer-inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-wizard-footer-actions {
+    justify-content: stretch;
+  }
+
+  .admin-wizard-footer-actions .admin-btn-secondary,
+  .admin-wizard-footer-actions .admin-btn-primary {
+    width: 100%;
+  }
 }
 
 .admin-wizard-actions .admin-btn-primary:hover {

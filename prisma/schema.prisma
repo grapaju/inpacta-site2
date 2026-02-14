@@ -28,6 +28,7 @@ model User {
   versoesDocumentoCriadas VersaoDocumento[] @relation("VersaoDocumentoCriadaPor")
   biddingMovements  BiddingMovement[]
   biddingDocuments  BiddingDocument[]
+  licitacaoHistorico LicitacaoHistorico[]
 
   @@map("users")
 }
@@ -343,6 +344,9 @@ model Bidding {
 
   // Documentos anexos do processo (Admin Licitações)
   documents       BiddingDocument[]
+
+  // Histórico (status/documentos)
+  historico       LicitacaoHistorico[]
   
   // Resultado
   winner          String?
@@ -368,10 +372,19 @@ model BiddingDocument {
 
   phase       BiddingPhase
 
+  // Tipagem formal (nullable para compatibilidade com registros antigos)
+  tipoDocumento  String?
+  numeroAnexo    Int?
+  tituloExibicao String?
+
   title       String
   description String?
   order       Int         @default(0)
   status      String      @default("PUBLISHED")
+
+  // Métricas públicas (contadores)
+  viewCount     Int         @default(0)
+  downloadCount Int         @default(0)
 
   fileName    String
   filePath    String
@@ -389,6 +402,26 @@ model BiddingDocument {
   @@index([biddingId, phase, order])
   @@index([createdAt])
   @@map("bidding_documents")
+}
+
+// Histórico jurídico/administrativo da licitação
+model LicitacaoHistorico {
+  id          String   @id @default(cuid())
+
+  licitacao   Bidding  @relation(fields: [licitacaoId], references: [id], onDelete: Cascade)
+  licitacaoId String   @map("licitacao_id")
+
+  acao        String
+  descricao   String   @db.Text
+
+  usuario     User?    @relation(fields: [usuarioId], references: [id])
+  usuarioId   String?  @map("usuario_id")
+
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([licitacaoId, createdAt])
+  @@index([acao])
+  @@map("licitacao_historico")
 }
 
 // Histórico de movimentações da licitação (NOVO)
