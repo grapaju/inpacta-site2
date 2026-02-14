@@ -6,6 +6,7 @@ import { getSiteUrl } from "@/lib/siteUrl";
 import { Prisma } from "@prisma/client";
 import { formatDocumentoPublicTitle } from "@/lib/biddingDocumentRules";
 import OpenDetailsOnHash from "@/components/OpenDetailsOnHash";
+import { IconChevronDown, IconEye, IconFileText } from "@/components/Icons";
 
 function formatDate(dateValue) {
   if (!dateValue) return "-";
@@ -225,7 +226,9 @@ function DocumentList({ documents }) {
         <div key={doc.id || `${doc.title}-${idx}`} className={`p-6 ${idx === 0 ? "" : "border-t border-[var(--border)]"}`}>
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-start gap-3 min-w-0">
-              <div className="text-lg" aria-hidden="true">📄</div>
+              <div className="text-[var(--primary)] mt-0.5" aria-hidden="true">
+                <IconFileText width="20" height="20" />
+              </div>
               <div className="min-w-0">
                 <div className="font-semibold text-[var(--primary)] break-words">
                   {formatDocumentoPublicTitle({
@@ -250,7 +253,10 @@ function DocumentList({ documents }) {
                   rel="noopener noreferrer"
                   className="btn-secondary"
                 >
-                  Visualizar
+                  <span className="inline-flex items-center gap-2">
+                    <IconEye width="18" height="18" aria-hidden="true" />
+                    Visualizar
+                  </span>
                 </a>
                 <a
                   href={`/api/public/biddings/documents/${doc.id}/download`}
@@ -265,6 +271,72 @@ function DocumentList({ documents }) {
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+function normalizeTipoDocumentoForUi(doc) {
+  const raw = doc?.tipoDocumento;
+  const normalized = String(raw || "").trim().toUpperCase();
+  if (normalized) return normalized;
+  // Fallback: se veio sem tipo mas tem numeroAnexo, trata como ANEXO.
+  if (doc?.numeroAnexo !== null && doc?.numeroAnexo !== undefined) return "ANEXO";
+  return "";
+}
+
+function sortDocumentsForUi(a, b) {
+  const aOrder = Number.isFinite(Number(a?.order)) ? Number(a.order) : 0;
+  const bOrder = Number.isFinite(Number(b?.order)) ? Number(b.order) : 0;
+  if (aOrder !== bOrder) return aOrder - bOrder;
+
+  const aAnexo = a?.numeroAnexo !== null && a?.numeroAnexo !== undefined ? Number(a.numeroAnexo) : null;
+  const bAnexo = b?.numeroAnexo !== null && b?.numeroAnexo !== undefined ? Number(b.numeroAnexo) : null;
+  if (aAnexo !== null && bAnexo !== null && aAnexo !== bAnexo) return aAnexo - bAnexo;
+
+  const aCreated = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
+  const bCreated = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
+  return bCreated - aCreated;
+}
+
+function DocumentGroups({ documents }) {
+  const list = Array.isArray(documents) ? documents.slice() : [];
+  if (list.length === 0) return <DocumentList documents={list} />;
+
+  const anexos = [];
+  const editalEOutros = [];
+
+  for (const doc of list) {
+    const tipo = normalizeTipoDocumentoForUi(doc);
+    if (tipo === "ANEXO") anexos.push(doc);
+    else editalEOutros.push(doc);
+  }
+
+  anexos.sort(sortDocumentsForUi);
+  editalEOutros.sort(sortDocumentsForUi);
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-base font-semibold text-[var(--text)] mb-3">Edital</h3>
+        <DocumentList documents={editalEOutros} />
+      </div>
+
+      {anexos.length > 0 && (
+        <details className="bg-[var(--card)] rounded-2xl border-2 border-[var(--border)] overflow-hidden">
+          <summary className="cursor-pointer select-none p-6 flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <div className="font-semibold text-[var(--text)]">Anexos ({anexos.length})</div>
+              <div className="mt-1 text-sm text-[color:var(--muted)]">Clique para expandir e visualizar a lista</div>
+            </div>
+            <span className="text-[var(--muted)]" aria-hidden="true">
+              <IconChevronDown width="20" height="20" />
+            </span>
+          </summary>
+          <div className="px-6 pb-6">
+            <DocumentList documents={anexos} />
+          </div>
+        </details>
+      )}
     </div>
   );
 }
@@ -536,7 +608,7 @@ export default async function Page({ params }) {
           </div>
         </ScrollReveal>
 
-        <DocumentList documents={documents} />
+        <DocumentGroups documents={documents} />
       </section>
 
       {/* Histórico */}
