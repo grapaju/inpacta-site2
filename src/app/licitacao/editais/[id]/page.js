@@ -284,6 +284,16 @@ function normalizeTipoDocumentoForUi(doc) {
   return "";
 }
 
+function isLikelyEdital(doc) {
+  const tipo = normalizeTipoDocumentoForUi(doc);
+  if (tipo === 'EDITAL') return true;
+  const title = String(doc?.tituloExibicao || doc?.title || '').toLowerCase();
+  if (!title) return false;
+  // Heurística simples: "edital" no título e não é explicitamente anexo.
+  if (title.includes('edital') && !title.includes('anexo')) return true;
+  return false;
+}
+
 function sortDocumentsForUi(a, b) {
   const aOrder = Number.isFinite(Number(a?.order)) ? Number(a.order) : 0;
   const bOrder = Number.isFinite(Number(b?.order)) ? Number(b.order) : 0;
@@ -302,31 +312,43 @@ function DocumentGroups({ documents }) {
   const list = Array.isArray(documents) ? documents.slice() : [];
   if (list.length === 0) return <DocumentList documents={list} />;
 
+  // Pedido: 1 documento principal (Edital) e 1 agrupamento único para todo o restante.
+  const editalDocs = [];
   const anexos = [];
-  const editalEOutros = [];
 
-  for (const doc of list) {
-    const tipo = normalizeTipoDocumentoForUi(doc);
-    if (tipo === "ANEXO") anexos.push(doc);
-    else editalEOutros.push(doc);
+  const sorted = list.slice().sort(sortDocumentsForUi);
+  for (const doc of sorted) {
+    if (editalDocs.length === 0 && isLikelyEdital(doc)) editalDocs.push(doc);
+    else anexos.push(doc);
   }
 
-  anexos.sort(sortDocumentsForUi);
-  editalEOutros.sort(sortDocumentsForUi);
+  // Se não achou edital, exibe tudo no agrupamento.
+  const hasEdital = editalDocs.length > 0;
 
   return (
     <div className="space-y-4">
-      <div>
-        <h3 className="text-base font-semibold text-[var(--text)] mb-3">Edital</h3>
-        <DocumentList documents={editalEOutros} />
-      </div>
+      {hasEdital && (
+        <div>
+          <h3 className="text-base font-semibold text-[var(--text)] mb-1">Edital</h3>
+          <p className="text-sm text-[color:var(--muted)] mb-3">
+            Documento principal do processo licitatório.
+          </p>
+          <DocumentList documents={editalDocs} />
+        </div>
+      )}
 
       {anexos.length > 0 && (
         <details className="bg-[var(--card)] rounded-2xl border-2 border-[var(--border)] overflow-hidden">
           <summary className="cursor-pointer select-none p-6 flex items-center justify-between gap-4">
             <div className="min-w-0">
-              <div className="font-semibold text-[var(--text)]">Anexos ({anexos.length})</div>
-              <div className="mt-1 text-sm text-[color:var(--muted)]">Clique para expandir e visualizar a lista</div>
+              <div className="font-semibold text-[var(--text)]">
+                {hasEdital ? `Anexos (${anexos.length})` : `Documentos (${anexos.length})`}
+              </div>
+              <div className="mt-1 text-sm text-[color:var(--muted)]">
+                {hasEdital
+                  ? 'Documentos complementares do processo. Clique para expandir.'
+                  : 'Clique para expandir e visualizar a lista de documentos.'}
+              </div>
             </div>
             <span className="text-[var(--muted)]" aria-hidden="true">
               <IconChevronDown width="20" height="20" />
