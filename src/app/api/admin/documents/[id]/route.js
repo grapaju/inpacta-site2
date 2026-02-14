@@ -9,6 +9,7 @@ import {
   validateTipoDocumentoPhase
 } from '@/lib/biddingDocumentRules';
 import { registrarHistoricoLicitacao } from '@/lib/licitacaoHistorico';
+import { Prisma } from '@prisma/client';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'inpacta-jwt-secret-2024';
 
@@ -50,6 +51,62 @@ function isAuthError(error) {
     message.includes('Token inválido') ||
     message.toLowerCase().includes('jwt')
   );
+}
+
+async function getBiddingDocumentCompatById(id) {
+  try {
+    const cols = await prisma.$queryRaw(
+      Prisma.sql`
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'bidding_documents'
+      `
+    );
+    const columnSet = new Set((cols || []).map((c) => c.column_name));
+
+    const safe = (name) => {
+      if (!columnSet.has(name)) return null;
+      if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) return null;
+      return name;
+    };
+
+    const coalesce = (a, b) => {
+      if (a && b && a !== b) return Prisma.raw(`COALESCE("${a}", "${b}")`);
+      if (a) return Prisma.raw(`"${a}"`);
+      if (b) return Prisma.raw(`"${b}"`);
+      return Prisma.raw('NULL');
+    };
+
+    const biddingIdExpr = coalesce(safe('biddingId'), safe('bidding_id'));
+    const createdByIdExpr = coalesce(safe('createdById'), safe('created_by'));
+
+    const tipoDocumentoExpr = coalesce(safe('tipoDocumento'), safe('tipo_documento') || safe('document_type'));
+    const numeroAnexoExpr = coalesce(safe('numeroAnexo'), safe('numero_anexo') || safe('annex_number'));
+    const tituloExibicaoExpr = coalesce(safe('tituloExibicao'), safe('titulo_exibicao') || safe('display_title'));
+
+    const rows = await prisma.$queryRaw(
+      Prisma.sql`
+        SELECT
+          "id",
+          ${biddingIdExpr} AS "biddingId",
+          ${createdByIdExpr} AS "createdById",
+          "title",
+          ${tipoDocumentoExpr} AS "tipoDocumento",
+          ${numeroAnexoExpr} AS "numeroAnexo",
+          ${tituloExibicaoExpr} AS "tituloExibicao"
+        FROM "bidding_documents"
+        WHERE "id" = ${id}
+        LIMIT 1
+      `
+    );
+
+    const row = Array.isArray(rows) ? rows[0] : null;
+    if (!row?.id) return null;
+    return row;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -254,12 +311,14 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ success: false, error: 'ID inválido' }, { status: 400 });
     }
 
-    const document = await prisma.biddingDocument.findUnique({ where: { id } });
+    // Compat: em bancos legados, colunas novas (ex: tipoDocumento) podem não existir.
+    // Evitamos prisma.biddingDocument.findUnique() para não estourar P2022.
+    const document = await getBiddingDocumentCompatById(id);
     if (!document) {
       return NextResponse.json({ success: false, error: 'Documento não encontrado' }, { status: 404 });
     }
 
-    if (decoded.role !== 'ADMIN' && document.createdById !== decoded.userId) {
+    if (decoded.role !== 'ADMIN' && (!document.createdById || document.createdById !== decoded.userId)) {
       return NextResponse.json(
         { success: false, error: 'Sem permissão para deletar este documento' },
         { status: 403 }
@@ -278,12 +337,14 @@ export async function DELETE(request, { params }) {
       tituloExibicao: document.tituloExibicao,
       title: document.title
     });
-    await registrarHistoricoLicitacao({
-      licitacaoId: document.biddingId,
-      acao: 'DOCUMENTO_EXCLUIDO',
-      descricao: `Documento excluído: ${label}`,
-      usuarioId: decoded.userId
-    });
+    if (document.biddingId) {
+      await registrarHistoricoLicitacao({
+        licitacaoId: document.biddingId,
+        acao: 'DOCUMENTO_EXCLUIDO',
+        descricao: `Documento excluído: ${label}`,
+        usuarioId: decoded.userId
+      });
+    }
 
     return NextResponse.json({ success: true, message: 'Documento deletado com sucesso' });
   } catch (error) {
