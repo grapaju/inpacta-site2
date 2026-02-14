@@ -318,11 +318,26 @@ function DocumentGroups({ documents }) {
 
   const sorted = list.slice().sort(sortDocumentsForUi);
   for (const doc of sorted) {
-    if (editalDocs.length === 0 && isLikelyEdital(doc)) editalDocs.push(doc);
+    const tipo = normalizeTipoDocumentoForUi(doc);
+    if (tipo === 'EDITAL') editalDocs.push(doc);
     else anexos.push(doc);
   }
 
-  // Se não achou edital, exibe tudo no agrupamento.
+  // Fallback: se nenhum doc estiver tipado como EDITAL, tenta identificar pelo título.
+  if (editalDocs.length === 0) {
+    const fallbackEditais = [];
+    const fallbackOutros = [];
+    for (const doc of sorted) {
+      if (isLikelyEdital(doc)) fallbackEditais.push(doc);
+      else fallbackOutros.push(doc);
+    }
+    if (fallbackEditais.length > 0) {
+      editalDocs.push(...fallbackEditais);
+      anexos.length = 0;
+      anexos.push(...fallbackOutros);
+    }
+  }
+
   const hasEdital = editalDocs.length > 0;
 
   return (
@@ -331,7 +346,7 @@ function DocumentGroups({ documents }) {
         <div>
           <h3 className="text-base font-semibold text-[var(--text)] mb-1">Edital</h3>
           <p className="text-sm text-[color:var(--muted)] mb-3">
-            Documento principal do processo licitatório.
+            Documentos principais do processo licitatório.
           </p>
           <DocumentList documents={editalDocs} />
         </div>
