@@ -5,6 +5,7 @@
 'use client';
 
 import { useState } from 'react';
+import { IconChevronDown } from '@/components/Icons';
 import StatusBadge from './StatusBadge';
 
 export default function BiddingPhases({ 
@@ -12,7 +13,8 @@ export default function BiddingPhases({
   documents = [], 
   onUpload, 
   onDelete,
-  onUpdateStatus 
+  onUpdateStatus,
+  onReorder
 }) {
   const [expandedPhase, setExpandedPhase] = useState('ABERTURA');
 
@@ -31,6 +33,11 @@ export default function BiddingPhases({
     return documents
       .filter(doc => doc.phase === phase)
       .sort((a, b) => (a.order || 0) - (b.order || 0));
+  };
+
+  const handleMove = (phaseKey, docId, direction) => {
+    if (typeof onReorder !== 'function') return;
+    onReorder(phaseKey, docId, direction);
   };
 
   const togglePhase = (phase) => {
@@ -112,7 +119,9 @@ export default function BiddingPhases({
                 <span className="phase-count">
                   {phaseDocuments.length} {phaseDocuments.length === 1 ? 'documento' : 'documentos'}
                 </span>
-                <span className="phase-toggle-arrow">▼</span>
+                <span className="phase-toggle-arrow" aria-hidden="true">
+                  <IconChevronDown width="18" height="18" />
+                </span>
               </div>
             </button>
 
@@ -141,6 +150,10 @@ export default function BiddingPhases({
                     {phaseDocuments.map((doc) => (
                       (() => {
                         const filename = getSafeFilename(doc);
+                        const phaseDocs = phaseDocuments;
+                        const docIndex = phaseDocs.findIndex((d) => d.id === doc.id);
+                        const canMoveUp = docIndex > 0;
+                        const canMoveDown = docIndex >= 0 && docIndex < phaseDocs.length - 1;
                         return (
                       <div key={doc.id} className="phase-document">
                         <div className="phase-document-icon">
@@ -178,6 +191,30 @@ export default function BiddingPhases({
                         </div>
 
                         <div className="phase-document-actions">
+                          {onReorder && (
+                            <>
+                              <button
+                                type="button"
+                                className="admin-btn-icon"
+                                onClick={() => handleMove(phase.key, doc.id, 'up')}
+                                title="Subir"
+                                disabled={!canMoveUp}
+                                aria-disabled={!canMoveUp}
+                              >
+                                ↑
+                              </button>
+                              <button
+                                type="button"
+                                className="admin-btn-icon"
+                                onClick={() => handleMove(phase.key, doc.id, 'down')}
+                                title="Descer"
+                                disabled={!canMoveDown}
+                                aria-disabled={!canMoveDown}
+                              >
+                                ↓
+                              </button>
+                            </>
+                          )}
                           {doc.filePath && (
                             <a
                               href={doc.filePath}

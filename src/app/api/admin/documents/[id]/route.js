@@ -173,6 +173,46 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ success: false, error: 'ID inválido' }, { status: 400 });
     }
 
+    const body = await request.json();
+    const bodyKeys = body && typeof body === 'object' ? Object.keys(body) : [];
+    const allowedOnlyOrderKeys = new Set(['order']);
+    const isOrderOnlyUpdate =
+      bodyKeys.length > 0 && bodyKeys.every((k) => allowedOnlyOrderKeys.has(k));
+
+    // Caminho compatível para DB legado: reordenação (somente campo `order`).
+    // Evita prisma.biddingDocument.* em bancos que ainda não têm colunas novas (ex: tipoDocumento).
+    if (isOrderOnlyUpdate) {
+      const current = await getBiddingDocumentCompatById(id);
+      if (!current) {
+        return NextResponse.json({ success: false, error: 'Documento não encontrado' }, { status: 404 });
+      }
+
+      if (decoded.role !== 'ADMIN' && (!current.createdById || current.createdById !== decoded.userId)) {
+        return NextResponse.json(
+          { success: false, error: 'Sem permissão para editar este documento' },
+          { status: 403 }
+        );
+      }
+
+      const parsedOrder =
+        body.order === null || body.order === '' || body.order === undefined
+          ? 0
+          : parseInt(body.order, 10);
+      if (!Number.isFinite(parsedOrder)) {
+        return NextResponse.json({ success: false, error: 'order inválido' }, { status: 400 });
+      }
+
+      await prisma.$executeRaw(
+        Prisma.sql`
+          UPDATE "bidding_documents"
+          SET "order" = ${parsedOrder}
+          WHERE "id" = ${id}
+        `
+      );
+
+      return NextResponse.json({ success: true, data: { id, order: parsedOrder } });
+    }
+
     const currentDocument = await prisma.biddingDocument.findUnique({ where: { id } });
     if (!currentDocument) {
       return NextResponse.json({ success: false, error: 'Documento não encontrado' }, { status: 404 });
@@ -185,7 +225,6 @@ export async function PATCH(request, { params }) {
       );
     }
 
-    const body = await request.json();
     const updateData = {
       updatedById: decoded.userId,
     };

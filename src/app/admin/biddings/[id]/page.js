@@ -134,6 +134,61 @@ export default function BiddingDetailPage() {
     alert('Funcionalidade de alteração de status em desenvolvimento');
   };
 
+  const handleReorderDocument = async (phase, docId, direction) => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        router.push('/admin/login');
+        return;
+      }
+
+      const phaseDocs = (documents || [])
+        .filter((d) => d.phase === phase)
+        .slice()
+        .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+      if (phaseDocs.length < 2) return;
+
+      const index = phaseDocs.findIndex((d) => d.id === docId);
+      if (index < 0) return;
+
+      const targetIndex = direction === 'up' ? index - 1 : index + 1;
+      if (targetIndex < 0 || targetIndex >= phaseDocs.length) return;
+
+      // Normaliza e aplica a troca
+      const normalized = phaseDocs.map((d, idx) => ({ ...d, __order: idx }));
+      const swapped = normalized.slice();
+      const tmp = swapped[index];
+      swapped[index] = swapped[targetIndex];
+      swapped[targetIndex] = tmp;
+
+      const updates = swapped.map((d, idx) => ({ id: d.id, order: idx, oldOrder: d.order || 0 }));
+      const changed = updates.filter((u) => u.order !== u.oldOrder);
+      if (changed.length === 0) return;
+
+      for (const u of changed) {
+        const response = await fetch(`/api/admin/documents/${u.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ order: u.order })
+        });
+
+        const data = await response.json().catch(() => null);
+        if (!response.ok || !data?.success) {
+          throw new Error(data?.error || 'Erro ao reordenar documentos');
+        }
+      }
+
+      fetchBidding();
+    } catch (error) {
+      console.error('Erro ao reordenar:', error);
+      alert(`Erro ao reordenar: ${error?.message || 'Erro ao reordenar documentos'}`);
+    }
+  };
+
   const handleAddMovement = () => {
     setShowMovementModal(true);
   };
@@ -308,6 +363,7 @@ export default function BiddingDetailPage() {
             onUpload={handleUploadClick}
             onDelete={handleDeleteDocument}
             onUpdateStatus={handleUpdateDocStatus}
+            onReorder={handleReorderDocument}
           />
         )}
 
